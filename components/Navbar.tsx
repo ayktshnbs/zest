@@ -28,7 +28,7 @@ export const Navbar = () => {
 
           {/* Desktop Links */}
           <nav className="hidden md:flex items-center gap-8">
-            {["Shop All", "Cookware", "Cutlery", "Dining", "Tools"].map((item) => (
+            {["Tümünü Gör", "Pişirme Gereçleri", "Bıçaklar", "Yemek", "Mutfak Gereçleri"].map((item) => (
               <a
                 key={item}
                 href={`#${item.toLowerCase().replace(" ", "-")}`}

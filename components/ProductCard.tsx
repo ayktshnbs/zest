@@ -48,7 +48,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           onClick={() => addToCart(product)}
           className="w-full mt-4 py-3 rounded-full border border-[#1c1c13]/10 font-bold text-sm hover:bg-[#1c1c13] hover:text-white transition-colors lg:hidden"
         >
-          Add to Cart
+          Sepete Ekle
         </button>
       </div>
     </div>

@@ -17,8 +17,8 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Zest | Premium Kitchenware",
-  description: "Elevate your culinary experience with our curated collection of high-quality kitchenware.",
+  title: "Zest | Premium Mutfak Gereçleri",
+  description: "Özenle seçilmiş yüksek kaliteli mutfak gereçleri koleksiyonumuzla mutfak deneyiminizi geliştirin.",
 };
 
 export default function RootLayout({
@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="tr" className="scroll-smooth">
       <body className={`${plusJakarta.variable} ${dmSans.variable} font-body bg-[#fdf9e9] text-[#1c1c13] antialiased`}>
         <CartProvider>
           <Navbar />
@@ -43,33 +43,33 @@ export default function RootLayout({
                     <span className="font-display text-2xl font-extrabold text-white">Zest</span>
                   </div>
                   <p className="text-white/60 max-w-sm mb-8">
-                    Making cooking fun, one colorful pan at a time. Non-toxic, beautiful, and built for your happiest kitchen.
+                    Yemek pişirmeyi eğlenceli hale getiriyoruz. Toksik olmayan, şık ve en mutlu mutfağınız için tasarlandı.
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-display font-bold mb-6">Shop</h4>
+                  <h4 className="font-display font-bold mb-6">Alışveriş</h4>
                   <ul className="space-y-4 text-white/60 text-sm">
-                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">Cookware</a></li>
-                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">Bakeware</a></li>
-                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">Cutlery</a></li>
-                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">Sale</a></li>
+                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">Pişirme Gereçleri</a></li>
+                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">Fırın Gereçleri</a></li>
+                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">Bıçaklar</a></li>
+                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">İndirim</a></li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-display font-bold mb-6">Support</h4>
+                  <h4 className="font-display font-bold mb-6">Destek</h4>
                   <ul className="space-y-4 text-white/60 text-sm">
-                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">About Us</a></li>
-                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">Shipping</a></li>
-                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">Returns</a></li>
-                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">FAQ</a></li>
+                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">Hakkımızda</a></li>
+                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">Kargo</a></li>
+                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">İadeler</a></li>
+                    <li><a href="#" className="hover:text-[#ffc329] transition-colors">SSS</a></li>
                   </ul>
                 </div>
               </div>
               <div className="border-t border-white/10 pt-10 flex flex-col md:flex-row justify-between items-center gap-4 text-white/40 text-xs">
-                <p>© 2026 Zest Kitchenware. All rights reserved.</p>
+                <p>© 2026 Zest Mutfak Gereçleri. Tüm hakları saklıdır.</p>
                 <div className="flex gap-8">
-                  <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-                  <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+                  <a href="#" className="hover:text-white transition-colors">Gizlilik Politikası</a>
+                  <a href="#" className="hover:text-white transition-colors">Kullanım Koşulları</a>
                 </div>
               </div>
             </div>

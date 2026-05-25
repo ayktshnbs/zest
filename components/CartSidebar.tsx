@@ -33,7 +33,7 @@ export const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
           <div className="p-6 border-b border-[#dedacb] flex items-center justify-between bg-white">
             <div className="flex items-center gap-3">
               <ShoppingBag className="text-[#b80035]" />
-              <h2 className="font-display text-xl font-bold text-[#1c1c13]">Your Cart ({totalItems})</h2>
+              <h2 className="font-display text-xl font-bold text-[#1c1c13]">Sepetiniz ({totalItems})</h2>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-[#f2eede] rounded-full transition-colors">
               <X size={24} />
@@ -47,12 +47,12 @@ export const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                 <div className="w-20 h-20 bg-[#f2eede] rounded-full flex items-center justify-center">
                   <ShoppingBag size={32} className="text-[#1c1c13]/20" />
                 </div>
-                <p className="font-body text-[#1c1c13]/60">Your cart is feeling a bit lonely.</p>
+                <p className="font-body text-[#1c1c13]/60">Sepetiniz biraz yalnız görünüyor.</p>
                 <button
                   onClick={onClose}
                   className="bg-[#b80035] text-white px-8 py-3 rounded-full font-bold hover:bg-[#e11d48] transition-colors"
                 >
-                  Start Shopping
+                  Alışverişe Başla
                 </button>
               </div>
             ) : (
@@ -102,14 +102,14 @@ export const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
           {cart.length > 0 && (
             <div className="p-6 bg-white border-t border-[#dedacb] space-y-4">
               <div className="flex justify-between items-end mb-2">
-                <span className="text-[#1c1c13]/60 font-body">Subtotal</span>
+                <span className="text-[#1c1c13]/60 font-body">Ara Toplam</span>
                 <span className="font-display text-2xl font-extrabold text-[#1c1c13]">
                   ${totalPrice.toFixed(0)}
                 </span>
               </div>
-              <p className="text-xs text-[#5c3f40] text-center">Shipping and taxes calculated at checkout.</p>
+              <p className="text-xs text-[#5c3f40] text-center">Kargo ve vergiler ödeme sırasında hesaplanır.</p>
               <button className="w-full bg-[#b80035] hover:bg-[#e11d48] text-white py-5 rounded-full font-bold shadow-lg shadow-[#b80035]/20 transition-all hover:-translate-y-1 active:scale-95">
-                Checkout Now
+                Şimdi Öde
               </button>
             </div>
           )}
