@@ -32,6 +32,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.code.html
-.design.md
-.screen.png
+code.html
+design.md
+screen.png
