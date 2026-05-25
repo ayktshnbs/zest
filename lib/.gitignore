@@ -1,0 +1,14 @@
+# Ignore environment variables
+.env
+.env.local
+.env.development
+.env.production
+node_modules/
+.next/
+.claude
+/src/generated/prisma
+*.db
+*.db-journal
+.DESINGN.MD
+.code.html
+.screen.png
