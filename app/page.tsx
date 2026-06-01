@@ -43,21 +43,21 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background relative">
       {/* Apple-Style Light Hero Section with Background Image */}
-      <section ref={heroRef} className="relative min-h-dvh flex items-start md:items-center justify-center overflow-hidden bg-[#f5f5f7] pt-32 md:pt-40">
+      <section ref={heroRef} className="relative min-h-dvh flex items-center justify-center overflow-hidden bg-[#f5f5f7]">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image 
             src="https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=80&w=2000" 
             alt="Modern Kitchen Essentials Background" 
             fill
-            className="object-cover opacity-60 md:opacity-80 contrast-[1.05] saturate-[1.05]"
+            className="object-cover opacity-60 md:opacity-80 contrast-[1.05] saturate-[1.05] object-center"
             priority
           />
         </div>
 
         <motion.div 
           style={{ y: textY, opacity: textOpacity }}
-          className="max-w-7xl mx-auto px-5 md:px-16 relative z-10 w-full text-center mt-20 md:mt-0"
+          className="max-w-7xl mx-auto px-5 md:px-16 relative z-10 w-full text-center mt-[15vh] md:mt-[10vh]"
         >
           <motion.div
             initial={{ y: 30, opacity: 0 }}
@@ -79,12 +79,12 @@ export default function Home() {
                 ease: "easeInOut" 
               }}
             >
-              <h1 className="font-audiowide text-3xl sm:text-4xl md:text-7xl lg:text-8xl leading-[1.1] mb-6 tracking-tight text-[#1d1d1f]">
+              <h1 className="font-audiowide text-2xl sm:text-4xl md:text-7xl lg:text-8xl leading-[1.1] mb-4 md:mb-6 tracking-tight text-[#1d1d1f]">
                 Pro-Level Tools.<br />
                 <span className="text-[#1d1d1f]/60">Effortless Cooking.</span>
               </h1>
 
-              <p className="font-body text-base sm:text-xl md:text-2xl text-[#1d1d1f]/60 max-w-xl mx-auto mb-10 leading-relaxed font-medium">
+              <p className="font-body text-sm sm:text-lg md:text-2xl text-[#1d1d1f]/60 max-w-xl mx-auto mb-8 md:mb-10 leading-relaxed font-medium">
                 Collection of modern kitchen essentials beautifully arranged for a minimalist luxury experience.
               </p>
             </motion.div>
