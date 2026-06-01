@@ -43,7 +43,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background relative">
       {/* Apple-Style Light Hero Section with Background Image */}
-      <section ref={heroRef} className="relative min-h-dvh flex items-start md:items-center justify-center overflow-hidden bg-[#f5f5f7] pt-24 md:pt-0">
+      <section ref={heroRef} className="relative min-h-dvh flex items-start md:items-center justify-center overflow-hidden bg-[#f5f5f7] pt-32 md:pt-40">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image 
@@ -57,7 +57,7 @@ export default function Home() {
 
         <motion.div 
           style={{ y: textY, opacity: textOpacity }}
-          className="max-w-7xl mx-auto px-5 md:px-16 relative z-10 w-full text-center"
+          className="max-w-7xl mx-auto px-5 md:px-16 relative z-10 w-full text-center mt-20 md:mt-0"
         >
           <motion.div
             initial={{ y: 30, opacity: 0 }}
