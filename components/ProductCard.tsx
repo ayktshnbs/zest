@@ -15,100 +15,79 @@ interface ProductCardProps {
 export const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
   const [isHovered, setIsHovered] = useState(false);
-  const [isWishlisted, setIsWishlisted] = useState(false);
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="metallic-card group shine-sweep"
+      className="group flex flex-col bg-card"
     >
       {/* Product Image Link */}
-      <Link href={`/products/${product.id}`} className="block relative aspect-[4/5] overflow-hidden bg-[#1a1d23]">
+      <Link href={`/products/${product.id}`} className="block relative aspect-[4/5] overflow-hidden bg-secondary/30">
         <Image
           src={product.imageUrl}
           alt={product.name}
           fill
-          className="object-cover transition-transform duration-700 ease-luxury group-hover:scale-110"
+          className="object-cover transition-transform duration-1000 group-hover:scale-105"
           sizes="(max-w-640px) 100vw, (max-w-1024px) 50vw, 25vw"
           loading="lazy"
         />
         
-        {/* Glassmorphism Overlay */}
-        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        
-        {/* Wishlist Button */}
-        <button 
-          onClick={(e) => {
-            e.preventDefault();
-            setIsWishlisted(!isWishlisted);
-          }}
-          className={`absolute top-5 right-5 z-20 p-3 rounded-full transition-all duration-400 ease-luxury ${
-            isWishlisted 
-              ? "bg-primary text-primary-foreground scale-110 shadow-lg shadow-primary/20" 
-              : "bg-black/40 backdrop-blur-md text-white/40 hover:text-primary hover:scale-110 border border-white/10"
-          }`}
-        >
-          <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} strokeWidth={2.5} />
-        </button>
-
-        {/* Floating Quick Action */}
+        {/* Desktop Add to Cart - Visible only on hover */}
         <AnimatePresence>
           {isHovered && (
-            <motion.div 
+            <motion.button 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="absolute bottom-6 left-6 right-6 z-10"
+              onClick={(e) => {
+                e.preventDefault();
+                addToCart(product);
+              }}
+              className="hidden lg:block absolute bottom-4 left-4 right-4 bg-foreground text-background py-4 font-audiowide text-[9px] uppercase tracking-[0.3em] z-20 hover:opacity-90 transition-opacity"
             >
-              <div className="glass px-5 py-3 rounded-2xl flex items-center justify-between border border-white/10 shadow-2xl">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">İncele</span>
-                <ArrowUpRight size={16} className="text-primary" />
-              </div>
-            </motion.div>
+              Sepete Ekle
+            </motion.button>
           )}
         </AnimatePresence>
+
+        {/* Favorite Icon - Minimal */}
+        <button 
+          className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center bg-background text-foreground/20 hover:text-foreground transition-colors"
+        >
+          <Heart size={16} strokeWidth={1.5} />
+        </button>
       </Link>
       
-      {/* Product Info */}
-      <div className="p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary">
-            {product.category}
-          </span>
-          <div className="flex items-center gap-1">
-            <Star size={10} className="fill-primary text-primary" />
-            <span className="text-[10px] font-bold text-text-secondary">{product.rating}.0</span>
-          </div>
-        </div>
+      {/* Product Info - Minimalist Typography */}
+      <div className="pt-6 flex flex-col items-center text-center px-2">
+        <span className="font-audiowide text-[8px] uppercase tracking-[0.4em] text-foreground/30 mb-2">
+          {product.category}
+        </span>
         
-        <Link href={`/products/${product.id}`}>
-          <h4 className="font-display font-bold text-text-primary group-hover:text-primary transition-colors duration-400 ease-luxury text-lg tracking-tight leading-tight">
+        <Link href={`/products/${product.id}`} className="block mb-2 w-full">
+          <h4 className="font-body text-sm text-foreground font-medium tracking-tight leading-relaxed line-clamp-1">
             {product.name}
           </h4>
         </Link>
         
-        <div className="flex items-center justify-between pt-2">
-          <div className="flex flex-col">
-            <span className="text-[8px] text-text-secondary font-bold uppercase tracking-widest mb-0.5 opacity-50">Fiyat</span>
-            <p className="font-display font-bold text-xl text-text-primary tracking-tight">
-              {product.price} <span className="text-sm font-medium text-text-secondary">TL</span>
-            </p>
-          </div>
-          
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              addToCart(product);
-            }}
-            className="w-12 h-12 bg-white/5 border border-white/10 text-text-primary rounded-xl transition-all duration-400 ease-luxury hover:bg-primary hover:text-primary-foreground hover:scale-105 hover:shadow-lg hover:shadow-primary/20 flex items-center justify-center group/btn"
-          >
-            <ShoppingCart size={18} className="group-hover/btn:scale-110 transition-transform" />
-          </button>
-        </div>
+        <p className="font-audiowide text-xs text-foreground tracking-wide mb-6">
+          {product.price} <span className="text-[10px] text-foreground/40 font-normal">TL</span>
+        </p>
+
+        {/* Mobile Add to Cart - Always visible on touch devices */}
+        <button 
+          onClick={(e) => {
+            e.preventDefault();
+            addToCart(product);
+          }}
+          className="lg:hidden w-full py-4 bg-foreground text-background font-audiowide text-[9px] uppercase tracking-[0.3em] transition-transform active:scale-95"
+        >
+          Sepete Ekle
+        </button>
       </div>
     </motion.div>
   );

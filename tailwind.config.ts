@@ -10,24 +10,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0F1115", // Deep metallic charcoal
-        surface: "#171A20", // Dark steel gray
-        metallic: "#22262E", // Metallic graphite
-        border: "#343A46", // Subtle steel gray
-        "text-primary": "#F3F4F6", // Soft white
-        "text-secondary": "#9CA3AF", // Muted gray
+        background: "var(--background)", 
+        foreground: "var(--foreground)",
+        surface: "var(--secondary)", 
+        border: "var(--border)", 
+        "text-primary": "var(--foreground)", 
+        "text-secondary": "var(--muted-foreground)", 
         primary: {
-          DEFAULT: "#C0C7D1", // Chrome silver
-          foreground: "#0F1115",
-          glow: "#4F8CFF", // Electric blue glow
-        },
-        secondary: {
-          DEFAULT: "#8B949E", // Warm steel
-          foreground: "#0F1115",
+          DEFAULT: "var(--primary)", 
+          foreground: "var(--primary-foreground)",
         },
         accent: {
-          DEFAULT: "#4F8CFF", // Subtle electric blue
-          foreground: "#FFFFFF",
+          DEFAULT: "var(--accent)", 
+          foreground: "var(--accent-foreground)",
         },
       },
       fontFamily: {

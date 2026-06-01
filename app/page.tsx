@@ -5,14 +5,18 @@ import { ProductCard } from "@/components/ProductCard";
 import { ArrowRight, ChevronRight, Sparkles, ShieldCheck, Zap, MousePointer2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, Variants } from "framer-motion";
+import { motion, Variants, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
 export default function Home() {
-  const categories = [
-    { name: "Doğrayıcılar & Rondolar", img: "https://images.unsplash.com/photo-1593618998160-e34014e67546?auto=format&fit=crop&q=80&w=800", count: "4 Ürün" },
-    { name: "Saklama Kapları", img: "https://images.unsplash.com/photo-1534073828943-f801091bb18c?auto=format&fit=crop&q=80&w=800", count: "5 Ürün" },
-    { name: "Rende Setleri", img: "https://images.unsplash.com/photo-1594833233514-469036980597?auto=format&fit=crop&q=80&w=800", count: "3 Ürün" },
-  ];
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+
+  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -37,150 +41,89 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-background">
-      {/* Hero Section - Cinematic Full Background */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Full Background Image with Cinematic Lighting */}
+    <main className="min-h-screen bg-background relative">
+      {/* Apple-Style Light Hero Section with Background Image */}
+      <section ref={heroRef} className="relative min-h-dvh flex items-start md:items-center justify-center overflow-hidden bg-[#f5f5f7] pt-24 md:pt-0">
+        {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image 
-            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=2000" 
-            alt="Luxury Modern Kitchen" 
+            src="https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=80&w=2000" 
+            alt="Modern Kitchen Essentials Background" 
             fill
-            className="object-cover opacity-60 md:mix-blend-luminosity scale-105"
+            className="object-cover opacity-60 md:opacity-80 contrast-[1.05] saturate-[1.05]"
             priority
-            sizes="100vw"
           />
-          {/* Multi-layered Cinematic Overlays */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/20 to-background z-10" />
-          <div className="absolute inset-0 bg-black/40 z-10" />
-          
-          {/* Animated "Light Leak" Blobs - Reduced for Mobile Performance */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none z-20">
-            <div className="absolute top-[10%] left-[5%] w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-blob-gradient mix-blend-screen opacity-30 md:opacity-40 animate-blob" />
-            <div className="absolute bottom-[10%] right-[5%] w-[350px] h-[350px] md:w-[700px] md:h-[700px] bg-blob-gradient mix-blend-screen opacity-20 md:opacity-30 animate-blob" style={{ animationDelay: '3s' }} />
-          </div>
         </div>
 
-        {/* Subtle Grid Overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:100px_100px] z-20 opacity-30" />
-        
-        <div className="max-w-7xl mx-auto px-5 md:px-16 relative z-30 w-full text-center">
-          <motion.div 
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        <motion.div 
+          style={{ y: textY, opacity: textOpacity }}
+          className="max-w-7xl mx-auto px-5 md:px-16 relative z-10 w-full text-center"
+        >
+          <motion.div
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ 
+              y: [30, 0],
+              opacity: 0.85,
+            }}
+            transition={{ 
+              duration: 1, 
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="max-w-4xl mx-auto"
           >
-            <div className="flex items-center gap-3 mb-10 inline-flex glass px-6 py-2.5 rounded-full border-white/10 shadow-glow mx-auto">
-              <Sparkles size={14} className="text-accent animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/80">Küratörlü Koleksiyon 2026</span>
-            </div>
+            <motion.div
+              animate={{ y: [0, -5, 0] }}
+              transition={{ 
+                duration: 5, 
+                repeat: Infinity, 
+                ease: "easeInOut" 
+              }}
+            >
+              <h1 className="font-audiowide text-3xl sm:text-4xl md:text-7xl lg:text-8xl leading-[1.1] mb-6 tracking-tight text-[#1d1d1f]">
+                Pro-Level Tools.<br />
+                <span className="text-[#1d1d1f]/60">Effortless Cooking.</span>
+              </h1>
+
+              <p className="font-body text-base sm:text-xl md:text-2xl text-[#1d1d1f]/60 max-w-xl mx-auto mb-10 leading-relaxed font-medium">
+                Collection of modern kitchen essentials beautifully arranged for a minimalist luxury experience.
+              </p>
+            </motion.div>
             
-            <h1 className="font-display text-6xl md:text-8xl lg:text-9xl font-black leading-[0.95] mb-12 tracking-tighter text-text-primary drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
-              Mutfakta <br />
-              <span className="text-primary italic">Zest</span> <br />
-              Dokunuşu.
-            </h1>
-            
-            <p className="font-body text-lg md:text-2xl text-white/70 max-w-2xl mx-auto mb-16 leading-relaxed font-medium drop-shadow-lg">
-              Mutfak gereçlerini sanat eserine dönüştüren, geleceğin tasarım diliyle harmanlanmış zamansız bir deneyim.
-            </p>
-            
-            <div className="flex flex-wrap gap-6 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link 
                 href="/shop"
-                className="btn-primary min-w-[220px]"
+                className="w-full sm:w-auto px-10 py-4 bg-[#1d1d1f] text-white font-audiowide text-[10px] sm:text-[12px] tracking-[0.2em] uppercase rounded-full hover:bg-black transition-all duration-300 shadow-xl shadow-black/10"
               >
-                Koleksiyonu Keşfet
-                <ArrowRight size={20} className="transition-transform duration-400 group-hover:translate-x-2" />
+                Buy Now
               </Link>
               <Link 
-                href="/about"
-                className="btn-secondary min-w-[200px]"
+                href="/shop"
+                className="w-full sm:w-auto px-10 py-4 bg-white/50 backdrop-blur-md text-[#1d1d1f] font-audiowide text-[10px] sm:text-[12px] tracking-[0.2em] uppercase rounded-full hover:bg-white/80 transition-all duration-300 flex items-center justify-center gap-2 border border-black/5"
               >
-                Tasarım Vizyonu
+                Learn more <ChevronRight size={14} />
               </Link>
             </div>
           </motion.div>
-        </div>
-
-        {/* Cinematic Scroll Indicator */}
-        <motion.div 
-          animate={{ y: [0, 15, 0] }}
-          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-5 z-30"
-        >
-          <div className="w-[1px] h-20 bg-gradient-to-b from-primary via-primary/50 to-transparent" />
-          <span className="text-[9px] font-black uppercase tracking-[0.5em] text-white/30 rotate-180 [writing-mode:vertical-lr]">Aşağı</span>
         </motion.div>
       </section>
 
-      {/* Featured Grid - Large Whitespace */}
-      <section className="py-32 md:py-48 px-5 md:px-16">
+      {/* Featured Grid - Scandinavian Minimal */}
+      <section className="py-20 md:py-48 px-5 md:px-16 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-32 items-center mb-48">
-            <motion.div
-              initial={{ x: -50, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="relative aspect-[4/5] rounded-[3rem] overflow-hidden group metallic-card border-none"
-            >
-              <Image 
-                src="https://images.unsplash.com/photo-1593618998160-e34014e67546?auto=format&fit=crop&q=80&w=1200" 
-                alt="Premium Design" 
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-[2s] ease-luxury"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-              <div className="absolute bottom-12 left-12 right-12">
-                <span className="text-primary font-black text-[10px] uppercase tracking-[0.3em] mb-4 block">Tasarım Felsefesi</span>
-                <h3 className="text-3xl font-black text-text-primary tracking-tighter mb-6">Minimalizm ve Güç.</h3>
-                <Link href="/about" className="inline-flex items-center gap-2 text-xs font-bold text-white uppercase tracking-widest group/link">
-                  Daha Fazla <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-            </motion.div>
-            
-            <div className="space-y-12">
-              <span className="text-primary font-black tracking-[0.3em] text-[10px] uppercase block">Küratörlük</span>
-              <h2 className="font-display text-5xl md:text-7xl font-black text-text-primary tracking-tighter leading-[1.05]">
-                Her Detayda <br/>
-                <span className="text-primary italic">Kusursuzluk.</span>
-              </h2>
-              <p className="text-text-secondary text-lg leading-relaxed font-medium italic">
-                "Mükemmellik detaylarda gizlidir. Biz bu detayları en yüksek kalite standartlarıyla birleştirerek size sunuyoruz."
-              </p>
-              <div className="grid grid-cols-2 gap-8 pt-8">
-                <div className="space-y-4 p-8 bg-surface rounded-[2rem] border border-border">
-                  <ShieldCheck size={24} className="text-primary" />
-                  <h4 className="font-bold text-sm uppercase tracking-widest">Dayanıklılık</h4>
-                  <p className="text-xs text-text-secondary leading-relaxed">Nesiller boyu kullanım için tasarlanan materyaller.</p>
-                </div>
-                <div className="space-y-4 p-8 bg-surface rounded-[2rem] border border-border">
-                  <Zap size={24} className="text-primary" />
-                  <h4 className="font-bold text-sm uppercase tracking-widest">Ergonomi</h4>
-                  <p className="text-xs text-text-secondary leading-relaxed">Maksimum konfor ve verimlilik sunan tasarım dili.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Product Showcase - Clean Grid */}
-          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
-            <div>
-              <span className="text-primary font-black tracking-[0.3em] text-[10px] uppercase mb-4 block">Seçkiler</span>
-              <h2 className="font-display text-5xl md:text-6xl font-black text-text-primary tracking-tighter">Popüler <br/>Gereçler</h2>
+          <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 md:mb-24 gap-8 text-center md:text-left">
+            <div className="space-y-6 w-full md:w-auto">
+              <span className="text-black/30 font-audiowide text-[9px] uppercase tracking-[0.4em] block">Küratörlük</span>
+              <h2 className="text-4xl md:text-6xl font-audiowide text-black tracking-tighter leading-[1.1]">Üstün Performans <br className="hidden md:block"/>Ve Minimalizm.</h2>
             </div>
             <Link 
               href="/shop"
-              className="group flex items-center gap-3 text-text-secondary font-black text-[10px] uppercase tracking-[0.3em] border-b border-primary/20 pb-2 hover:border-primary transition-all duration-400"
+              className="mx-auto md:mx-0 font-audiowide text-[10px] uppercase tracking-[0.3em] text-black border-b border-black/10 pb-2 hover:border-black transition-all"
             >
-              Tümünü Keşfet
-              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              Tümünü Gör
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 sm:gap-x-8 sm:gap-y-20">
             {products.slice(0, 4).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -188,22 +131,34 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Newsletter - Centered Minimal */}
-      <section className="py-32 md:py-48 px-5">
-        <div className="max-w-4xl mx-auto text-center space-y-12">
-          <div className="w-16 h-px bg-primary mx-auto" />
-          <h2 className="font-display text-4xl md:text-6xl font-black text-text-primary tracking-tighter">Ayrıcalıklı Deneyim İçin <br />Abone Olun</h2>
-          <p className="text-text-secondary text-lg md:text-xl font-medium max-w-xl mx-auto">
-            Yeni koleksiyonlar ve özel davetlerden haberdar olun.
+      {/* Quote / Philosophy Section */}
+      <section className="py-32 md:py-48 px-5 bg-[#f9fafb]">
+        <div className="max-w-3xl mx-auto text-center px-4">
+          <p className="font-body text-xl md:text-3xl text-black leading-relaxed font-light italic">
+            "Mükemmellik, eklenecek bir şey kalmadığında değil, çıkarılacak bir şey kalmadığında elde edilir."
           </p>
-          <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto pt-8">
+          <div className="mt-12 flex flex-col items-center gap-4">
+            <div className="w-12 h-px bg-black/10" />
+            <span className="font-audiowide text-[9px] uppercase tracking-[0.5em] text-black/30">Zest Philosophy</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter - Centered Minimal */}
+      <section className="py-24 md:py-48 px-5 bg-white border-t border-black/5">
+        <div className="max-w-4xl mx-auto text-center space-y-12 md:space-y-16">
+          <h2 className="font-audiowide text-2xl md:text-5xl text-black tracking-tight uppercase">Abone Olun</h2>
+          <p className="text-black/50 text-base md:text-xl max-w-xl mx-auto font-light">
+            Yeni koleksiyonlar ve özel davetlerden haberdar olun. Minimalist yaşam tarzını mutfağınıza taşıyın.
+          </p>
+          <form className="flex flex-col sm:flex-row gap-0 max-w-lg mx-auto pt-4 md:pt-8 border-b border-black">
             <input 
               type="email" 
               placeholder="E-posta adresiniz" 
-              className="flex-1 bg-surface border border-border rounded-full px-8 py-5 focus:outline-none focus:border-primary text-white font-medium placeholder:text-text-secondary/30 transition-all text-sm"
+              className="flex-1 bg-transparent px-0 py-5 focus:outline-none text-black font-light placeholder:text-black/20 text-base md:text-lg"
             />
-            <button className="btn-primary px-10 py-5 text-xs tracking-widest uppercase">
-              Abone Ol
+            <button className="py-5 text-[10px] font-audiowide tracking-[0.3em] uppercase text-black hover:opacity-50 transition-opacity text-right">
+              Gönder
             </button>
           </form>
         </div>
