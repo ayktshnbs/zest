@@ -31,8 +31,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-space-grotesk)", "system-ui", "sans-serif"],
+        display: ["var(--font-audiowide)", "var(--font-space-grotesk)", "system-ui", "sans-serif"],
         body: ["var(--font-inter)", "system-ui", "sans-serif"],
+        audiowide: ["var(--font-audiowide)", "system-ui", "sans-serif"],
       },
       boxShadow: {
         'premium': '0 10px 40px -10px rgba(0, 0, 0, 0.5)',

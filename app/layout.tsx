@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter, Space_Grotesk, Audiowide } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/components/CartProvider";
 import { Navbar } from "@/components/Navbar";
@@ -16,6 +16,12 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
 });
 
+const audiowide = Audiowide({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-audiowide",
+});
+
 export const metadata: Metadata = {
   title: "Zest | Premium Mutfak Gereçleri",
   description: "Modern ve pratik mutfak gereçleri koleksiyonumuzla mutfak deneyiminizi geliştirin.",
@@ -27,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" suppressHydrationWarning className={`scroll-smooth ${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="tr" suppressHydrationWarning className={`scroll-smooth ${inter.variable} ${spaceGrotesk.variable} ${audiowide.variable}`}>
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" />
       </head>

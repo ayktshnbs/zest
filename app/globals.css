@@ -35,8 +35,14 @@
     @apply bg-background text-text-primary font-body antialiased selection:bg-accent/30 selection:text-white;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-bold tracking-tight text-text-primary;
+    @apply font-audiowide font-normal tracking-wider text-text-primary;
   }
+}
+
+.audiowide-regular {
+  font-family: var(--font-audiowide), sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 @layer components {
@@ -61,7 +67,7 @@
 
   /* Premium Buttons */
   .btn-primary {
-    @apply relative overflow-hidden bg-primary text-primary-foreground font-display font-bold px-10 py-5 rounded-full shadow-lg shadow-primary/10 transition-all duration-400 ease-luxury hover:-translate-y-1 hover:shadow-glow active:scale-[0.98] flex items-center justify-center gap-3 border border-transparent;
+    @apply relative overflow-hidden bg-primary text-primary-foreground font-audiowide font-normal px-10 py-5 rounded-full shadow-lg shadow-primary/10 transition-all duration-400 ease-luxury hover:-translate-y-1 hover:shadow-glow active:scale-[0.98] flex items-center justify-center gap-3 border border-transparent;
   }
 
   .btn-primary::after {
@@ -74,7 +80,7 @@
   }
 
   .btn-secondary {
-    @apply glass hover:bg-white/10 text-text-primary font-display font-bold px-10 py-5 rounded-full transition-all duration-400 ease-luxury hover:-translate-y-1 active:scale-[0.98] flex items-center justify-center gap-3;
+    @apply glass hover:bg-white/10 text-text-primary font-audiowide font-normal px-10 py-5 rounded-full transition-all duration-400 ease-luxury hover:-translate-y-1 active:scale-[0.98] flex items-center justify-center gap-3;
   }
 
   .btn-ghost {
