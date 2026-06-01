@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Star, ShoppingCart, Heart, Eye } from "lucide-react";
+import { Star, ShoppingCart, Heart, Eye, ArrowUpRight } from "lucide-react";
 import { Product } from "@/types";
 import { useCart } from "./CartProvider";
 import Link from "next/link";
@@ -19,87 +19,84 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <motion.div 
-      layout
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative bg-white dark:bg-neutral-900 rounded-[2.5rem] p-4 transition-all duration-500 hover:shadow-premium-hover border border-transparent hover:border-primary/10 overflow-hidden"
+      className="metallic-card group shine-sweep"
     >
-      {/* Wishlist Button */}
-      <button 
-        onClick={(e) => {
-          e.preventDefault();
-          setIsWishlisted(!isWishlisted);
-        }}
-        className={`absolute top-6 right-6 z-20 p-3 rounded-full transition-all duration-300 ${
-          isWishlisted 
-            ? "bg-primary text-white scale-110 shadow-lg shadow-primary/20" 
-            : "bg-white/80 dark:bg-black/40 backdrop-blur-md text-foreground/40 hover:text-primary hover:scale-110"
-        }`}
-      >
-        <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} strokeWidth={2.5} />
-      </button>
-
       {/* Product Image Link */}
-      <Link href={`/products/${product.id}`} className="block relative aspect-square rounded-[2rem] overflow-hidden mb-6 bg-accent/50 dark:bg-neutral-800">
+      <Link href={`/products/${product.id}`} className="block relative aspect-[4/5] overflow-hidden bg-[#1a1d23]">
         <Image
           src={product.imageUrl}
           alt={product.name}
           fill
-          className="object-cover transition-transform duration-1000 group-hover:scale-110"
-          sizes="(max-w-768px) 100vw, (max-w-1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 ease-luxury group-hover:scale-110"
+          sizes="(max-w-640px) 100vw, (max-w-1024px) 50vw, 25vw"
+          loading="lazy"
         />
         
-        {/* Overlay Actions */}
+        {/* Glassmorphism Overlay */}
+        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        
+        {/* Wishlist Button */}
+        <button 
+          onClick={(e) => {
+            e.preventDefault();
+            setIsWishlisted(!isWishlisted);
+          }}
+          className={`absolute top-5 right-5 z-20 p-3 rounded-full transition-all duration-400 ease-luxury ${
+            isWishlisted 
+              ? "bg-primary text-primary-foreground scale-110 shadow-lg shadow-primary/20" 
+              : "bg-black/40 backdrop-blur-md text-white/40 hover:text-primary hover:scale-110 border border-white/10"
+          }`}
+        >
+          <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} strokeWidth={2.5} />
+        </button>
+
+        {/* Floating Quick Action */}
         <AnimatePresence>
           {isHovered && (
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/10 backdrop-blur-[2px] flex items-center justify-center gap-3 z-10"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="absolute bottom-6 left-6 right-6 z-10"
             >
-              <button 
-                onClick={(e) => {
-                  e.preventDefault();
-                  // Quick View logic could go here
-                }}
-                className="p-4 bg-white dark:bg-neutral-800 text-foreground rounded-full shadow-xl hover:bg-primary hover:text-white transition-all duration-300 scale-90 hover:scale-100"
-              >
-                <Eye size={22} />
-              </button>
+              <div className="glass px-5 py-3 rounded-2xl flex items-center justify-between border border-white/10 shadow-2xl">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">İncele</span>
+                <ArrowUpRight size={16} className="text-primary" />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
       </Link>
       
       {/* Product Info */}
-      <div className="px-3 pb-2">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60 bg-primary/5 px-3 py-1 rounded-full">
+      <div className="p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary">
             {product.category}
           </span>
           <div className="flex items-center gap-1">
-            <Star size={12} className="fill-secondary text-secondary" />
-            <span className="text-xs font-bold text-foreground/60">{product.rating}.0</span>
+            <Star size={10} className="fill-primary text-primary" />
+            <span className="text-[10px] font-bold text-text-secondary">{product.rating}.0</span>
           </div>
         </div>
         
         <Link href={`/products/${product.id}`}>
-          <h4 className="font-display font-bold text-[#1c1c13] dark:text-white mb-2 group-hover:text-primary transition-colors leading-tight text-lg tracking-tight">
+          <h4 className="font-display font-bold text-text-primary group-hover:text-primary transition-colors duration-400 ease-luxury text-lg tracking-tight leading-tight">
             {product.name}
           </h4>
         </Link>
         
-        <p className="font-body text-sm text-foreground/50 mb-6 line-clamp-1 font-medium italic">
-          {product.description}
-        </p>
-        
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between pt-2">
           <div className="flex flex-col">
-            <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest mb-0.5">Fiyat</span>
-            <p className="font-display font-black text-2xl text-primary">{product.price} TL</p>
+            <span className="text-[8px] text-text-secondary font-bold uppercase tracking-widest mb-0.5 opacity-50">Fiyat</span>
+            <p className="font-display font-bold text-xl text-text-primary tracking-tight">
+              {product.price} <span className="text-sm font-medium text-text-secondary">TL</span>
+            </p>
           </div>
           
           <button
@@ -107,25 +104,12 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               e.preventDefault();
               addToCart(product);
             }}
-            className="relative flex items-center justify-center w-14 h-14 bg-neutral-950 dark:bg-primary text-white rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 active:scale-90 overflow-hidden group/btn"
+            className="w-12 h-12 bg-white/5 border border-white/10 text-text-primary rounded-xl transition-all duration-400 ease-luxury hover:bg-primary hover:text-primary-foreground hover:scale-105 hover:shadow-lg hover:shadow-primary/20 flex items-center justify-center group/btn"
           >
-            <ShoppingCart size={22} className="group-hover/btn:-translate-y-12 transition-transform duration-500" />
-            <span className="absolute translate-y-12 group-hover/btn:translate-y-0 transition-transform duration-500 font-bold text-[10px] uppercase">Ekle</span>
+            <ShoppingCart size={18} className="group-hover/btn:scale-110 transition-transform" />
           </button>
         </div>
       </div>
-
-      {/* Quick Badges */}
-      {product.price > 200 && (
-        <div className="absolute top-6 left-6 z-20">
-          <span className="bg-secondary text-secondary-foreground text-[10px] font-black px-4 py-2 rounded-full shadow-lg uppercase tracking-tighter">
-            Ücretsiz Kargo
-          </span>
-        </div>
-      )}
     </motion.div>
   );
 };
-
-
-

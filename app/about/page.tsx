@@ -1,15 +1,15 @@
 "use client";
 
-import { CheckCircle2, Award, Users, Heart, Sparkles, MapPin, Target } from "lucide-react";
+import { CheckCircle2, Award, Users, Heart, Sparkles, Target } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
 export default function AboutPage() {
   const stats = [
-    { label: "Yıllık Deneyim", value: "12+", icon: <Award size={28} /> },
+    { label: "Yıllık Deneyim", value: "10+", icon: <Award size={28} /> },
     { label: "Mutlu Müşteri", value: "50k+", icon: <Users size={28} /> },
     { label: "Ürün Çeşidi", value: "200+", icon: <Heart size={28} /> },
-    { label: "Global İş Ortaklığı", value: "15+", icon: <CheckCircle2 size={28} /> },
+    { label: "Hızlı Teslimat", value: "24 Saat", icon: <CheckCircle2 size={28} /> },
   ];
 
   return (
@@ -31,10 +31,10 @@ export default function AboutPage() {
               <span className="text-primary italic underline decoration-secondary/30 underline-offset-8">Sanata</span> Dönüştürüyoruz.
             </h1>
             <p className="font-body text-xl text-foreground/60 mb-8 leading-relaxed font-medium">
-              2014 yılında küçük bir atölyede başlayan yolculuğumuz, bugün modern mutfakların vazgeçilmezi olan profesyonel gereçleri tüm Türkiye ile buluşturan bir vizyona dönüştü.
+              Zest olarak yolculuğumuz, modern mutfakların vazgeçilmezi olan pratik ve estetik gereçleri en yüksek kalite standartlarıyla buluşturma vizyonuyla başladı.
             </p>
             <p className="font-body text-lg text-foreground/50 mb-12 leading-relaxed italic">
-              Her bir ürünümüzü seçerken sadece işlevselliğine değil, aynı zamanda mutfağınıza katacağı estetik değere ve sürdürülebilirliğine de odaklanıyoruz.
+              Koleksiyonumuzdaki her bir ürün, mutfaktaki işlerinizi kolaylaştırırken yaşam alanınıza değer katmak için özenle seçilmiştir.
             </p>
             
             <div className="grid grid-cols-2 gap-8">
@@ -62,7 +62,7 @@ export default function AboutPage() {
           >
             <Image 
               src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=1200" 
-              alt="Kitchen Workshop" 
+              alt="Zest Mutfak" 
               fill
               className="object-cover transition-transform duration-[3s] hover:scale-110"
             />
@@ -87,11 +87,11 @@ export default function AboutPage() {
             <div className="grid md:grid-cols-2 gap-16 text-left">
               <div className="p-10 bg-white/5 rounded-[3rem] border border-white/10 hover:bg-white/10 transition-colors">
                 <h4 className="font-display font-black text-xl mb-6 text-secondary uppercase tracking-widest">Kalite Standartımız</h4>
-                <p className="text-neutral-400 font-medium leading-relaxed">Ürünlerimizde sadece en yüksek kalitede çelik, döküm ve seramik malzemeler kullanıyoruz. Toksik içermeyen, çevre dostu üretim süreçlerini tavizsiz destekliyoruz.</p>
+                <p className="text-neutral-400 font-medium leading-relaxed">Ürünlerimizde dayanıklılık ve estetiği ön planda tutuyoruz. Fonksiyonel tasarımları, en iyi kullanıcı deneyimi için modernize ediyoruz.</p>
               </div>
               <div className="p-10 bg-white/5 rounded-[3rem] border border-white/10 hover:bg-white/10 transition-colors">
-                <h4 className="font-display font-black text-xl mb-6 text-secondary uppercase tracking-widest">Sürdürülebilirlik</h4>
-                <p className="text-neutral-400 font-medium leading-relaxed">Gelecek nesillere daha yaşanabilir bir dünya bırakmak için paketleme malzemelerimizde %100 geri dönüştürülebilir ürünleri tercih ediyor, karbon ayak izimizi minimize ediyoruz.</p>
+                <h4 className="font-display font-black text-xl mb-6 text-secondary uppercase tracking-widest">Müşteri Memnuniyeti</h4>
+                <p className="text-neutral-400 font-medium leading-relaxed">Zest ailesi olarak, alışveriş öncesi ve sonrası süreçlerde her zaman yanınızdayız. Sorunsuz teslimat ve hızlı destek temel önceliğimizdir.</p>
               </div>
             </div>
           </div>

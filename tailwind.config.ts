@@ -10,96 +10,66 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        background: "#0F1115", // Deep metallic charcoal
+        surface: "#171A20", // Dark steel gray
+        metallic: "#22262E", // Metallic graphite
+        border: "#343A46", // Subtle steel gray
+        "text-primary": "#F3F4F6", // Soft white
+        "text-secondary": "#9CA3AF", // Muted gray
         primary: {
-          DEFAULT: "#b80035",
-          foreground: "#ffffff",
-          50: "#fff1f2",
-          100: "#ffe4e6",
-          200: "#fecdd3",
-          300: "#fda4af",
-          400: "#fb7185",
-          500: "#f43f5e",
-          600: "#e11d48",
-          700: "#be123c",
-          800: "#9f1239",
-          900: "#881337",
+          DEFAULT: "#C0C7D1", // Chrome silver
+          foreground: "#0F1115",
+          glow: "#4F8CFF", // Electric blue glow
         },
         secondary: {
-          DEFAULT: "#ffc329",
-          foreground: "#795900",
-          50: "#fffbeb",
-          100: "#fef3c7",
-          200: "#fde68a",
-          300: "#fcd34d",
-          400: "#fbbf24",
-          500: "#f59e0b",
-          600: "#d97706",
-          700: "#b45309",
-          800: "#92400e",
-          900: "#78350f",
-        },
-        neutral: {
-          50: "#fafafa",
-          100: "#f4f4f5",
-          200: "#e4e4e7",
-          300: "#d4d4d8",
-          400: "#a1a1aa",
-          500: "#71717a",
-          600: "#52525b",
-          700: "#3f3f46",
-          800: "#27272a",
-          900: "#18181b",
-          950: "#09090b",
+          DEFAULT: "#8B949E", // Warm steel
+          foreground: "#0F1115",
         },
         accent: {
-          DEFAULT: "#f2eede",
-          foreground: "#1c1c13",
+          DEFAULT: "#4F8CFF", // Subtle electric blue
+          foreground: "#FFFFFF",
         },
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-        xl: "1.25rem",
-        "2xl": "1.5rem",
-        "3xl": "2rem",
       },
       fontFamily: {
-        display: ["Poppins", "system-ui", "sans-serif"],
-        body: ["Inter", "system-ui", "sans-serif"],
+        display: ["var(--font-space-grotesk)", "system-ui", "sans-serif"],
+        body: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        'premium': '0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -2px rgba(0, 0, 0, 0.02)',
-        'premium-hover': '0 20px 40px -5px rgba(0, 0, 0, 0.1), 0 8px 15px -2px rgba(0, 0, 0, 0.05)',
-        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+        'premium': '0 10px 40px -10px rgba(0, 0, 0, 0.5)',
+        'premium-hover': '0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(79, 140, 255, 0.15)', // Blue glow
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.4)',
+        'glow': '0 0 15px rgba(79, 140, 255, 0.3)',
       },
-      animation: {
-        'fade-in': 'fadeIn 0.5s ease-out',
-        'slide-up': 'slideUp 0.5s ease-out',
-        'scale-in': 'scaleIn 0.3s ease-out',
+      transitionTimingFunction: {
+        'luxury': 'cubic-bezier(0.22, 1, 0.36, 1)', // Smooth ease-out
+      },
+      transitionDuration: {
+        '400': '400ms',
+        '600': '600ms',
+      },
+      backgroundImage: {
+        'metallic-gradient': 'linear-gradient(145deg, #22262E 0%, #171A20 100%)',
+        'metallic-surface': 'linear-gradient(to bottom right, rgba(255,255,255,0.05), rgba(255,255,255,0.01))',
+        'shine-sweep': 'linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent)',
+        'blob-gradient': 'radial-gradient(circle at center, rgba(79, 140, 255, 0.15) 0%, transparent 70%)',
       },
       keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+        blobBounce: {
+          '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+          '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+          '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
         },
-        slideUp: {
-          '0%': { transform: 'translateY(20px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        scaleIn: {
-          '0%': { transform: 'scale(0.95)', opacity: '0' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
-        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        }
+      },
+      animation: {
+        'blob': 'blobBounce 10s infinite cubic-bezier(0.4, 0, 0.2, 1)',
+        'float': 'float 6s infinite ease-in-out',
       },
     },
   },
   plugins: [require("@tailwindcss/forms")],
 };
 export default config;
-
