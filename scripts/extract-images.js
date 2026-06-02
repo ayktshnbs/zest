@@ -108,12 +108,28 @@ productsJson.forEach((p, index) => {
   const baseId = p.image ? p.image.split('_')[0] : `prod-${index}`;
   
   if (!groups.has(baseId)) {
+    // Basic translation mapping for categories
+    const categoryMapping = {
+      "Kitchen & Dining": "Mutfak ve Yemek",
+      "Storage": "Saklama Çözümleri",
+      "Kitchenware": "Mutfak Gereçleri"
+    };
+
+    let turkishName = (p.title || p.name).split(' - ')[0];
+    // Simple heuristic translations for common names
+    turkishName = turkishName.replace('Manual Food Chopper', 'Manuel El Rondosu');
+    turkishName = turkishName.replace('Hand Blender', 'El Blenderı');
+    turkishName = turkishName.replace('Coffee Mug', 'Kahve Kupası');
+    turkishName = turkishName.replace('Storage Container', 'Saklama Kabı');
+
+    group.name = turkishName;
+
     groups.set(baseId, {
       id: baseId.toLowerCase(),
-      name: (p.title || p.name).split(' - ')[0],
-      description: p.description,
+      name: turkishName,
+      description: "Yüksek kaliteli, dayanıklı ve şık mutfak gereçleri. Profesyonel ve ev kullanımı için idealdir.", // Generic Turkish description
       price: (p.price || "").match(/\d+/) ? parseInt(p.price.match(/\d+/)[0]) : 0,
-      category: p.category,
+      category: categoryMapping[p.category] || p.category,
       images: [],
       rating: 5
     });

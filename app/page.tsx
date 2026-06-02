@@ -86,12 +86,12 @@ export default function Home() {
               }}
             >
               <h1 className="font-audiowide text-2xl sm:text-4xl md:text-7xl lg:text-8xl leading-[1.1] mb-4 md:mb-6 tracking-tight text-[#1d1d1f]">
-                Pro-Level Tools.<br />
-                <span className="text-[#1d1d1f]/60">Effortless Cooking.</span>
+                Profesyonel Gereçler.<br />
+                <span className="text-[#1d1d1f]/60">Zahmetsiz Yemek.</span>
               </h1>
 
               <p className="font-body text-sm sm:text-lg md:text-2xl text-[#1d1d1f]/60 max-w-xl mx-auto mb-8 md:mb-10 leading-relaxed font-medium">
-                Collection of modern kitchen essentials beautifully arranged for a minimalist luxury experience.
+                Modern mutfak gereçlerinden oluşan, minimalist lüks bir deneyim için tasarlanmış özel koleksiyon.
               </p>
             </motion.div>
             
@@ -100,13 +100,13 @@ export default function Home() {
                 href="/shop"
                 className="w-full sm:w-auto px-10 py-4 bg-[#1d1d1f] text-white font-audiowide text-[10px] sm:text-[12px] tracking-[0.2em] uppercase rounded-full hover:bg-black transition-all duration-300 shadow-xl shadow-black/10"
               >
-                Buy Now
+                Hemen Al
               </Link>
               <Link 
                 href="/shop"
                 className="w-full sm:w-auto px-10 py-4 bg-white/50 backdrop-blur-md text-[#1d1d1f] font-audiowide text-[10px] sm:text-[12px] tracking-[0.2em] uppercase rounded-full hover:bg-white/80 transition-all duration-300 flex items-center justify-center gap-2 border border-black/5"
               >
-                Learn more <ChevronRight size={14} />
+                Keşfet <ChevronRight size={14} />
               </Link>
             </div>
           </motion.div>
