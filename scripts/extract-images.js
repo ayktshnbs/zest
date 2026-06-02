@@ -21,17 +21,24 @@ if (fs.existsSync(destDir)) {
 
 const zips = fs.readdirSync(imgDir).filter(f => f.endsWith('.zip'));
 
-console.log(`Found ${zips.length} zip files. Extracting up to 5 sample images per zip...`);
+console.log(`Found ${zips.length} zip files. Extracting 3 unique shots...`);
 
-const availableImagesMap = new Map(); // Map zipName -> Array of extracted image names
+const availableImagesMap = new Map();
 
 zips.forEach(zip => {
   const zipName = zip.replace('.zip', '');
   const tempDir = path.join(imgDir, `temp_${zipName}`);
   const extractedForThisZip = [];
+  const seenFileStems = new Set();
   
   try {
     console.log(`Processing ${zip}...`);
+    // Skip the 2.6GB file if we are low on space
+    if (fs.statSync(path.join(imgDir, zip)).size > 1000000000) {
+        console.log(`  Skipping ${zip} due to size (>1GB) to save disk space.`);
+        return;
+    }
+
     execSync(`powershell.exe -Command "Expand-Archive -Path '${path.join(imgDir, zip)}' -DestinationPath '${tempDir}' -Force"`);
     
     const findImages = (dir) => {
@@ -51,19 +58,34 @@ zips.forEach(zip => {
 
     const images = findImages(tempDir);
     
-    // Take up to 5 images
-    images.slice(0, 5).forEach((imgPath, index) => {
+    images.sort((a, b) => {
+        const extA = path.extname(a).toLowerCase();
+        const extB = path.extname(b).toLowerCase();
+        if (extA === '.jpg' && extB !== '.jpg') return -1;
+        if (extA !== '.jpg' && extB === '.jpg') return 1;
+        return 0;
+    });
+
+    let count = 0;
+    for (const imgPath of images) {
+      if (count >= 3) break; // Reduced to 3 unique shots
+      
+      const fileStem = path.basename(imgPath, path.extname(imgPath)).toLowerCase();
+      if (seenFileStems.has(fileStem)) continue;
+      
       let ext = path.extname(imgPath).toUpperCase();
       if (ext === '.JPEG') ext = '.JPG';
       
-      const newName = `${zipName}_${index}${ext}`;
+      const newName = `${zipName}_${count}${ext}`;
       const destPath = path.join(destDir, newName);
       fs.copyFileSync(imgPath, destPath);
       extractedForThisZip.push(newName);
-      console.log(`  Saved ${newName}`);
-    });
+      seenFileStems.add(fileStem);
+      count++;
+    }
     
     availableImagesMap.set(zipName, extractedForThisZip);
+    console.log(`  Saved ${extractedForThisZip.length} unique images for ${zipName}`);
 
   } catch (err) {
     console.error(`Error processing ${zip}:`, err.message);
@@ -76,41 +98,39 @@ zips.forEach(zip => {
   }
 });
 
-// Now generate the static products.ts file
-console.log('Generating lib/products.ts...');
+// Now generate the static products.ts file with GROUPING
+console.log('Generating grouped lib/products.ts...');
 const productsJson = JSON.parse(fs.readFileSync(productsJsonPath, 'utf8'));
 
-const transformedProducts = productsJson.map((p, index) => {
-  const priceMatch = (p.price || "").match(/\d+/);
-  const price = priceMatch ? parseInt(priceMatch[0]) : 0;
-  const id = p.image ? p.image.split('.')[0].toLowerCase() : `prod-${index}`;
-  const zipName = p.image ? p.image.split('_')[0] : null;
+const groups = new Map();
+
+productsJson.forEach((p, index) => {
+  const baseId = p.image ? p.image.split('_')[0] : `prod-${index}`;
   
-  let images = [];
-  let imageUrl = "https://images.unsplash.com/photo-1593618998160-e34014e67546?auto=format&fit=crop&q=80&w=800";
-  
-  if (zipName && availableImagesMap.has(zipName)) {
-    const extracted = availableImagesMap.get(zipName);
-    images = extracted.map(img => `/products/${img}`);
-    if (images.length > 0) {
-        imageUrl = images[0]; // First image is cover
-    }
+  if (!groups.has(baseId)) {
+    groups.set(baseId, {
+      id: baseId.toLowerCase(),
+      name: (p.title || p.name).split(' - ')[0],
+      description: p.description,
+      price: (p.price || "").match(/\d+/) ? parseInt(p.price.match(/\d+/)[0]) : 0,
+      category: p.category,
+      images: [],
+      rating: 5
+    });
   }
-  
-  // If specific image exists in products.json but wasn't the first extracted, 
-  // we could try to find it, but the user wants "different images of same product",
-  // and the current products.json seems to list variants.
-  
-  return {
-    id,
-    name: p.title || p.name,
-    description: p.description,
-    price,
-    category: p.category,
-    imageUrl, // Cover
-    images,   // All images for gallery
-    rating: 5,
-  };
+});
+
+const transformedProducts = Array.from(groups.values()).map(group => {
+  const zipName = group.id.toUpperCase();
+  if (availableImagesMap.has(zipName) && availableImagesMap.get(zipName).length > 0) {
+    const extracted = availableImagesMap.get(zipName);
+    group.images = extracted.map(img => `/products/${img}`);
+    group.imageUrl = group.images[0];
+  } else {
+    group.imageUrl = "https://images.unsplash.com/photo-1593618998160-e34014e67546?auto=format&fit=crop&q=80&w=800";
+    group.images = [group.imageUrl];
+  }
+  return group;
 });
 
 const fileContent = `import { Product } from "@/types";
@@ -119,4 +139,4 @@ export const products: Product[] = ${JSON.stringify(transformedProducts, null, 2
 `;
 
 fs.writeFileSync(outputDataPath, fileContent);
-console.log('Done.');
+console.log(`Done. Grouped into ${transformedProducts.length} products.`);
