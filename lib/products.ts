@@ -8,6 +8,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Food Prep & Choppers",
     "imageUrl": "/products/M-1_0.JPG",
+    "images": [
+      "/products/M-1_0.JPG",
+      "/products/M-1_1.PNG",
+      "/products/M-1_2.JPG",
+      "/products/M-1_3.PNG",
+      "/products/M-1_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -17,6 +24,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Food Prep & Choppers",
     "imageUrl": "/products/M-1_0.JPG",
+    "images": [
+      "/products/M-1_0.JPG",
+      "/products/M-1_1.PNG",
+      "/products/M-1_2.JPG",
+      "/products/M-1_3.PNG",
+      "/products/M-1_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -26,6 +40,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Food Prep & Choppers",
     "imageUrl": "/products/M-1_0.JPG",
+    "images": [
+      "/products/M-1_0.JPG",
+      "/products/M-1_1.PNG",
+      "/products/M-1_2.JPG",
+      "/products/M-1_3.PNG",
+      "/products/M-1_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -35,6 +56,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Food Prep & Choppers",
     "imageUrl": "/products/M-1_0.JPG",
+    "images": [
+      "/products/M-1_0.JPG",
+      "/products/M-1_1.PNG",
+      "/products/M-1_2.JPG",
+      "/products/M-1_3.PNG",
+      "/products/M-1_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -44,6 +72,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Food Prep & Choppers",
     "imageUrl": "/products/M-1_0.JPG",
+    "images": [
+      "/products/M-1_0.JPG",
+      "/products/M-1_1.PNG",
+      "/products/M-1_2.JPG",
+      "/products/M-1_3.PNG",
+      "/products/M-1_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -53,6 +88,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-10_0.JPG",
+    "images": [
+      "/products/M-10_0.JPG",
+      "/products/M-10_1.PNG",
+      "/products/M-10_2.JPG",
+      "/products/M-10_3.PNG",
+      "/products/M-10_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -62,6 +104,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-10_0.JPG",
+    "images": [
+      "/products/M-10_0.JPG",
+      "/products/M-10_1.PNG",
+      "/products/M-10_2.JPG",
+      "/products/M-10_3.PNG",
+      "/products/M-10_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -71,6 +120,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-10_0.JPG",
+    "images": [
+      "/products/M-10_0.JPG",
+      "/products/M-10_1.PNG",
+      "/products/M-10_2.JPG",
+      "/products/M-10_3.PNG",
+      "/products/M-10_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -80,6 +136,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-10_0.JPG",
+    "images": [
+      "/products/M-10_0.JPG",
+      "/products/M-10_1.PNG",
+      "/products/M-10_2.JPG",
+      "/products/M-10_3.PNG",
+      "/products/M-10_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -89,6 +152,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-10_0.JPG",
+    "images": [
+      "/products/M-10_0.JPG",
+      "/products/M-10_1.PNG",
+      "/products/M-10_2.JPG",
+      "/products/M-10_3.PNG",
+      "/products/M-10_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -98,6 +168,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Food Prep & Choppers",
     "imageUrl": "/products/M-11_0.JPG",
+    "images": [
+      "/products/M-11_0.JPG",
+      "/products/M-11_1.PNG",
+      "/products/M-11_2.JPG",
+      "/products/M-11_3.PNG",
+      "/products/M-11_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -107,6 +184,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Food Prep & Choppers",
     "imageUrl": "/products/M-11_0.JPG",
+    "images": [
+      "/products/M-11_0.JPG",
+      "/products/M-11_1.PNG",
+      "/products/M-11_2.JPG",
+      "/products/M-11_3.PNG",
+      "/products/M-11_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -116,6 +200,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Food Prep & Choppers",
     "imageUrl": "/products/M-11_0.JPG",
+    "images": [
+      "/products/M-11_0.JPG",
+      "/products/M-11_1.PNG",
+      "/products/M-11_2.JPG",
+      "/products/M-11_3.PNG",
+      "/products/M-11_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -125,6 +216,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Food Prep & Choppers",
     "imageUrl": "/products/M-11_0.JPG",
+    "images": [
+      "/products/M-11_0.JPG",
+      "/products/M-11_1.PNG",
+      "/products/M-11_2.JPG",
+      "/products/M-11_3.PNG",
+      "/products/M-11_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -134,6 +232,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Food Prep & Choppers",
     "imageUrl": "/products/M-11_0.JPG",
+    "images": [
+      "/products/M-11_0.JPG",
+      "/products/M-11_1.PNG",
+      "/products/M-11_2.JPG",
+      "/products/M-11_3.PNG",
+      "/products/M-11_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -143,6 +248,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Slicers & Dicers",
     "imageUrl": "/products/M-12_0.JPG",
+    "images": [
+      "/products/M-12_0.JPG",
+      "/products/M-12_1.JPG",
+      "/products/M-12_2.JPG",
+      "/products/M-12_3.JPG",
+      "/products/M-12_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -152,6 +264,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Slicers & Dicers",
     "imageUrl": "/products/M-12_0.JPG",
+    "images": [
+      "/products/M-12_0.JPG",
+      "/products/M-12_1.JPG",
+      "/products/M-12_2.JPG",
+      "/products/M-12_3.JPG",
+      "/products/M-12_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -161,6 +280,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Slicers & Dicers",
     "imageUrl": "/products/M-12_0.JPG",
+    "images": [
+      "/products/M-12_0.JPG",
+      "/products/M-12_1.JPG",
+      "/products/M-12_2.JPG",
+      "/products/M-12_3.JPG",
+      "/products/M-12_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -170,6 +296,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Slicers & Dicers",
     "imageUrl": "/products/M-12_0.JPG",
+    "images": [
+      "/products/M-12_0.JPG",
+      "/products/M-12_1.JPG",
+      "/products/M-12_2.JPG",
+      "/products/M-12_3.JPG",
+      "/products/M-12_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -179,6 +312,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Slicers & Dicers",
     "imageUrl": "/products/M-12_0.JPG",
+    "images": [
+      "/products/M-12_0.JPG",
+      "/products/M-12_1.JPG",
+      "/products/M-12_2.JPG",
+      "/products/M-12_3.JPG",
+      "/products/M-12_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -188,6 +328,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Utensils",
     "imageUrl": "/products/M-2_0.JPG",
+    "images": [
+      "/products/M-2_0.JPG",
+      "/products/M-2_1.PNG",
+      "/products/M-2_2.JPG",
+      "/products/M-2_3.PNG",
+      "/products/M-2_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -197,6 +344,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Utensils",
     "imageUrl": "/products/M-2_0.JPG",
+    "images": [
+      "/products/M-2_0.JPG",
+      "/products/M-2_1.PNG",
+      "/products/M-2_2.JPG",
+      "/products/M-2_3.PNG",
+      "/products/M-2_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -206,6 +360,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Utensils",
     "imageUrl": "/products/M-2_0.JPG",
+    "images": [
+      "/products/M-2_0.JPG",
+      "/products/M-2_1.PNG",
+      "/products/M-2_2.JPG",
+      "/products/M-2_3.PNG",
+      "/products/M-2_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -215,6 +376,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Utensils",
     "imageUrl": "/products/M-2_0.JPG",
+    "images": [
+      "/products/M-2_0.JPG",
+      "/products/M-2_1.PNG",
+      "/products/M-2_2.JPG",
+      "/products/M-2_3.PNG",
+      "/products/M-2_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -224,6 +392,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Utensils",
     "imageUrl": "/products/M-2_0.JPG",
+    "images": [
+      "/products/M-2_0.JPG",
+      "/products/M-2_1.PNG",
+      "/products/M-2_2.JPG",
+      "/products/M-2_3.PNG",
+      "/products/M-2_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -233,6 +408,13 @@ export const products: Product[] = [
     "price": 195,
     "category": "Kitchen Utensils",
     "imageUrl": "/products/M-3_0.JPG",
+    "images": [
+      "/products/M-3_0.JPG",
+      "/products/M-3_1.JPG",
+      "/products/M-3_2.JPG",
+      "/products/M-3_3.JPG",
+      "/products/M-3_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -242,6 +424,13 @@ export const products: Product[] = [
     "price": 195,
     "category": "Kitchen Utensils",
     "imageUrl": "/products/M-3_0.JPG",
+    "images": [
+      "/products/M-3_0.JPG",
+      "/products/M-3_1.JPG",
+      "/products/M-3_2.JPG",
+      "/products/M-3_3.JPG",
+      "/products/M-3_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -251,6 +440,13 @@ export const products: Product[] = [
     "price": 195,
     "category": "Kitchen Utensils",
     "imageUrl": "/products/M-3_0.JPG",
+    "images": [
+      "/products/M-3_0.JPG",
+      "/products/M-3_1.JPG",
+      "/products/M-3_2.JPG",
+      "/products/M-3_3.JPG",
+      "/products/M-3_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -260,6 +456,13 @@ export const products: Product[] = [
     "price": 195,
     "category": "Kitchen Utensils",
     "imageUrl": "/products/M-3_0.JPG",
+    "images": [
+      "/products/M-3_0.JPG",
+      "/products/M-3_1.JPG",
+      "/products/M-3_2.JPG",
+      "/products/M-3_3.JPG",
+      "/products/M-3_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -269,6 +472,13 @@ export const products: Product[] = [
     "price": 195,
     "category": "Kitchen Utensils",
     "imageUrl": "/products/M-3_0.JPG",
+    "images": [
+      "/products/M-3_0.JPG",
+      "/products/M-3_1.JPG",
+      "/products/M-3_2.JPG",
+      "/products/M-3_3.JPG",
+      "/products/M-3_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -278,6 +488,13 @@ export const products: Product[] = [
     "price": 85,
     "category": "Kitchen Accessories",
     "imageUrl": "/products/M-4_0.JPG",
+    "images": [
+      "/products/M-4_0.JPG",
+      "/products/M-4_1.JPG",
+      "/products/M-4_2.JPG",
+      "/products/M-4_3.PNG",
+      "/products/M-4_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -287,6 +504,13 @@ export const products: Product[] = [
     "price": 85,
     "category": "Kitchen Accessories",
     "imageUrl": "/products/M-4_0.JPG",
+    "images": [
+      "/products/M-4_0.JPG",
+      "/products/M-4_1.JPG",
+      "/products/M-4_2.JPG",
+      "/products/M-4_3.PNG",
+      "/products/M-4_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -296,6 +520,13 @@ export const products: Product[] = [
     "price": 85,
     "category": "Kitchen Accessories",
     "imageUrl": "/products/M-4_0.JPG",
+    "images": [
+      "/products/M-4_0.JPG",
+      "/products/M-4_1.JPG",
+      "/products/M-4_2.JPG",
+      "/products/M-4_3.PNG",
+      "/products/M-4_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -305,6 +536,13 @@ export const products: Product[] = [
     "price": 85,
     "category": "Kitchen Accessories",
     "imageUrl": "/products/M-4_0.JPG",
+    "images": [
+      "/products/M-4_0.JPG",
+      "/products/M-4_1.JPG",
+      "/products/M-4_2.JPG",
+      "/products/M-4_3.PNG",
+      "/products/M-4_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -314,6 +552,13 @@ export const products: Product[] = [
     "price": 85,
     "category": "Kitchen Accessories",
     "imageUrl": "/products/M-4_0.JPG",
+    "images": [
+      "/products/M-4_0.JPG",
+      "/products/M-4_1.JPG",
+      "/products/M-4_2.JPG",
+      "/products/M-4_3.PNG",
+      "/products/M-4_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -323,6 +568,13 @@ export const products: Product[] = [
     "price": 55,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-5_0.JPG",
+    "images": [
+      "/products/M-5_0.JPG",
+      "/products/M-5_1.JPG",
+      "/products/M-5_2.JPG",
+      "/products/M-5_3.JPG",
+      "/products/M-5_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -332,6 +584,13 @@ export const products: Product[] = [
     "price": 55,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-5_0.JPG",
+    "images": [
+      "/products/M-5_0.JPG",
+      "/products/M-5_1.JPG",
+      "/products/M-5_2.JPG",
+      "/products/M-5_3.JPG",
+      "/products/M-5_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -341,6 +600,13 @@ export const products: Product[] = [
     "price": 65,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-5_0.JPG",
+    "images": [
+      "/products/M-5_0.JPG",
+      "/products/M-5_1.JPG",
+      "/products/M-5_2.JPG",
+      "/products/M-5_3.JPG",
+      "/products/M-5_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -350,6 +616,13 @@ export const products: Product[] = [
     "price": 245,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-5_0.JPG",
+    "images": [
+      "/products/M-5_0.JPG",
+      "/products/M-5_1.JPG",
+      "/products/M-5_2.JPG",
+      "/products/M-5_3.JPG",
+      "/products/M-5_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -359,6 +632,13 @@ export const products: Product[] = [
     "price": 245,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-5_0.JPG",
+    "images": [
+      "/products/M-5_0.JPG",
+      "/products/M-5_1.JPG",
+      "/products/M-5_2.JPG",
+      "/products/M-5_3.JPG",
+      "/products/M-5_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -368,6 +648,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-6_0.JPG",
+    "images": [
+      "/products/M-6_0.JPG",
+      "/products/M-6_1.JPG",
+      "/products/M-6_2.JPG",
+      "/products/M-6_3.JPG",
+      "/products/M-6_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -377,6 +664,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-6_0.JPG",
+    "images": [
+      "/products/M-6_0.JPG",
+      "/products/M-6_1.JPG",
+      "/products/M-6_2.JPG",
+      "/products/M-6_3.JPG",
+      "/products/M-6_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -386,6 +680,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-6_0.JPG",
+    "images": [
+      "/products/M-6_0.JPG",
+      "/products/M-6_1.JPG",
+      "/products/M-6_2.JPG",
+      "/products/M-6_3.JPG",
+      "/products/M-6_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -395,6 +696,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-6_0.JPG",
+    "images": [
+      "/products/M-6_0.JPG",
+      "/products/M-6_1.JPG",
+      "/products/M-6_2.JPG",
+      "/products/M-6_3.JPG",
+      "/products/M-6_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -404,6 +712,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-6_0.JPG",
+    "images": [
+      "/products/M-6_0.JPG",
+      "/products/M-6_1.JPG",
+      "/products/M-6_2.JPG",
+      "/products/M-6_3.JPG",
+      "/products/M-6_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -413,6 +728,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-7_0.JPG",
+    "images": [
+      "/products/M-7_0.JPG",
+      "/products/M-7_1.JPG",
+      "/products/M-7_2.JPG",
+      "/products/M-7_3.JPG",
+      "/products/M-7_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -422,6 +744,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-7_0.JPG",
+    "images": [
+      "/products/M-7_0.JPG",
+      "/products/M-7_1.JPG",
+      "/products/M-7_2.JPG",
+      "/products/M-7_3.JPG",
+      "/products/M-7_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -431,6 +760,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-7_0.JPG",
+    "images": [
+      "/products/M-7_0.JPG",
+      "/products/M-7_1.JPG",
+      "/products/M-7_2.JPG",
+      "/products/M-7_3.JPG",
+      "/products/M-7_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -440,6 +776,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-7_0.JPG",
+    "images": [
+      "/products/M-7_0.JPG",
+      "/products/M-7_1.JPG",
+      "/products/M-7_2.JPG",
+      "/products/M-7_3.JPG",
+      "/products/M-7_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -449,6 +792,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-7_0.JPG",
+    "images": [
+      "/products/M-7_0.JPG",
+      "/products/M-7_1.JPG",
+      "/products/M-7_2.JPG",
+      "/products/M-7_3.JPG",
+      "/products/M-7_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -458,6 +808,11 @@ export const products: Product[] = [
     "price": 195,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-8_0.JPG",
+    "images": [
+      "/products/M-8_0.JPG",
+      "/products/M-8_1.JPG",
+      "/products/M-8_2.JPG"
+    ],
     "rating": 5
   },
   {
@@ -467,6 +822,11 @@ export const products: Product[] = [
     "price": 195,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-8_0.JPG",
+    "images": [
+      "/products/M-8_0.JPG",
+      "/products/M-8_1.JPG",
+      "/products/M-8_2.JPG"
+    ],
     "rating": 5
   },
   {
@@ -476,6 +836,11 @@ export const products: Product[] = [
     "price": 195,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-8_0.JPG",
+    "images": [
+      "/products/M-8_0.JPG",
+      "/products/M-8_1.JPG",
+      "/products/M-8_2.JPG"
+    ],
     "rating": 5
   },
   {
@@ -485,6 +850,13 @@ export const products: Product[] = [
     "price": 285,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-9_0.JPG",
+    "images": [
+      "/products/M-9_0.JPG",
+      "/products/M-9_1.JPG",
+      "/products/M-9_2.JPG",
+      "/products/M-9_3.JPG",
+      "/products/M-9_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -494,6 +866,13 @@ export const products: Product[] = [
     "price": 285,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-9_0.JPG",
+    "images": [
+      "/products/M-9_0.JPG",
+      "/products/M-9_1.JPG",
+      "/products/M-9_2.JPG",
+      "/products/M-9_3.JPG",
+      "/products/M-9_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -503,6 +882,13 @@ export const products: Product[] = [
     "price": 285,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-9_0.JPG",
+    "images": [
+      "/products/M-9_0.JPG",
+      "/products/M-9_1.JPG",
+      "/products/M-9_2.JPG",
+      "/products/M-9_3.JPG",
+      "/products/M-9_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -512,6 +898,13 @@ export const products: Product[] = [
     "price": 285,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-9_0.JPG",
+    "images": [
+      "/products/M-9_0.JPG",
+      "/products/M-9_1.JPG",
+      "/products/M-9_2.JPG",
+      "/products/M-9_3.JPG",
+      "/products/M-9_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -521,6 +914,13 @@ export const products: Product[] = [
     "price": 285,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-9_0.JPG",
+    "images": [
+      "/products/M-9_0.JPG",
+      "/products/M-9_1.JPG",
+      "/products/M-9_2.JPG",
+      "/products/M-9_3.JPG",
+      "/products/M-9_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -530,6 +930,13 @@ export const products: Product[] = [
     "price": 345,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0001_0.JPG",
+    "images": [
+      "/products/M-ESK-0001_0.JPG",
+      "/products/M-ESK-0001_1.JPG",
+      "/products/M-ESK-0001_2.JPG",
+      "/products/M-ESK-0001_3.JPG",
+      "/products/M-ESK-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -539,6 +946,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0001_0.JPG",
+    "images": [
+      "/products/M-ESK-0001_0.JPG",
+      "/products/M-ESK-0001_1.JPG",
+      "/products/M-ESK-0001_2.JPG",
+      "/products/M-ESK-0001_3.JPG",
+      "/products/M-ESK-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -548,6 +962,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0001_0.JPG",
+    "images": [
+      "/products/M-ESK-0001_0.JPG",
+      "/products/M-ESK-0001_1.JPG",
+      "/products/M-ESK-0001_2.JPG",
+      "/products/M-ESK-0001_3.JPG",
+      "/products/M-ESK-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -557,6 +978,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0001_0.JPG",
+    "images": [
+      "/products/M-ESK-0001_0.JPG",
+      "/products/M-ESK-0001_1.JPG",
+      "/products/M-ESK-0001_2.JPG",
+      "/products/M-ESK-0001_3.JPG",
+      "/products/M-ESK-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -566,6 +994,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0001_0.JPG",
+    "images": [
+      "/products/M-ESK-0001_0.JPG",
+      "/products/M-ESK-0001_1.JPG",
+      "/products/M-ESK-0001_2.JPG",
+      "/products/M-ESK-0001_3.JPG",
+      "/products/M-ESK-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -575,6 +1010,13 @@ export const products: Product[] = [
     "price": 85,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0002_0.JPG",
+    "images": [
+      "/products/M-ESK-0002_0.JPG",
+      "/products/M-ESK-0002_1.JPG",
+      "/products/M-ESK-0002_2.JPG",
+      "/products/M-ESK-0002_3.JPG",
+      "/products/M-ESK-0002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -584,6 +1026,13 @@ export const products: Product[] = [
     "price": 85,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0002_0.JPG",
+    "images": [
+      "/products/M-ESK-0002_0.JPG",
+      "/products/M-ESK-0002_1.JPG",
+      "/products/M-ESK-0002_2.JPG",
+      "/products/M-ESK-0002_3.JPG",
+      "/products/M-ESK-0002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -593,6 +1042,13 @@ export const products: Product[] = [
     "price": 85,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0002_0.JPG",
+    "images": [
+      "/products/M-ESK-0002_0.JPG",
+      "/products/M-ESK-0002_1.JPG",
+      "/products/M-ESK-0002_2.JPG",
+      "/products/M-ESK-0002_3.JPG",
+      "/products/M-ESK-0002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -602,6 +1058,13 @@ export const products: Product[] = [
     "price": 85,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0002_0.JPG",
+    "images": [
+      "/products/M-ESK-0002_0.JPG",
+      "/products/M-ESK-0002_1.JPG",
+      "/products/M-ESK-0002_2.JPG",
+      "/products/M-ESK-0002_3.JPG",
+      "/products/M-ESK-0002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -611,6 +1074,13 @@ export const products: Product[] = [
     "price": 85,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0002_0.JPG",
+    "images": [
+      "/products/M-ESK-0002_0.JPG",
+      "/products/M-ESK-0002_1.JPG",
+      "/products/M-ESK-0002_2.JPG",
+      "/products/M-ESK-0002_3.JPG",
+      "/products/M-ESK-0002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -620,6 +1090,13 @@ export const products: Product[] = [
     "price": 65,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0003_0.JPG",
+    "images": [
+      "/products/M-ESK-0003_0.JPG",
+      "/products/M-ESK-0003_1.JPG",
+      "/products/M-ESK-0003_2.JPG",
+      "/products/M-ESK-0003_3.JPG",
+      "/products/M-ESK-0003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -629,6 +1106,13 @@ export const products: Product[] = [
     "price": 65,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0003_0.JPG",
+    "images": [
+      "/products/M-ESK-0003_0.JPG",
+      "/products/M-ESK-0003_1.JPG",
+      "/products/M-ESK-0003_2.JPG",
+      "/products/M-ESK-0003_3.JPG",
+      "/products/M-ESK-0003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -638,6 +1122,13 @@ export const products: Product[] = [
     "price": 65,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0003_0.JPG",
+    "images": [
+      "/products/M-ESK-0003_0.JPG",
+      "/products/M-ESK-0003_1.JPG",
+      "/products/M-ESK-0003_2.JPG",
+      "/products/M-ESK-0003_3.JPG",
+      "/products/M-ESK-0003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -647,6 +1138,13 @@ export const products: Product[] = [
     "price": 65,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0003_0.JPG",
+    "images": [
+      "/products/M-ESK-0003_0.JPG",
+      "/products/M-ESK-0003_1.JPG",
+      "/products/M-ESK-0003_2.JPG",
+      "/products/M-ESK-0003_3.JPG",
+      "/products/M-ESK-0003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -656,6 +1154,13 @@ export const products: Product[] = [
     "price": 65,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0003_0.JPG",
+    "images": [
+      "/products/M-ESK-0003_0.JPG",
+      "/products/M-ESK-0003_1.JPG",
+      "/products/M-ESK-0003_2.JPG",
+      "/products/M-ESK-0003_3.JPG",
+      "/products/M-ESK-0003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -665,6 +1170,11 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0101_0.PNG",
+    "images": [
+      "/products/M-ESK-0101_0.PNG",
+      "/products/M-ESK-0101_1.PNG",
+      "/products/M-ESK-0101_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -674,6 +1184,11 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0101_0.PNG",
+    "images": [
+      "/products/M-ESK-0101_0.PNG",
+      "/products/M-ESK-0101_1.PNG",
+      "/products/M-ESK-0101_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -683,6 +1198,11 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0101_0.PNG",
+    "images": [
+      "/products/M-ESK-0101_0.PNG",
+      "/products/M-ESK-0101_1.PNG",
+      "/products/M-ESK-0101_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -692,6 +1212,11 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0102_0.PNG",
+    "images": [
+      "/products/M-ESK-0102_0.PNG",
+      "/products/M-ESK-0102_1.PNG",
+      "/products/M-ESK-0102_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -701,6 +1226,11 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0102_0.PNG",
+    "images": [
+      "/products/M-ESK-0102_0.PNG",
+      "/products/M-ESK-0102_1.PNG",
+      "/products/M-ESK-0102_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -710,6 +1240,11 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0102_0.PNG",
+    "images": [
+      "/products/M-ESK-0102_0.PNG",
+      "/products/M-ESK-0102_1.PNG",
+      "/products/M-ESK-0102_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -719,6 +1254,11 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0103_0.PNG",
+    "images": [
+      "/products/M-ESK-0103_0.PNG",
+      "/products/M-ESK-0103_1.PNG",
+      "/products/M-ESK-0103_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -728,6 +1268,11 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0103_0.PNG",
+    "images": [
+      "/products/M-ESK-0103_0.PNG",
+      "/products/M-ESK-0103_1.PNG",
+      "/products/M-ESK-0103_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -737,6 +1282,11 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0103_0.PNG",
+    "images": [
+      "/products/M-ESK-0103_0.PNG",
+      "/products/M-ESK-0103_1.PNG",
+      "/products/M-ESK-0103_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -746,6 +1296,10 @@ export const products: Product[] = [
     "price": 95,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0211_0.PNG",
+    "images": [
+      "/products/M-ESK-0211_0.PNG",
+      "/products/M-ESK-0211_1.PNG"
+    ],
     "rating": 5
   },
   {
@@ -755,6 +1309,10 @@ export const products: Product[] = [
     "price": 95,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0211_0.PNG",
+    "images": [
+      "/products/M-ESK-0211_0.PNG",
+      "/products/M-ESK-0211_1.PNG"
+    ],
     "rating": 5
   },
   {
@@ -764,6 +1322,11 @@ export const products: Product[] = [
     "price": 95,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0212_0.PNG",
+    "images": [
+      "/products/M-ESK-0212_0.PNG",
+      "/products/M-ESK-0212_1.PNG",
+      "/products/M-ESK-0212_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -773,6 +1336,11 @@ export const products: Product[] = [
     "price": 85,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0212_0.PNG",
+    "images": [
+      "/products/M-ESK-0212_0.PNG",
+      "/products/M-ESK-0212_1.PNG",
+      "/products/M-ESK-0212_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -782,6 +1350,11 @@ export const products: Product[] = [
     "price": 180,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0212_0.PNG",
+    "images": [
+      "/products/M-ESK-0212_0.PNG",
+      "/products/M-ESK-0212_1.PNG",
+      "/products/M-ESK-0212_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -791,6 +1364,10 @@ export const products: Product[] = [
     "price": 95,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0213_0.PNG",
+    "images": [
+      "/products/M-ESK-0213_0.PNG",
+      "/products/M-ESK-0213_1.PNG"
+    ],
     "rating": 5
   },
   {
@@ -800,6 +1377,10 @@ export const products: Product[] = [
     "price": 95,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-0213_0.PNG",
+    "images": [
+      "/products/M-ESK-0213_0.PNG",
+      "/products/M-ESK-0213_1.PNG"
+    ],
     "rating": 5
   },
   {
@@ -809,6 +1390,13 @@ export const products: Product[] = [
     "price": 495,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1001_0.JPG",
+    "images": [
+      "/products/M-ESK-1001_0.JPG",
+      "/products/M-ESK-1001_1.JPG",
+      "/products/M-ESK-1001_2.JPG",
+      "/products/M-ESK-1001_3.JPG",
+      "/products/M-ESK-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -818,6 +1406,13 @@ export const products: Product[] = [
     "price": 65,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1001_0.JPG",
+    "images": [
+      "/products/M-ESK-1001_0.JPG",
+      "/products/M-ESK-1001_1.JPG",
+      "/products/M-ESK-1001_2.JPG",
+      "/products/M-ESK-1001_3.JPG",
+      "/products/M-ESK-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -827,6 +1422,13 @@ export const products: Product[] = [
     "price": 55,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1001_0.JPG",
+    "images": [
+      "/products/M-ESK-1001_0.JPG",
+      "/products/M-ESK-1001_1.JPG",
+      "/products/M-ESK-1001_2.JPG",
+      "/products/M-ESK-1001_3.JPG",
+      "/products/M-ESK-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -836,6 +1438,13 @@ export const products: Product[] = [
     "price": 45,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1001_0.JPG",
+    "images": [
+      "/products/M-ESK-1001_0.JPG",
+      "/products/M-ESK-1001_1.JPG",
+      "/products/M-ESK-1001_2.JPG",
+      "/products/M-ESK-1001_3.JPG",
+      "/products/M-ESK-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -845,6 +1454,13 @@ export const products: Product[] = [
     "price": 495,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1001_0.JPG",
+    "images": [
+      "/products/M-ESK-1001_0.JPG",
+      "/products/M-ESK-1001_1.JPG",
+      "/products/M-ESK-1001_2.JPG",
+      "/products/M-ESK-1001_3.JPG",
+      "/products/M-ESK-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -854,6 +1470,11 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1101_0.PNG",
+    "images": [
+      "/products/M-ESK-1101_0.PNG",
+      "/products/M-ESK-1101_1.PNG",
+      "/products/M-ESK-1101_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -863,6 +1484,11 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1101_0.PNG",
+    "images": [
+      "/products/M-ESK-1101_0.PNG",
+      "/products/M-ESK-1101_1.PNG",
+      "/products/M-ESK-1101_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -872,6 +1498,11 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1101_0.PNG",
+    "images": [
+      "/products/M-ESK-1101_0.PNG",
+      "/products/M-ESK-1101_1.PNG",
+      "/products/M-ESK-1101_2.PNG"
+    ],
     "rating": 5
   },
   {
@@ -881,6 +1512,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1211_0.JPG",
+    "images": [
+      "/products/M-ESK-1211_0.JPG",
+      "/products/M-ESK-1211_1.JPG",
+      "/products/M-ESK-1211_2.JPG",
+      "/products/M-ESK-1211_3.JPG",
+      "/products/M-ESK-1211_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -890,6 +1528,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1211_0.JPG",
+    "images": [
+      "/products/M-ESK-1211_0.JPG",
+      "/products/M-ESK-1211_1.JPG",
+      "/products/M-ESK-1211_2.JPG",
+      "/products/M-ESK-1211_3.JPG",
+      "/products/M-ESK-1211_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -899,6 +1544,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1211_0.JPG",
+    "images": [
+      "/products/M-ESK-1211_0.JPG",
+      "/products/M-ESK-1211_1.JPG",
+      "/products/M-ESK-1211_2.JPG",
+      "/products/M-ESK-1211_3.JPG",
+      "/products/M-ESK-1211_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -908,6 +1560,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1211_0.JPG",
+    "images": [
+      "/products/M-ESK-1211_0.JPG",
+      "/products/M-ESK-1211_1.JPG",
+      "/products/M-ESK-1211_2.JPG",
+      "/products/M-ESK-1211_3.JPG",
+      "/products/M-ESK-1211_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -917,6 +1576,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Storage",
     "imageUrl": "/products/M-ESK-1211_0.JPG",
+    "images": [
+      "/products/M-ESK-1211_0.JPG",
+      "/products/M-ESK-1211_1.JPG",
+      "/products/M-ESK-1211_2.JPG",
+      "/products/M-ESK-1211_3.JPG",
+      "/products/M-ESK-1211_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -926,6 +1592,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen Accessories",
     "imageUrl": "/products/M-KAG-3001_0.JPG",
+    "images": [
+      "/products/M-KAG-3001_0.JPG",
+      "/products/M-KAG-3001_1.JPG",
+      "/products/M-KAG-3001_2.JPG",
+      "/products/M-KAG-3001_3.JPG",
+      "/products/M-KAG-3001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -935,6 +1608,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen Accessories",
     "imageUrl": "/products/M-KAG-3001_0.JPG",
+    "images": [
+      "/products/M-KAG-3001_0.JPG",
+      "/products/M-KAG-3001_1.JPG",
+      "/products/M-KAG-3001_2.JPG",
+      "/products/M-KAG-3001_3.JPG",
+      "/products/M-KAG-3001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -944,6 +1624,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen Accessories",
     "imageUrl": "/products/M-KAG-3001_0.JPG",
+    "images": [
+      "/products/M-KAG-3001_0.JPG",
+      "/products/M-KAG-3001_1.JPG",
+      "/products/M-KAG-3001_2.JPG",
+      "/products/M-KAG-3001_3.JPG",
+      "/products/M-KAG-3001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -953,6 +1640,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen Accessories",
     "imageUrl": "/products/M-KAG-3001_0.JPG",
+    "images": [
+      "/products/M-KAG-3001_0.JPG",
+      "/products/M-KAG-3001_1.JPG",
+      "/products/M-KAG-3001_2.JPG",
+      "/products/M-KAG-3001_3.JPG",
+      "/products/M-KAG-3001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -962,6 +1656,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen Accessories",
     "imageUrl": "/products/M-KAG-3001_0.JPG",
+    "images": [
+      "/products/M-KAG-3001_0.JPG",
+      "/products/M-KAG-3001_1.JPG",
+      "/products/M-KAG-3001_2.JPG",
+      "/products/M-KAG-3001_3.JPG",
+      "/products/M-KAG-3001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -971,6 +1672,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0001_0.JPG",
+    "images": [
+      "/products/M-KAL-0001_0.JPG",
+      "/products/M-KAL-0001_1.JPG",
+      "/products/M-KAL-0001_2.JPG",
+      "/products/M-KAL-0001_3.JPG",
+      "/products/M-KAL-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -980,6 +1688,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0001_0.JPG",
+    "images": [
+      "/products/M-KAL-0001_0.JPG",
+      "/products/M-KAL-0001_1.JPG",
+      "/products/M-KAL-0001_2.JPG",
+      "/products/M-KAL-0001_3.JPG",
+      "/products/M-KAL-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -989,6 +1704,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0001_0.JPG",
+    "images": [
+      "/products/M-KAL-0001_0.JPG",
+      "/products/M-KAL-0001_1.JPG",
+      "/products/M-KAL-0001_2.JPG",
+      "/products/M-KAL-0001_3.JPG",
+      "/products/M-KAL-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -998,6 +1720,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0001_0.JPG",
+    "images": [
+      "/products/M-KAL-0001_0.JPG",
+      "/products/M-KAL-0001_1.JPG",
+      "/products/M-KAL-0001_2.JPG",
+      "/products/M-KAL-0001_3.JPG",
+      "/products/M-KAL-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1007,6 +1736,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0001_0.JPG",
+    "images": [
+      "/products/M-KAL-0001_0.JPG",
+      "/products/M-KAL-0001_1.JPG",
+      "/products/M-KAL-0001_2.JPG",
+      "/products/M-KAL-0001_3.JPG",
+      "/products/M-KAL-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1016,6 +1752,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0002_0.JPG",
+    "images": [
+      "/products/M-KAL-0002_0.JPG",
+      "/products/M-KAL-0002_1.JPG",
+      "/products/M-KAL-0002_2.JPG",
+      "/products/M-KAL-0002_3.JPG",
+      "/products/M-KAL-0002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1025,6 +1768,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0002_0.JPG",
+    "images": [
+      "/products/M-KAL-0002_0.JPG",
+      "/products/M-KAL-0002_1.JPG",
+      "/products/M-KAL-0002_2.JPG",
+      "/products/M-KAL-0002_3.JPG",
+      "/products/M-KAL-0002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1034,6 +1784,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0002_0.JPG",
+    "images": [
+      "/products/M-KAL-0002_0.JPG",
+      "/products/M-KAL-0002_1.JPG",
+      "/products/M-KAL-0002_2.JPG",
+      "/products/M-KAL-0002_3.JPG",
+      "/products/M-KAL-0002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1043,6 +1800,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0002_0.JPG",
+    "images": [
+      "/products/M-KAL-0002_0.JPG",
+      "/products/M-KAL-0002_1.JPG",
+      "/products/M-KAL-0002_2.JPG",
+      "/products/M-KAL-0002_3.JPG",
+      "/products/M-KAL-0002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1052,6 +1816,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0002_0.JPG",
+    "images": [
+      "/products/M-KAL-0002_0.JPG",
+      "/products/M-KAL-0002_1.JPG",
+      "/products/M-KAL-0002_2.JPG",
+      "/products/M-KAL-0002_3.JPG",
+      "/products/M-KAL-0002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1061,6 +1832,13 @@ export const products: Product[] = [
     "price": 65,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0003_0.JPG",
+    "images": [
+      "/products/M-KAL-0003_0.JPG",
+      "/products/M-KAL-0003_1.JPG",
+      "/products/M-KAL-0003_2.JPG",
+      "/products/M-KAL-0003_3.JPG",
+      "/products/M-KAL-0003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1070,6 +1848,13 @@ export const products: Product[] = [
     "price": 65,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0003_0.JPG",
+    "images": [
+      "/products/M-KAL-0003_0.JPG",
+      "/products/M-KAL-0003_1.JPG",
+      "/products/M-KAL-0003_2.JPG",
+      "/products/M-KAL-0003_3.JPG",
+      "/products/M-KAL-0003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1079,6 +1864,13 @@ export const products: Product[] = [
     "price": 65,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0003_0.JPG",
+    "images": [
+      "/products/M-KAL-0003_0.JPG",
+      "/products/M-KAL-0003_1.JPG",
+      "/products/M-KAL-0003_2.JPG",
+      "/products/M-KAL-0003_3.JPG",
+      "/products/M-KAL-0003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1088,6 +1880,13 @@ export const products: Product[] = [
     "price": 65,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0003_0.JPG",
+    "images": [
+      "/products/M-KAL-0003_0.JPG",
+      "/products/M-KAL-0003_1.JPG",
+      "/products/M-KAL-0003_2.JPG",
+      "/products/M-KAL-0003_3.JPG",
+      "/products/M-KAL-0003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1097,6 +1896,13 @@ export const products: Product[] = [
     "price": 65,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-0003_0.JPG",
+    "images": [
+      "/products/M-KAL-0003_0.JPG",
+      "/products/M-KAL-0003_1.JPG",
+      "/products/M-KAL-0003_2.JPG",
+      "/products/M-KAL-0003_3.JPG",
+      "/products/M-KAL-0003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1106,6 +1912,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1001_0.JPG",
+    "images": [
+      "/products/M-KAL-1001_0.JPG",
+      "/products/M-KAL-1001_1.JPG",
+      "/products/M-KAL-1001_2.JPG",
+      "/products/M-KAL-1001_3.JPG",
+      "/products/M-KAL-1001_4.PNG"
+    ],
     "rating": 5
   },
   {
@@ -1115,6 +1928,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1001_0.JPG",
+    "images": [
+      "/products/M-KAL-1001_0.JPG",
+      "/products/M-KAL-1001_1.JPG",
+      "/products/M-KAL-1001_2.JPG",
+      "/products/M-KAL-1001_3.JPG",
+      "/products/M-KAL-1001_4.PNG"
+    ],
     "rating": 5
   },
   {
@@ -1124,6 +1944,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1001_0.JPG",
+    "images": [
+      "/products/M-KAL-1001_0.JPG",
+      "/products/M-KAL-1001_1.JPG",
+      "/products/M-KAL-1001_2.JPG",
+      "/products/M-KAL-1001_3.JPG",
+      "/products/M-KAL-1001_4.PNG"
+    ],
     "rating": 5
   },
   {
@@ -1133,6 +1960,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1001_0.JPG",
+    "images": [
+      "/products/M-KAL-1001_0.JPG",
+      "/products/M-KAL-1001_1.JPG",
+      "/products/M-KAL-1001_2.JPG",
+      "/products/M-KAL-1001_3.JPG",
+      "/products/M-KAL-1001_4.PNG"
+    ],
     "rating": 5
   },
   {
@@ -1142,6 +1976,13 @@ export const products: Product[] = [
     "price": 175,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1001_0.JPG",
+    "images": [
+      "/products/M-KAL-1001_0.JPG",
+      "/products/M-KAL-1001_1.JPG",
+      "/products/M-KAL-1001_2.JPG",
+      "/products/M-KAL-1001_3.JPG",
+      "/products/M-KAL-1001_4.PNG"
+    ],
     "rating": 5
   },
   {
@@ -1151,6 +1992,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1002_0.PNG",
+    "images": [
+      "/products/M-KAL-1002_0.PNG",
+      "/products/M-KAL-1002_1.PNG",
+      "/products/M-KAL-1002_2.PNG",
+      "/products/M-KAL-1002_3.JPG",
+      "/products/M-KAL-1002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1160,6 +2008,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1002_0.PNG",
+    "images": [
+      "/products/M-KAL-1002_0.PNG",
+      "/products/M-KAL-1002_1.PNG",
+      "/products/M-KAL-1002_2.PNG",
+      "/products/M-KAL-1002_3.JPG",
+      "/products/M-KAL-1002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1169,6 +2024,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1002_0.PNG",
+    "images": [
+      "/products/M-KAL-1002_0.PNG",
+      "/products/M-KAL-1002_1.PNG",
+      "/products/M-KAL-1002_2.PNG",
+      "/products/M-KAL-1002_3.JPG",
+      "/products/M-KAL-1002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1178,6 +2040,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1002_0.PNG",
+    "images": [
+      "/products/M-KAL-1002_0.PNG",
+      "/products/M-KAL-1002_1.PNG",
+      "/products/M-KAL-1002_2.PNG",
+      "/products/M-KAL-1002_3.JPG",
+      "/products/M-KAL-1002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1187,6 +2056,13 @@ export const products: Product[] = [
     "price": 175,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1002_0.PNG",
+    "images": [
+      "/products/M-KAL-1002_0.PNG",
+      "/products/M-KAL-1002_1.PNG",
+      "/products/M-KAL-1002_2.PNG",
+      "/products/M-KAL-1002_3.JPG",
+      "/products/M-KAL-1002_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1196,6 +2072,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1003_0.JPG",
+    "images": [
+      "/products/M-KAL-1003_0.JPG",
+      "/products/M-KAL-1003_1.JPG",
+      "/products/M-KAL-1003_2.JPG",
+      "/products/M-KAL-1003_3.JPG",
+      "/products/M-KAL-1003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1205,6 +2088,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1003_0.JPG",
+    "images": [
+      "/products/M-KAL-1003_0.JPG",
+      "/products/M-KAL-1003_1.JPG",
+      "/products/M-KAL-1003_2.JPG",
+      "/products/M-KAL-1003_3.JPG",
+      "/products/M-KAL-1003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1214,6 +2104,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1003_0.JPG",
+    "images": [
+      "/products/M-KAL-1003_0.JPG",
+      "/products/M-KAL-1003_1.JPG",
+      "/products/M-KAL-1003_2.JPG",
+      "/products/M-KAL-1003_3.JPG",
+      "/products/M-KAL-1003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1223,6 +2120,13 @@ export const products: Product[] = [
     "price": 165,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1003_0.JPG",
+    "images": [
+      "/products/M-KAL-1003_0.JPG",
+      "/products/M-KAL-1003_1.JPG",
+      "/products/M-KAL-1003_2.JPG",
+      "/products/M-KAL-1003_3.JPG",
+      "/products/M-KAL-1003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1232,6 +2136,13 @@ export const products: Product[] = [
     "price": 175,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAL-1003_0.JPG",
+    "images": [
+      "/products/M-KAL-1003_0.JPG",
+      "/products/M-KAL-1003_1.JPG",
+      "/products/M-KAL-1003_2.JPG",
+      "/products/M-KAL-1003_3.JPG",
+      "/products/M-KAL-1003_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1241,6 +2152,13 @@ export const products: Product[] = [
     "price": 195,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAS-0001_0.JPG",
+    "images": [
+      "/products/M-KAS-0001_0.JPG",
+      "/products/M-KAS-0001_1.JPG",
+      "/products/M-KAS-0001_2.JPG",
+      "/products/M-KAS-0001_3.JPG",
+      "/products/M-KAS-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1250,6 +2168,13 @@ export const products: Product[] = [
     "price": 195,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAS-0001_0.JPG",
+    "images": [
+      "/products/M-KAS-0001_0.JPG",
+      "/products/M-KAS-0001_1.JPG",
+      "/products/M-KAS-0001_2.JPG",
+      "/products/M-KAS-0001_3.JPG",
+      "/products/M-KAS-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1259,6 +2184,13 @@ export const products: Product[] = [
     "price": 185,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAS-0001_0.JPG",
+    "images": [
+      "/products/M-KAS-0001_0.JPG",
+      "/products/M-KAS-0001_1.JPG",
+      "/products/M-KAS-0001_2.JPG",
+      "/products/M-KAS-0001_3.JPG",
+      "/products/M-KAS-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1268,6 +2200,13 @@ export const products: Product[] = [
     "price": 195,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAS-0001_0.JPG",
+    "images": [
+      "/products/M-KAS-0001_0.JPG",
+      "/products/M-KAS-0001_1.JPG",
+      "/products/M-KAS-0001_2.JPG",
+      "/products/M-KAS-0001_3.JPG",
+      "/products/M-KAS-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1277,6 +2216,13 @@ export const products: Product[] = [
     "price": 185,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAS-0001_0.JPG",
+    "images": [
+      "/products/M-KAS-0001_0.JPG",
+      "/products/M-KAS-0001_1.JPG",
+      "/products/M-KAS-0001_2.JPG",
+      "/products/M-KAS-0001_3.JPG",
+      "/products/M-KAS-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1286,6 +2232,13 @@ export const products: Product[] = [
     "price": 225,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAS-1001_0.JPG",
+    "images": [
+      "/products/M-KAS-1001_0.JPG",
+      "/products/M-KAS-1001_1.JPG",
+      "/products/M-KAS-1001_2.JPG",
+      "/products/M-KAS-1001_3.JPG",
+      "/products/M-KAS-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1295,6 +2248,13 @@ export const products: Product[] = [
     "price": 225,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAS-1001_0.JPG",
+    "images": [
+      "/products/M-KAS-1001_0.JPG",
+      "/products/M-KAS-1001_1.JPG",
+      "/products/M-KAS-1001_2.JPG",
+      "/products/M-KAS-1001_3.JPG",
+      "/products/M-KAS-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1304,6 +2264,13 @@ export const products: Product[] = [
     "price": 215,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAS-1001_0.JPG",
+    "images": [
+      "/products/M-KAS-1001_0.JPG",
+      "/products/M-KAS-1001_1.JPG",
+      "/products/M-KAS-1001_2.JPG",
+      "/products/M-KAS-1001_3.JPG",
+      "/products/M-KAS-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1313,6 +2280,13 @@ export const products: Product[] = [
     "price": 225,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAS-1001_0.JPG",
+    "images": [
+      "/products/M-KAS-1001_0.JPG",
+      "/products/M-KAS-1001_1.JPG",
+      "/products/M-KAS-1001_2.JPG",
+      "/products/M-KAS-1001_3.JPG",
+      "/products/M-KAS-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1322,6 +2296,13 @@ export const products: Product[] = [
     "price": 215,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAS-1001_0.JPG",
+    "images": [
+      "/products/M-KAS-1001_0.JPG",
+      "/products/M-KAS-1001_1.JPG",
+      "/products/M-KAS-1001_2.JPG",
+      "/products/M-KAS-1001_3.JPG",
+      "/products/M-KAS-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1331,6 +2312,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAU-0001_0.JPG",
+    "images": [
+      "/products/M-KAU-0001_0.JPG",
+      "/products/M-KAU-0001_1.JPG",
+      "/products/M-KAU-0001_2.JPG",
+      "/products/M-KAU-0001_3.JPG",
+      "/products/M-KAU-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1340,6 +2328,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAU-0001_0.JPG",
+    "images": [
+      "/products/M-KAU-0001_0.JPG",
+      "/products/M-KAU-0001_1.JPG",
+      "/products/M-KAU-0001_2.JPG",
+      "/products/M-KAU-0001_3.JPG",
+      "/products/M-KAU-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1349,6 +2344,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAU-0001_0.JPG",
+    "images": [
+      "/products/M-KAU-0001_0.JPG",
+      "/products/M-KAU-0001_1.JPG",
+      "/products/M-KAU-0001_2.JPG",
+      "/products/M-KAU-0001_3.JPG",
+      "/products/M-KAU-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1358,6 +2360,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAU-0001_0.JPG",
+    "images": [
+      "/products/M-KAU-0001_0.JPG",
+      "/products/M-KAU-0001_1.JPG",
+      "/products/M-KAU-0001_2.JPG",
+      "/products/M-KAU-0001_3.JPG",
+      "/products/M-KAU-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1367,6 +2376,13 @@ export const products: Product[] = [
     "price": 75,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAU-0001_0.JPG",
+    "images": [
+      "/products/M-KAU-0001_0.JPG",
+      "/products/M-KAU-0001_1.JPG",
+      "/products/M-KAU-0001_2.JPG",
+      "/products/M-KAU-0001_3.JPG",
+      "/products/M-KAU-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1376,6 +2392,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAU-1001_0.PNG",
+    "images": [
+      "/products/M-KAU-1001_0.PNG",
+      "/products/M-KAU-1001_1.PNG",
+      "/products/M-KAU-1001_2.PNG",
+      "/products/M-KAU-1001_3.JPG",
+      "/products/M-KAU-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1385,6 +2408,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAU-1001_0.PNG",
+    "images": [
+      "/products/M-KAU-1001_0.PNG",
+      "/products/M-KAU-1001_1.PNG",
+      "/products/M-KAU-1001_2.PNG",
+      "/products/M-KAU-1001_3.JPG",
+      "/products/M-KAU-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1394,6 +2424,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAU-1001_0.PNG",
+    "images": [
+      "/products/M-KAU-1001_0.PNG",
+      "/products/M-KAU-1001_1.PNG",
+      "/products/M-KAU-1001_2.PNG",
+      "/products/M-KAU-1001_3.JPG",
+      "/products/M-KAU-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1403,6 +2440,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAU-1001_0.PNG",
+    "images": [
+      "/products/M-KAU-1001_0.PNG",
+      "/products/M-KAU-1001_1.PNG",
+      "/products/M-KAU-1001_2.PNG",
+      "/products/M-KAU-1001_3.JPG",
+      "/products/M-KAU-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1412,6 +2456,13 @@ export const products: Product[] = [
     "price": 135,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAU-1001_0.PNG",
+    "images": [
+      "/products/M-KAU-1001_0.PNG",
+      "/products/M-KAU-1001_1.PNG",
+      "/products/M-KAU-1001_2.PNG",
+      "/products/M-KAU-1001_3.JPG",
+      "/products/M-KAU-1001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1421,6 +2472,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAV-0001_0.JPG",
+    "images": [
+      "/products/M-KAV-0001_0.JPG",
+      "/products/M-KAV-0001_1.JPG",
+      "/products/M-KAV-0001_2.JPG",
+      "/products/M-KAV-0001_3.JPG",
+      "/products/M-KAV-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1430,6 +2488,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAV-0001_0.JPG",
+    "images": [
+      "/products/M-KAV-0001_0.JPG",
+      "/products/M-KAV-0001_1.JPG",
+      "/products/M-KAV-0001_2.JPG",
+      "/products/M-KAV-0001_3.JPG",
+      "/products/M-KAV-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1439,6 +2504,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAV-0001_0.JPG",
+    "images": [
+      "/products/M-KAV-0001_0.JPG",
+      "/products/M-KAV-0001_1.JPG",
+      "/products/M-KAV-0001_2.JPG",
+      "/products/M-KAV-0001_3.JPG",
+      "/products/M-KAV-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1448,6 +2520,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAV-0001_0.JPG",
+    "images": [
+      "/products/M-KAV-0001_0.JPG",
+      "/products/M-KAV-0001_1.JPG",
+      "/products/M-KAV-0001_2.JPG",
+      "/products/M-KAV-0001_3.JPG",
+      "/products/M-KAV-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1457,6 +2536,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-KAV-0001_0.JPG",
+    "images": [
+      "/products/M-KAV-0001_0.JPG",
+      "/products/M-KAV-0001_1.JPG",
+      "/products/M-KAV-0001_2.JPG",
+      "/products/M-KAV-0001_3.JPG",
+      "/products/M-KAV-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1466,6 +2552,13 @@ export const products: Product[] = [
     "price": 345,
     "category": "Kitchen Tools",
     "imageUrl": "/products/M-KMN-0001_0.JPG",
+    "images": [
+      "/products/M-KMN-0001_0.JPG",
+      "/products/M-KMN-0001_1.JPG",
+      "/products/M-KMN-0001_2.JPG",
+      "/products/M-KMN-0001_3.JPG",
+      "/products/M-KMN-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1475,6 +2568,13 @@ export const products: Product[] = [
     "price": 345,
     "category": "Kitchen Tools",
     "imageUrl": "/products/M-KMN-0001_0.JPG",
+    "images": [
+      "/products/M-KMN-0001_0.JPG",
+      "/products/M-KMN-0001_1.JPG",
+      "/products/M-KMN-0001_2.JPG",
+      "/products/M-KMN-0001_3.JPG",
+      "/products/M-KMN-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1484,6 +2584,13 @@ export const products: Product[] = [
     "price": 345,
     "category": "Kitchen Tools",
     "imageUrl": "/products/M-KMN-0001_0.JPG",
+    "images": [
+      "/products/M-KMN-0001_0.JPG",
+      "/products/M-KMN-0001_1.JPG",
+      "/products/M-KMN-0001_2.JPG",
+      "/products/M-KMN-0001_3.JPG",
+      "/products/M-KMN-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1493,6 +2600,13 @@ export const products: Product[] = [
     "price": 345,
     "category": "Kitchen Tools",
     "imageUrl": "/products/M-KMN-0001_0.JPG",
+    "images": [
+      "/products/M-KMN-0001_0.JPG",
+      "/products/M-KMN-0001_1.JPG",
+      "/products/M-KMN-0001_2.JPG",
+      "/products/M-KMN-0001_3.JPG",
+      "/products/M-KMN-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1502,6 +2616,13 @@ export const products: Product[] = [
     "price": 345,
     "category": "Kitchen Tools",
     "imageUrl": "/products/M-KMN-0001_0.JPG",
+    "images": [
+      "/products/M-KMN-0001_0.JPG",
+      "/products/M-KMN-0001_1.JPG",
+      "/products/M-KMN-0001_2.JPG",
+      "/products/M-KMN-0001_3.JPG",
+      "/products/M-KMN-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1511,6 +2632,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Tools",
     "imageUrl": "/products/M-KPG-0001_0.PNG",
+    "images": [
+      "/products/M-KPG-0001_0.PNG",
+      "/products/M-KPG-0001_1.PNG",
+      "/products/M-KPG-0001_2.PNG",
+      "/products/M-KPG-0001_3.PNG",
+      "/products/M-KPG-0001_4.PNG"
+    ],
     "rating": 5
   },
   {
@@ -1520,6 +2648,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Tools",
     "imageUrl": "/products/M-KPG-0001_0.PNG",
+    "images": [
+      "/products/M-KPG-0001_0.PNG",
+      "/products/M-KPG-0001_1.PNG",
+      "/products/M-KPG-0001_2.PNG",
+      "/products/M-KPG-0001_3.PNG",
+      "/products/M-KPG-0001_4.PNG"
+    ],
     "rating": 5
   },
   {
@@ -1529,6 +2664,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Tools",
     "imageUrl": "/products/M-KPG-0001_0.PNG",
+    "images": [
+      "/products/M-KPG-0001_0.PNG",
+      "/products/M-KPG-0001_1.PNG",
+      "/products/M-KPG-0001_2.PNG",
+      "/products/M-KPG-0001_3.PNG",
+      "/products/M-KPG-0001_4.PNG"
+    ],
     "rating": 5
   },
   {
@@ -1538,6 +2680,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Tools",
     "imageUrl": "/products/M-KPG-0001_0.PNG",
+    "images": [
+      "/products/M-KPG-0001_0.PNG",
+      "/products/M-KPG-0001_1.PNG",
+      "/products/M-KPG-0001_2.PNG",
+      "/products/M-KPG-0001_3.PNG",
+      "/products/M-KPG-0001_4.PNG"
+    ],
     "rating": 5
   },
   {
@@ -1547,6 +2696,13 @@ export const products: Product[] = [
     "price": 145,
     "category": "Kitchen Tools",
     "imageUrl": "/products/M-KPG-0001_0.PNG",
+    "images": [
+      "/products/M-KPG-0001_0.PNG",
+      "/products/M-KPG-0001_1.PNG",
+      "/products/M-KPG-0001_2.PNG",
+      "/products/M-KPG-0001_3.PNG",
+      "/products/M-KPG-0001_4.PNG"
+    ],
     "rating": 5
   },
   {
@@ -1556,6 +2712,13 @@ export const products: Product[] = [
     "price": 385,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-REV-0001_0.JPG",
+    "images": [
+      "/products/M-REV-0001_0.JPG",
+      "/products/M-REV-0001_1.JPG",
+      "/products/M-REV-0001_2.JPG",
+      "/products/M-REV-0001_3.JPG",
+      "/products/M-REV-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1565,6 +2728,13 @@ export const products: Product[] = [
     "price": 385,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-REV-0001_0.JPG",
+    "images": [
+      "/products/M-REV-0001_0.JPG",
+      "/products/M-REV-0001_1.JPG",
+      "/products/M-REV-0001_2.JPG",
+      "/products/M-REV-0001_3.JPG",
+      "/products/M-REV-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1574,6 +2744,13 @@ export const products: Product[] = [
     "price": 385,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-REV-0001_0.JPG",
+    "images": [
+      "/products/M-REV-0001_0.JPG",
+      "/products/M-REV-0001_1.JPG",
+      "/products/M-REV-0001_2.JPG",
+      "/products/M-REV-0001_3.JPG",
+      "/products/M-REV-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1583,6 +2760,13 @@ export const products: Product[] = [
     "price": 385,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-REV-0001_0.JPG",
+    "images": [
+      "/products/M-REV-0001_0.JPG",
+      "/products/M-REV-0001_1.JPG",
+      "/products/M-REV-0001_2.JPG",
+      "/products/M-REV-0001_3.JPG",
+      "/products/M-REV-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1592,6 +2776,13 @@ export const products: Product[] = [
     "price": 385,
     "category": "Kitchen Gadgets & Graters",
     "imageUrl": "/products/M-REV-0001_0.JPG",
+    "images": [
+      "/products/M-REV-0001_0.JPG",
+      "/products/M-REV-0001_1.JPG",
+      "/products/M-REV-0001_2.JPG",
+      "/products/M-REV-0001_3.JPG",
+      "/products/M-REV-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1601,6 +2792,13 @@ export const products: Product[] = [
     "price": 95,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-SUA-0001_0.JPG",
+    "images": [
+      "/products/M-SUA-0001_0.JPG",
+      "/products/M-SUA-0001_1.JPG",
+      "/products/M-SUA-0001_2.PNG",
+      "/products/M-SUA-0001_3.JPG",
+      "/products/M-SUA-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1610,6 +2808,13 @@ export const products: Product[] = [
     "price": 95,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-SUA-0001_0.JPG",
+    "images": [
+      "/products/M-SUA-0001_0.JPG",
+      "/products/M-SUA-0001_1.JPG",
+      "/products/M-SUA-0001_2.PNG",
+      "/products/M-SUA-0001_3.JPG",
+      "/products/M-SUA-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1619,6 +2824,13 @@ export const products: Product[] = [
     "price": 95,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-SUA-0001_0.JPG",
+    "images": [
+      "/products/M-SUA-0001_0.JPG",
+      "/products/M-SUA-0001_1.JPG",
+      "/products/M-SUA-0001_2.PNG",
+      "/products/M-SUA-0001_3.JPG",
+      "/products/M-SUA-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1628,6 +2840,13 @@ export const products: Product[] = [
     "price": 105,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-SUA-0001_0.JPG",
+    "images": [
+      "/products/M-SUA-0001_0.JPG",
+      "/products/M-SUA-0001_1.JPG",
+      "/products/M-SUA-0001_2.PNG",
+      "/products/M-SUA-0001_3.JPG",
+      "/products/M-SUA-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1637,6 +2856,13 @@ export const products: Product[] = [
     "price": 95,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-SUA-0001_0.JPG",
+    "images": [
+      "/products/M-SUA-0001_0.JPG",
+      "/products/M-SUA-0001_1.JPG",
+      "/products/M-SUA-0001_2.PNG",
+      "/products/M-SUA-0001_3.JPG",
+      "/products/M-SUA-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1646,6 +2872,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-SUH-0001_0.JPG",
+    "images": [
+      "/products/M-SUH-0001_0.JPG",
+      "/products/M-SUH-0001_1.JPG",
+      "/products/M-SUH-0001_2.PNG",
+      "/products/M-SUH-0001_3.JPG",
+      "/products/M-SUH-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1655,6 +2888,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-SUH-0001_0.JPG",
+    "images": [
+      "/products/M-SUH-0001_0.JPG",
+      "/products/M-SUH-0001_1.JPG",
+      "/products/M-SUH-0001_2.PNG",
+      "/products/M-SUH-0001_3.JPG",
+      "/products/M-SUH-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1664,6 +2904,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-SUH-0001_0.JPG",
+    "images": [
+      "/products/M-SUH-0001_0.JPG",
+      "/products/M-SUH-0001_1.JPG",
+      "/products/M-SUH-0001_2.PNG",
+      "/products/M-SUH-0001_3.JPG",
+      "/products/M-SUH-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1673,6 +2920,13 @@ export const products: Product[] = [
     "price": 115,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-SUH-0001_0.JPG",
+    "images": [
+      "/products/M-SUH-0001_0.JPG",
+      "/products/M-SUH-0001_1.JPG",
+      "/products/M-SUH-0001_2.PNG",
+      "/products/M-SUH-0001_3.JPG",
+      "/products/M-SUH-0001_4.JPG"
+    ],
     "rating": 5
   },
   {
@@ -1682,6 +2936,13 @@ export const products: Product[] = [
     "price": 125,
     "category": "Kitchen & Dining",
     "imageUrl": "/products/M-SUH-0001_0.JPG",
+    "images": [
+      "/products/M-SUH-0001_0.JPG",
+      "/products/M-SUH-0001_1.JPG",
+      "/products/M-SUH-0001_2.PNG",
+      "/products/M-SUH-0001_3.JPG",
+      "/products/M-SUH-0001_4.JPG"
+    ],
     "rating": 5
   }
 ];

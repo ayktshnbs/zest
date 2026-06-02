@@ -21,13 +21,14 @@ if (fs.existsSync(destDir)) {
 
 const zips = fs.readdirSync(imgDir).filter(f => f.endsWith('.zip'));
 
-console.log(`Found ${zips.length} zip files. Extracting 1 sample image per zip...`);
+console.log(`Found ${zips.length} zip files. Extracting up to 5 sample images per zip...`);
 
-const availableImages = new Set();
+const availableImagesMap = new Map(); // Map zipName -> Array of extracted image names
 
 zips.forEach(zip => {
   const zipName = zip.replace('.zip', '');
   const tempDir = path.join(imgDir, `temp_${zipName}`);
+  const extractedForThisZip = [];
   
   try {
     console.log(`Processing ${zip}...`);
@@ -50,17 +51,19 @@ zips.forEach(zip => {
 
     const images = findImages(tempDir);
     
-    if (images.length > 0) {
-      const imgPath = images[0];
+    // Take up to 5 images
+    images.slice(0, 5).forEach((imgPath, index) => {
       let ext = path.extname(imgPath).toUpperCase();
       if (ext === '.JPEG') ext = '.JPG';
       
-      const newName = `${zipName}_0${ext}`;
+      const newName = `${zipName}_${index}${ext}`;
       const destPath = path.join(destDir, newName);
       fs.copyFileSync(imgPath, destPath);
-      availableImages.add(newName);
+      extractedForThisZip.push(newName);
       console.log(`  Saved ${newName}`);
-    }
+    });
+    
+    availableImagesMap.set(zipName, extractedForThisZip);
 
   } catch (err) {
     console.error(`Error processing ${zip}:`, err.message);
@@ -81,24 +84,22 @@ const transformedProducts = productsJson.map((p, index) => {
   const priceMatch = (p.price || "").match(/\d+/);
   const price = priceMatch ? parseInt(priceMatch[0]) : 0;
   const id = p.image ? p.image.split('.')[0].toLowerCase() : `prod-${index}`;
+  const zipName = p.image ? p.image.split('_')[0] : null;
   
+  let images = [];
   let imageUrl = "https://images.unsplash.com/photo-1593618998160-e34014e67546?auto=format&fit=crop&q=80&w=800";
   
-  if (p.image) {
-    if (availableImages.has(p.image)) {
-      imageUrl = `/products/${p.image}`;
-    } else {
-      const prefix = p.image.split('_')[0];
-      const fallbackJpg = `${prefix}_0.JPG`;
-      const fallbackPng = `${prefix}_0.PNG`;
-      
-      if (availableImages.has(fallbackJpg)) {
-        imageUrl = `/products/${fallbackJpg}`;
-      } else if (availableImages.has(fallbackPng)) {
-        imageUrl = `/products/${fallbackPng}`;
-      }
+  if (zipName && availableImagesMap.has(zipName)) {
+    const extracted = availableImagesMap.get(zipName);
+    images = extracted.map(img => `/products/${img}`);
+    if (images.length > 0) {
+        imageUrl = images[0]; // First image is cover
     }
   }
+  
+  // If specific image exists in products.json but wasn't the first extracted, 
+  // we could try to find it, but the user wants "different images of same product",
+  // and the current products.json seems to list variants.
   
   return {
     id,
@@ -106,7 +107,8 @@ const transformedProducts = productsJson.map((p, index) => {
     description: p.description,
     price,
     category: p.category,
-    imageUrl,
+    imageUrl, // Cover
+    images,   // All images for gallery
     rating: 5,
   };
 });

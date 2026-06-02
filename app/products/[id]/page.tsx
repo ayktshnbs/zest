@@ -15,6 +15,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [activeTab, setActiveTab] = useState("ozellikler");
+  const [mainImage, setMainImage] = useState(product?.imageUrl || "");
 
   if (!product) {
     notFound();
@@ -25,6 +26,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       addToCart(product);
     }
   };
+
+  const productImages = product.images.length > 0 ? product.images : [product.imageUrl];
 
   return (
     <main className="min-h-screen pt-32 pb-24 bg-background">
@@ -67,7 +70,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           >
             <div className="relative aspect-square rounded-[4rem] overflow-hidden shadow-2xl bg-white dark:bg-neutral-900 group">
               <Image 
-                src={product.imageUrl} 
+                src={mainImage || product.imageUrl} 
                 alt={product.name} 
                 fill
                 className="object-cover transition-transform duration-[2s] group-hover:scale-105"
@@ -80,11 +83,15 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               </div>
             </div>
             
-            {/* Thumbnails Placeholder */}
-            <div className="grid grid-cols-4 gap-4 mt-8">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className={`aspect-square rounded-3xl overflow-hidden cursor-pointer border-2 transition-all ${i === 1 ? "border-primary shadow-lg" : "border-transparent opacity-60 hover:opacity-100"}`}>
-                  <Image src={product.imageUrl} alt={product.name} width={200} height={200} className="object-cover w-full h-full" />
+            {/* Thumbnails */}
+            <div className="grid grid-cols-5 gap-4 mt-8">
+              {productImages.map((img, i) => (
+                <div 
+                  key={i} 
+                  onClick={() => setMainImage(img)}
+                  className={`aspect-square rounded-3xl overflow-hidden cursor-pointer border-2 transition-all ${mainImage === img ? "border-primary shadow-lg" : "border-transparent opacity-60 hover:opacity-100"}`}
+                >
+                  <Image src={img} alt={`${product.name} view ${i + 1}`} width={200} height={200} className="object-cover w-full h-full" />
                 </div>
               ))}
             </div>
