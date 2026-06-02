@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ArrowRight, ChevronRight, Sparkles, ShieldCheck, Zap, MousePointer2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, Variants, useScroll, useTransform } from "framer-motion";
+import { motion, Variants, useScroll, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
 
 export default function Home() {
@@ -15,8 +15,14 @@ export default function Home() {
     offset: ["start start", "end start"]
   });
 
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const rawTextY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
+  const textY = useSpring(rawTextY, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+  
+  const textOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
