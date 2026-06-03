@@ -23,7 +23,7 @@ const QUALITY = 78;
 // Each value is the folder name under SRC.
 const PRODUCT_SOURCES = {
   // Doğrayıcılar & Rondolar
-  "dor-m1":   "M-1",
+  "dor-m1":   "M-14",
   "dor-m2":   "M-2",
   "dor-m11":  "M-11",
 

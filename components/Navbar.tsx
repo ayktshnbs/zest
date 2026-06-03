@@ -75,18 +75,25 @@ export const Navbar = () => {
       <header
         className={`fixed top-0 w-full z-40 transition-all duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${
           isScrolled
-            ? "bg-background/80 backdrop-blur-md py-3 md:py-4 border-b border-foreground/5"
-            : "bg-transparent py-5 md:py-8"
+            ? "bg-background/80 backdrop-blur-md py-2.5 md:py-4 border-b border-foreground/5"
+            : "bg-transparent py-3.5 md:py-8"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-5 md:px-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-4 group">
+        <div className="max-w-7xl mx-auto px-4 md:px-16 flex items-center justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2 md:gap-3 group min-w-0">
             <span
-              className={`font-audiowide text-2xl tracking-[0.2em] transition-colors duration-500 ${
+              className={`flex items-center justify-center rounded-md md:rounded-lg bg-foreground text-background w-7 h-7 md:w-9 md:h-9 shrink-0 transition-opacity duration-500 ${
+                isScrolled ? "opacity-100" : "opacity-90"
+              }`}
+            >
+              <span className="font-audiowide text-sm md:text-base leading-none">Z</span>
+            </span>
+            <span
+              className={`font-audiowide text-[11px] md:text-base tracking-[0.25em] md:tracking-[0.3em] uppercase truncate transition-colors duration-500 ${
                 isScrolled ? "text-foreground" : "text-foreground/90"
               }`}
             >
-              ZEST KITCHENE
+              Zest Kitchene
             </span>
           </Link>
 
