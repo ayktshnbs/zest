@@ -43,7 +43,6 @@ export const Navbar = () => {
   }, [pathname]);
 
   const navLinks = [
-    { name: "Anasayfa", href: "/" },
     { name: "Alışveriş", href: "/shop" },
     { name: "Kategoriler", href: "/kategoriler" },
     { name: "Hikayemiz", href: "/about" },
