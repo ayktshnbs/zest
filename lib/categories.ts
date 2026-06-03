@@ -7,12 +7,10 @@ export const categories: Category[] = [
     label: "Saklama Kapları",
     description:
       "Vakumlu kapaklı, modüler ve hava geçirmez saklama çözümleriyle mutfağınız her zaman düzenli kalsın.",
-    image:
-      "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&q=80&w=1200",
+    image: "/products/skl-esk1001/0.jpg",
     subcategories: [
       { slug: "vakumlu-kavanozlar", label: "Vakumlu Kavanozlar" },
       { slug: "dikdortgen-kaplar", label: "Dikdörtgen Kaplar" },
-      { slug: "kare-kaplar", label: "Kare Kaplar" },
       { slug: "cam-gorunumlu", label: "Cam Görünümlü Kaplar" },
       { slug: "ahsap-kapakli", label: "Ahşap Kapaklı Kavanozlar" },
       { slug: "saklama-setleri", label: "Saklama Setleri" },
@@ -24,8 +22,7 @@ export const categories: Category[] = [
     label: "Doğrayıcılar & Rondolar",
     description:
       "Manuel doğrayıcılar, ipli rondolar ve çok bıçaklı sistemlerle hızlı hazırlık.",
-    image:
-      "https://images.unsplash.com/photo-1604908176997-431b88e1be43?auto=format&fit=crop&q=80&w=1200",
+    image: "/products/dor-m1/0.jpg",
     subcategories: [
       { slug: "manuel-dograyicilar", label: "Manuel Doğrayıcılar" },
       { slug: "el-rondolari", label: "El Rondoları" },
@@ -38,8 +35,7 @@ export const categories: Category[] = [
     label: "Rendeler & Dilimleyiciler",
     description:
       "Mandolin dilimleyiciler ve çok yönlü rendelerle pratik ön hazırlık.",
-    image:
-      "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&q=80&w=1200",
+    image: "/products/rnd-rev/0.jpg",
     subcategories: [
       { slug: "mandolin-dilimleyiciler", label: "Mandolin Dilimleyiciler" },
       { slug: "cok-yonlu-rendeler", label: "Çok Yönlü Rendeler" },
@@ -52,8 +48,7 @@ export const categories: Category[] = [
     label: "Servis & Sofra",
     description:
       "Salata kaseleri, servis tabakları ve sürahilerle sofralarınıza özen.",
-    image:
-      "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&q=80&w=1200",
+    image: "/products/srv-kal1001/0.jpg",
     subcategories: [
       { slug: "salata-kaseleri", label: "Salata & Servis Kaseleri" },
       { slug: "servis-tabaklari", label: "Servis Tabakları" },
@@ -65,13 +60,13 @@ export const categories: Category[] = [
     shortLabel: "Aletler",
     label: "Mutfak Aletleri",
     description:
-      "Spatula, kepçe, ölçü kabı ve salata kurutucu gibi vazgeçilmez mutfak araçları.",
-    image:
-      "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=1200",
+      "Spatula, kepçe, ölçü kabı, salata kurutucu ve soyacaklarla vazgeçilmez mutfak araçları.",
+    image: "/products/alt-kmn/0.jpg",
     subcategories: [
       { slug: "spatula-kepce-setleri", label: "Spatula & Kepçe Setleri" },
       { slug: "olcu-kaplari", label: "Ölçü Kapları" },
       { slug: "salata-kurutucular", label: "Salata Kurutucular" },
+      { slug: "soyacaklar", label: "Soyacaklar" },
     ],
   },
   {
@@ -80,8 +75,7 @@ export const categories: Category[] = [
     label: "Mutfak Aksesuarları",
     description:
       "Havluluklar, buz kalıpları ve düzenleyiciler ile mutfak detayları.",
-    image:
-      "https://images.unsplash.com/photo-1610137255937-8eb421b9cd0c?auto=format&fit=crop&q=80&w=1200",
+    image: "/products/aks-kag/0.jpg",
     subcategories: [
       { slug: "havluluk-standlar", label: "Havluluk & Standlar" },
       { slug: "buz-kaliplari", label: "Buz Kalıpları" },

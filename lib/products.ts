@@ -1,10 +1,10 @@
 import { Product } from "@/types";
 import { categoryMap } from "./categories";
-import { pickImages } from "./images";
 import { slugify } from "./utils";
 
 interface ProductSeed {
   id: string;
+  imageCount: number;
   name: string;
   category: string;
   subcategory?: string;
@@ -34,10 +34,14 @@ const containerCare =
 const metalCare =
   "Kullanım sonrası nemli bezle silin. Paslanma riskine karşı her seferinde kurulayın. Klorlu temizleyicilerden kaçının.";
 
+const woodCare =
+  "Ahşap kapakları suya batırmayın; nemli bezle silin. Gövde elde yıkanır. Ahşap zaman zaman doğal yağ ile beslenmelidir.";
+
 const seeds: ProductSeed[] = [
-  // ── Doğrayıcılar & Rondolar ──────────────────────────────────────────
+  // ── Doğrayıcılar & Rondolar ────────────────────────────────────────
   {
-    id: "dor-101",
+    id: "dor-m1",
+    imageCount: 5,
     name: "Dora Manuel El Rondosu",
     category: "dograyicilar",
     subcategory: "el-rondolari",
@@ -65,7 +69,34 @@ const seeds: ProductSeed[] = [
     isFeatured: true,
   },
   {
-    id: "dor-102",
+    id: "dor-m2",
+    imageCount: 5,
+    name: "3 Bıçaklı Manuel Doğrayıcı",
+    category: "dograyicilar",
+    subcategory: "manuel-dograyicilar",
+    price: 459,
+    stock: 18,
+    rating: 4.6,
+    reviewCount: 187,
+    shortDescription:
+      "Sebzelerden cevize, üç farklı bıçakla çok amaçlı doğrayıcı.",
+    description:
+      "3 Bıçaklı Manuel Doğrayıcı, değiştirilebilir bıçak setiyle ince doğrama, jülyen ve püre haline getirme işlerini tek üründe sunar. Şeffaf haznesi ve dökme kapağıyla mutfakta ekstra alan kaplamaz.",
+    features: [
+      "3 farklı doğrama bıçağı",
+      "Şeffaf 800 ml hazne",
+      "Geniş dökme ağızlı kapak",
+      "Bulaşık makinesinde yıkanabilir",
+      "Kompakt saklama tasarımı",
+    ],
+    materials: "Yüksek darbeye dayanıklı kompozit plastik, 304 paslanmaz çelik bıçak.",
+    care: standardCare,
+    dimensions: "16 × 16 × 18 cm",
+    tags: ["3-bicak", "manuel", "dograyici"],
+  },
+  {
+    id: "dor-m11",
+    imageCount: 5,
     name: "Vera İpli Manuel Doğrayıcı",
     category: "dograyicilar",
     subcategory: "ipli-dograyicilar",
@@ -91,62 +122,11 @@ const seeds: ProductSeed[] = [
     tags: ["ipli", "manuel", "dograyici"],
     isFeatured: true,
   },
-  {
-    id: "dor-103",
-    name: "Maxi 3 Bıçaklı Manuel Doğrayıcı",
-    category: "dograyicilar",
-    subcategory: "manuel-dograyicilar",
-    price: 459,
-    stock: 18,
-    rating: 4.6,
-    reviewCount: 187,
-    shortDescription:
-      "Sebzelerden cevize, üç farklı bıçakla çok amaçlı doğrayıcı.",
-    description:
-      "Maxi 3 Bıçaklı Doğrayıcı, değiştirilebilir bıçak setiyle ince doğrama, jülyen ve püre haline getirme işlerini tek üründe sunar. Şeffaf haznesi ve dökme kapağıyla mutfakta ekstra alan kaplamaz.",
-    features: [
-      "3 farklı doğrama bıçağı",
-      "Şeffaf 800 ml hazne",
-      "Geniş dökme ağızlı kapak",
-      "Bulaşık makinesinde yıkanabilir",
-      "Kompakt saklama tasarımı",
-    ],
-    materials: "Yüksek darbeye dayanıklı kompozit plastik, 304 paslanmaz çelik bıçak.",
-    care: standardCare,
-    dimensions: "16 × 16 × 18 cm",
-    tags: ["3-bicak", "manuel", "dograyici"],
-  },
-  {
-    id: "dor-104",
-    name: "Pro Salata Kurutucu & Doğrayıcı",
-    category: "dograyicilar",
-    subcategory: "el-rondolari",
-    price: 689,
-    originalPrice: 829,
-    stock: 12,
-    rating: 4.9,
-    reviewCount: 421,
-    shortDescription:
-      "Hem salata kurutur hem de küçük doğramalar için kullanılır.",
-    description:
-      "Pro Salata Kurutucu & Doğrayıcı, çift fonksiyonlu yapısıyla mutfakta yer kazandırır. Kuvvetli santrifüj sistemi salatalarınızı saniyeler içinde kurutur; ek bıçak başlığıyla küçük doğrama işlerini de halleder.",
-    features: [
-      "Santrifüjlü hızlı kurutma sistemi",
-      "Ekstra mini doğrama bıçağı",
-      "2,5 L kapasite",
-      "Tek elle çevirme tutamağı",
-      "Kaymaz taban ve şeffaf gövde",
-    ],
-    materials: "Gıda sınıfı ABS, paslanmaz çelik aksam.",
-    care: standardCare,
-    dimensions: "24 × 24 × 18 cm",
-    tags: ["salata", "kurutucu", "dograyici"],
-    isBestSeller: true,
-  },
 
-  // ── Rendeler & Dilimleyiciler ────────────────────────────────────────
+  // ── Rendeler & Dilimleyiciler ─────────────────────────────────────
   {
-    id: "rnd-201",
+    id: "rnd-m9",
+    imageCount: 5,
     name: "Profesyonel Mandolin Dilimleyici",
     category: "rendeler-dilimleyiciler",
     subcategory: "mandolin-dilimleyiciler",
@@ -174,7 +154,8 @@ const seeds: ProductSeed[] = [
     isFeatured: true,
   },
   {
-    id: "rnd-202",
+    id: "rnd-m12",
+    imageCount: 5,
     name: "Flat Ayarlanabilir Mandolin",
     category: "rendeler-dilimleyiciler",
     subcategory: "mandolin-dilimleyiciler",
@@ -198,7 +179,8 @@ const seeds: ProductSeed[] = [
     tags: ["mandolin", "ince-tasarim"],
   },
   {
-    id: "rnd-203",
+    id: "rnd-m10",
+    imageCount: 5,
     name: "Çok Yönlü Rende Seti",
     category: "rendeler-dilimleyiciler",
     subcategory: "cok-yonlu-rendeler",
@@ -207,8 +189,7 @@ const seeds: ProductSeed[] = [
     stock: 33,
     rating: 4.6,
     reviewCount: 203,
-    shortDescription:
-      "Dört farklı rende yüzeyi tek üründe.",
+    shortDescription: "Dört farklı rende yüzeyi tek üründe.",
     description:
       "Çok Yönlü Rende Seti; ince, kalın, çubuk ve dilim olmak üzere dört farklı yüzey sunar. Ergonomik tutamağı ve kaymaz tabanıyla güvenli kullanım sağlar.",
     features: [
@@ -223,7 +204,8 @@ const seeds: ProductSeed[] = [
     tags: ["rende", "set", "cok-yonlu"],
   },
   {
-    id: "rnd-204",
+    id: "rnd-rev",
+    imageCount: 5,
     name: "Profesyonel Multi Rende & Dilimleyici",
     category: "rendeler-dilimleyiciler",
     subcategory: "profesyonel-setler",
@@ -248,38 +230,37 @@ const seeds: ProductSeed[] = [
     dimensions: "42 × 18 × 18 cm",
     tags: ["profesyonel", "set", "mandolin"],
     isFeatured: true,
-  },
-
-  // ── Saklama Kapları ─────────────────────────────────────────────────
-  {
-    id: "skl-301",
-    name: "Bonny Vakumlu Saklama Kavanozu 1.2L",
-    category: "saklama-kaplari",
-    subcategory: "vakumlu-kavanozlar",
-    price: 229,
-    originalPrice: 279,
-    stock: 86,
-    rating: 4.7,
-    reviewCount: 512,
-    shortDescription:
-      "Vakum kapaklı saklama kavanozu kuru gıdalarınızı uzun süre taze tutar.",
-    description:
-      "Bonny Vakumlu Saklama Kavanozu, tek dokunuşla kapanan vakum kilidiyle baharat, çay, kahve ve kuru gıdaları aylarca taze tutar. Modüler tasarımı kavanozları üst üste istiflemenize olanak verir.",
-    features: [
-      "Tek dokunuş vakum kilidi",
-      "Modüler istiflenebilir gövde",
-      "BPA içermez",
-      "Bulaşık makinesinde yıkanabilir gövde",
-      "Şeffaf gövde ile içerik kontrolü",
-    ],
-    materials: "Tritan™ benzeri saydam plastik, silikon conta.",
-    care: containerCare,
-    dimensions: "10 × 10 × 18 cm · 1.2 L",
-    tags: ["vakumlu", "kavanoz", "saklama"],
     isBestSeller: true,
   },
+
+  // ── Saklama Kapları ──────────────────────────────────────────────
   {
-    id: "skl-302",
+    id: "skl-esk0001",
+    imageCount: 5,
+    name: "Uzun Boy Vakumlu Saklama Kavanozu",
+    category: "saklama-kaplari",
+    subcategory: "vakumlu-kavanozlar",
+    price: 345,
+    stock: 47,
+    rating: 4.7,
+    reviewCount: 198,
+    shortDescription: "Spagetti, makarna ve uzun gıdalarınız için yüksek boy kavanoz.",
+    description:
+      "Uzun Boy Vakumlu Saklama Kavanozu, dar tabanlı uzun gövdesiyle makarna, spagetti ve uzun gıdaları eksiksiz saklamanıza imkân verir. Vakum kilidi tazeliği korur.",
+    features: [
+      "Uzun ince gövde",
+      "Vakum kilitli kapak",
+      "BPA içermez",
+      "Şeffaf gövde içerik kontrolü",
+    ],
+    materials: "BPA içermeyen kompozit gövde, silikon conta.",
+    care: containerCare,
+    dimensions: "10 × 10 × 28 cm · 1.5 L",
+    tags: ["uzun", "vakumlu", "kavanoz"],
+  },
+  {
+    id: "skl-esk0002",
+    imageCount: 5,
     name: "Bonny Vakumlu Saklama Kavanozu 0.6L",
     category: "saklama-kaplari",
     subcategory: "vakumlu-kavanozlar",
@@ -290,7 +271,7 @@ const seeds: ProductSeed[] = [
     shortDescription:
       "Küçük boy vakumlu kavanoz; baharat ve kuruyemiş için ideal.",
     description:
-      "Bonny serisinin küçük boyu, baharat dolaplarınızda tasarrufla yer tutar. Aynı vakum mekanizması ve istiflenebilir yapı küçük gıdalarınızı korur.",
+      "Bonny serisinin küçük boyu, baharat dolaplarınızda tasarrufla yer tutar. Vakum mekanizması ve istiflenebilir yapı küçük gıdalarınızı korur.",
     features: [
       "Tek dokunuş vakum kapağı",
       "Modüler istiflenebilir tasarım",
@@ -303,8 +284,37 @@ const seeds: ProductSeed[] = [
     tags: ["vakumlu", "kavanoz"],
   },
   {
-    id: "skl-303",
-    name: "Luxe Premium Vakumlu Kavanoz 1L",
+    id: "skl-esk0003",
+    imageCount: 5,
+    name: "Bonny Vakumlu Saklama Kavanozu 0.9L",
+    category: "saklama-kaplari",
+    subcategory: "vakumlu-kavanozlar",
+    price: 199,
+    originalPrice: 249,
+    stock: 86,
+    rating: 4.7,
+    reviewCount: 512,
+    shortDescription:
+      "Orta boy vakumlu saklama kavanozu kuru gıdalarınızı uzun süre taze tutar.",
+    description:
+      "Bonny Vakumlu Saklama Kavanozu, tek dokunuşla kapanan vakum kilidiyle baharat, çay, kahve ve kuru gıdaları aylarca taze tutar. Modüler tasarımı kavanozları üst üste istiflemenize olanak verir.",
+    features: [
+      "Tek dokunuş vakum kilidi",
+      "Modüler istiflenebilir gövde",
+      "BPA içermez",
+      "Bulaşık makinesinde yıkanabilir gövde",
+      "Şeffaf gövde ile içerik kontrolü",
+    ],
+    materials: "Tritan™ benzeri saydam plastik, silikon conta.",
+    care: containerCare,
+    dimensions: "10 × 10 × 16 cm · 0.9 L",
+    tags: ["vakumlu", "kavanoz", "saklama"],
+    isBestSeller: true,
+  },
+  {
+    id: "skl-esk0101",
+    imageCount: 3,
+    name: "Luxe Premium Vakumlu Kavanoz – Gold",
     category: "saklama-kaplari",
     subcategory: "vakumlu-kavanozlar",
     price: 279,
@@ -312,8 +322,7 @@ const seeds: ProductSeed[] = [
     stock: 64,
     rating: 4.8,
     reviewCount: 428,
-    shortDescription:
-      "Saten dokulu premium gövde, modern mutfaklara uyum.",
+    shortDescription: "Saten dokulu premium gövde, mat altın detaylı kapak.",
     description:
       "Luxe Premium serisi, saten dokulu gövdesi ve mat metalik kapağıyla mutfak tezgâhlarında dekoratif duruşa sahip. Vakum sistemi sayesinde içerikleri uzun süre korur.",
     features: [
@@ -325,36 +334,61 @@ const seeds: ProductSeed[] = [
     materials: "BPA içermeyen kompozit, mat metalik kaplama.",
     care: containerCare,
     dimensions: "10 × 10 × 16 cm · 1 L",
-    tags: ["premium", "vakumlu", "kavanoz"],
+    tags: ["premium", "vakumlu", "gold"],
     isNew: true,
     isFeatured: true,
   },
   {
-    id: "skl-304",
-    name: "Luxe Premium Vakumlu Kavanoz 1.8L",
+    id: "skl-esk0102",
+    imageCount: 3,
+    name: "Luxe Premium Vakumlu Kavanoz – Gümüş",
     category: "saklama-kaplari",
     subcategory: "vakumlu-kavanozlar",
-    price: 339,
+    price: 279,
     stock: 49,
     rating: 4.8,
     reviewCount: 263,
-    shortDescription:
-      "Geniş hacimli premium kavanoz; un ve şeker için ideal.",
+    shortDescription: "Saten dokulu gövde, mat gümüş tonlu kapak.",
     description:
-      "Luxe Premium serisinin 1.8 litrelik geniş boyu, un, şeker, makarna gibi temel kuru gıdalarınız için pratik saklama sunar.",
+      "Luxe Premium serisinin gümüş versiyonu, mutfağınıza dengeli bir nötr ton katar. Vakum sistemi sayesinde içeriği korur.",
     features: [
-      "Geniş ağız ölçü kabı uyumu",
       "Saten dokulu gövde",
-      "Vakum kilitli kapak",
+      "Mat gümüş vakum kapağı",
+      "İstiflenebilir tasarım",
     ],
     materials: "BPA içermeyen kompozit gövde.",
     care: containerCare,
-    dimensions: "12 × 12 × 22 cm · 1.8 L",
-    tags: ["premium", "vakumlu"],
+    dimensions: "10 × 10 × 16 cm · 1 L",
+    tags: ["premium", "vakumlu", "gumus"],
     isNew: true,
   },
   {
-    id: "skl-305",
+    id: "skl-esk0103",
+    imageCount: 3,
+    name: "Luxe Premium Vakumlu Kavanoz – Roze",
+    category: "saklama-kaplari",
+    subcategory: "vakumlu-kavanozlar",
+    price: 279,
+    stock: 38,
+    rating: 4.7,
+    reviewCount: 184,
+    shortDescription: "Saten dokulu gövde, modern roze altın kapak.",
+    description:
+      "Luxe Premium serisinin roze versiyonu, sıcak ve modern bir doku katar. Tezgâhlarda dekoratif şıklık sağlar.",
+    features: [
+      "Saten dokulu gövde",
+      "Roze altın metalik vakum kapağı",
+      "İstiflenebilir tasarım",
+    ],
+    materials: "BPA içermeyen kompozit gövde.",
+    care: containerCare,
+    dimensions: "10 × 10 × 16 cm · 1 L",
+    tags: ["premium", "vakumlu", "roze"],
+    isNew: true,
+  },
+  {
+    id: "skl-esk0211",
+    imageCount: 4,
     name: "Woody Ahşap Kapaklı Kavanoz 0.9L",
     category: "saklama-kaplari",
     subcategory: "ahsap-kapakli",
@@ -362,8 +396,7 @@ const seeds: ProductSeed[] = [
     stock: 92,
     rating: 4.7,
     reviewCount: 198,
-    shortDescription:
-      "Doğal ahşap kapaklı kavanoz, sıcak Scandi dokunuşu.",
+    shortDescription: "Doğal ahşap kapaklı kavanoz, sıcak Scandi dokunuşu.",
     description:
       "Woody Ahşap Kapaklı Kavanoz, doğal kayın ağacı kapağı ve silikon contası sayesinde hem dekoratif hem de işlevseldir. Açık raflarda sergilemek için idealdir.",
     features: [
@@ -373,12 +406,13 @@ const seeds: ProductSeed[] = [
       "Açık rafta sergi uyumu",
     ],
     materials: "Cam görünümlü kompozit, kayın ağacı kapak.",
-    care: "Ahşap kapakları suya batırmayın; nemli bezle silin. Gövde elde yıkanır.",
+    care: woodCare,
     dimensions: "10 × 10 × 14 cm · 0.9 L",
     tags: ["ahsap", "scandi", "kavanoz"],
   },
   {
-    id: "skl-306",
+    id: "skl-esk0212",
+    imageCount: 5,
     name: "Woody Ahşap Kapaklı Kavanoz 1.4L",
     category: "saklama-kaplari",
     subcategory: "ahsap-kapakli",
@@ -397,21 +431,71 @@ const seeds: ProductSeed[] = [
       "Şeffaf cam görünüm",
     ],
     materials: "Cam görünümlü kompozit, ahşap kapak.",
-    care: "Ahşap kapakları suya batırmayın.",
+    care: woodCare,
     dimensions: "12 × 12 × 20 cm · 1.4 L",
     tags: ["ahsap", "scandi", "kavanoz"],
   },
   {
-    id: "skl-307",
-    name: "Crystal Şeffaf Hava Sızdırmaz Kap 1L",
+    id: "skl-esk0213",
+    imageCount: 4,
+    name: "Woody Ahşap Kapaklı Kavanoz Mini",
+    category: "saklama-kaplari",
+    subcategory: "ahsap-kapakli",
+    price: 159,
+    stock: 108,
+    rating: 4.6,
+    reviewCount: 121,
+    shortDescription:
+      "Küçük boy ahşap kapaklı kavanoz; baharat ve atıştırmalık için.",
+    description:
+      "Woody serisinin küçük boyu, baharatlık olarak ya da atıştırmalıkları sergilemek için ideal şıklıkta bir tercihtir.",
+    features: [
+      "Doğal kayın ağacı kapak",
+      "Silikon conta",
+      "Küçük boy zarif gövde",
+    ],
+    materials: "Cam görünümlü kompozit, ahşap kapak.",
+    care: woodCare,
+    dimensions: "9 × 9 × 11 cm · 0.5 L",
+    tags: ["ahsap", "mini", "kavanoz"],
+  },
+  {
+    id: "skl-esk1001",
+    imageCount: 5,
+    name: "Kare Vakumlu Saklama Seti 3'lü",
+    category: "saklama-kaplari",
+    subcategory: "saklama-setleri",
+    price: 749,
+    originalPrice: 899,
+    stock: 22,
+    rating: 4.9,
+    reviewCount: 318,
+    shortDescription: "Üç farklı boyda hava sızdırmaz kare set.",
+    description:
+      "Kare Saklama Seti, üç farklı boyutu sayesinde mutfak dolabınızda eksiksiz bir saklama çözümü sunar. Aynı tabana sahip kapları üst üste istiflemek mümkün.",
+    features: [
+      "0.6 L + 1.2 L + 2.0 L",
+      "Dört kelebek kilit",
+      "İstiflenebilir kare gövde",
+      "BPA içermez",
+    ],
+    materials: "Gıda sınıfı PP, silikon.",
+    care: containerCare,
+    dimensions: "Set kutusu: 22 × 22 × 20 cm",
+    tags: ["set", "saklama", "kare"],
+    isBestSeller: true,
+  },
+  {
+    id: "skl-esk1101",
+    imageCount: 3,
+    name: "Crystal Şeffaf Hava Sızdırmaz Kap",
     category: "saklama-kaplari",
     subcategory: "cam-gorunumlu",
     price: 189,
     stock: 58,
     rating: 4.5,
     reviewCount: 142,
-    shortDescription:
-      "Cam görünümlü, kelebek kilitli pratik saklama kabı.",
+    shortDescription: "Cam görünümlü, kelebek kilitli pratik saklama kabı.",
     description:
       "Crystal serisi, cam görünümlü gövdesi ve dört taraftan kilitli kapağıyla hava sızdırmaz saklama sunar. Hafiftir, kırılmaz ve buzdolabında yer kazandırır.",
     features: [
@@ -426,104 +510,8 @@ const seeds: ProductSeed[] = [
     tags: ["cam-gorunum", "hava-sizdirmaz"],
   },
   {
-    id: "skl-308",
-    name: "Crystal Şeffaf Saklama Kabı 0.5L",
-    category: "saklama-kaplari",
-    subcategory: "cam-gorunumlu",
-    price: 129,
-    stock: 76,
-    rating: 4.4,
-    reviewCount: 92,
-    shortDescription:
-      "Küçük boy şeffaf saklama kabı; soslar ve kahvaltılıklar için.",
-    description:
-      "Crystal serisinin küçük boyu, sos, çerez ve kahvaltılıkları taze tutmak için tasarlandı.",
-    features: [
-      "Kelebek kilitli kapak",
-      "Şeffaf gövde",
-      "İstiflenebilir tasarım",
-    ],
-    materials: "PP gövde, silikon conta.",
-    care: containerCare,
-    dimensions: "14 × 11 × 6 cm · 0.5 L",
-    tags: ["cam-gorunum", "kucuk-boy"],
-  },
-  {
-    id: "skl-309",
-    name: "Square 3'lü Saklama Kabı Seti",
-    category: "saklama-kaplari",
-    subcategory: "saklama-setleri",
-    price: 749,
-    originalPrice: 899,
-    stock: 22,
-    rating: 4.9,
-    reviewCount: 318,
-    shortDescription:
-      "Üç farklı boyda hava sızdırmaz kare set.",
-    description:
-      "Square Saklama Seti, üç farklı boyutu sayesinde mutfak dolabınızda eksiksiz bir saklama çözümü sunar. Aynı tabana sahip kapları üst üste istiflemek mümkün.",
-    features: [
-      "0.6 L + 1.2 L + 2.0 L",
-      "Dört kelebek kilit",
-      "İstiflenebilir kare gövde",
-      "BPA içermez",
-    ],
-    materials: "Gıda sınıfı PP, silikon.",
-    care: containerCare,
-    dimensions: "Set kutusu: 22 × 22 × 20 cm",
-    tags: ["set", "saklama", "kare"],
-    isBestSeller: true,
-  },
-  {
-    id: "skl-310",
-    name: "Modüler Dikdörtgen Saklama Kabı 1.2L",
-    category: "saklama-kaplari",
-    subcategory: "dikdortgen-kaplar",
-    price: 149,
-    stock: 134,
-    rating: 4.6,
-    reviewCount: 221,
-    shortDescription:
-      "Buzdolabına ergonomik sığan dikdörtgen kap.",
-    description:
-      "Modüler Dikdörtgen Saklama Kabı, dolap ölçülerine göre tasarlanmış formuyla yerden kazandırır. Mikrodalga ve dondurucuda kullanıma uygundur.",
-    features: [
-      "Buzdolabı dostu form",
-      "Hava sızdırmaz kilit",
-      "Mikrodalga uyumlu",
-      "İstiflenebilir tasarım",
-    ],
-    materials: "BPA içermeyen PP, silikon conta.",
-    care: containerCare,
-    dimensions: "20 × 14 × 7 cm · 1.2 L",
-    tags: ["dikdortgen", "hava-sizdirmaz"],
-  },
-  {
-    id: "skl-311",
-    name: "Modüler Dikdörtgen Saklama Kabı 1.8L",
-    category: "saklama-kaplari",
-    subcategory: "dikdortgen-kaplar",
-    price: 189,
-    stock: 102,
-    rating: 4.6,
-    reviewCount: 174,
-    shortDescription:
-      "Geniş hacimli dikdörtgen kap; sebzeler ve hazırlanmış yemekler için.",
-    description:
-      "Geniş hacmiyle önceden hazırlanan yemekler ve sebzeler için ideal. Aynı seriyle istiflenebilir tasarım sayesinde buzdolabınızda düzen sağlar.",
-    features: [
-      "1.8 L geniş hacim",
-      "Hava sızdırmaz kilit",
-      "Mikrodalga uyumlu",
-      "Şeffaf gövde",
-    ],
-    materials: "PP gövde, silikon conta.",
-    care: containerCare,
-    dimensions: "24 × 16 × 8 cm · 1.8 L",
-    tags: ["dikdortgen", "geniş"],
-  },
-  {
-    id: "skl-312",
+    id: "skl-esk1211",
+    imageCount: 5,
     name: "Tall Cam Görünümlü Vakumlu Kavanoz",
     category: "saklama-kaplari",
     subcategory: "vakumlu-kavanozlar",
@@ -531,77 +519,108 @@ const seeds: ProductSeed[] = [
     stock: 47,
     rating: 4.7,
     reviewCount: 138,
-    shortDescription:
-      "Uzun boylu, dar tabanlı kavanoz; makarna ve spagetti için.",
+    shortDescription: "Uzun boylu, dar tabanlı kavanoz; uzun gıdalar için.",
     description:
-      "Tall serisinin uzun gövdesi, spagetti ve makarna gibi uzun ürünleri eksiksiz saklamanıza imkân verir. Vakum kilidi tazeliği korur.",
-    features: [
-      "Uzun gövde",
-      "Vakum kapağı",
-      "Şeffaf görünüm",
-    ],
+      "Tall serisinin uzun gövdesi, spagetti, makarna ve uzun ürünleri eksiksiz saklamanıza imkân verir. Vakum kilidi tazeliği korur.",
+    features: ["Uzun gövde", "Vakum kapağı", "Şeffaf görünüm"],
     materials: "BPA içermeyen plastik, silikon conta.",
     care: containerCare,
     dimensions: "10 × 10 × 28 cm · 1.5 L",
     tags: ["uzun", "vakumlu"],
   },
   {
-    id: "skl-313",
-    name: "Tall Storage Kavanoz Üçlü Set",
+    id: "skl-m5",
+    imageCount: 5,
+    name: "Modüler Kapaklı Saklama Kabı 0.9L",
     category: "saklama-kaplari",
-    subcategory: "saklama-setleri",
-    price: 849,
-    originalPrice: 999,
-    stock: 19,
-    rating: 4.8,
-    reviewCount: 247,
-    shortDescription:
-      "Aynı tasarımda üç uzun kavanoz; mutfak rafı için bütünlüklü görünüm.",
+    subcategory: "dikdortgen-kaplar",
+    price: 119,
+    stock: 134,
+    rating: 4.6,
+    reviewCount: 221,
+    shortDescription: "Siyah kapaklı, buzdolabına ergonomik sığan dikdörtgen kap.",
     description:
-      "Tall Kavanoz Üçlü Set, aynı yüksekliğe sahip kavanozlarıyla raflarınızda dingin bir bütünlük yaratır. Vakum sistemi sayesinde gıdalarınız korunur.",
+      "Modüler Saklama Kabı, dolap ölçülerine göre tasarlanmış formuyla yerden kazandırır. Şık siyah kapak detayı ve hava sızdırmaz contası ile yemekleri taze tutar.",
     features: [
-      "3 × 1.5 L kavanoz",
-      "Aynı boy bütünlüklü görünüm",
-      "Vakum kapak",
-      "Modüler istif",
+      "Hava sızdırmaz kapak",
+      "Buzdolabı dostu form",
+      "Mikrodalga uyumlu",
+      "İstiflenebilir",
     ],
-    materials: "BPA içermez plastik, silikon.",
+    materials: "BPA içermeyen PP, silikon conta.",
     care: containerCare,
-    dimensions: "Set: 32 × 12 × 28 cm",
-    tags: ["set", "uzun", "vakumlu"],
-    isFeatured: true,
+    dimensions: "18 × 14 × 7 cm · 0.9 L",
+    tags: ["dikdortgen", "siyah-kapak"],
   },
   {
-    id: "skl-314",
-    name: "Hava Sızdırmaz Saklama Seti 7'li",
+    id: "skl-m6",
+    imageCount: 5,
+    name: "Dikdörtgen Saklama Kabı Orta",
     category: "saklama-kaplari",
-    subcategory: "saklama-setleri",
-    price: 1299,
-    originalPrice: 1599,
-    stock: 14,
-    rating: 4.9,
-    reviewCount: 412,
-    shortDescription:
-      "Mutfak dolabınızı tamamen düzenleyecek 7 parça profesyonel set.",
+    subcategory: "dikdortgen-kaplar",
+    price: 149,
+    stock: 102,
+    rating: 4.6,
+    reviewCount: 174,
+    shortDescription: "Orta boy dikdörtgen kap; günlük yemekler için.",
     description:
-      "7 farklı boyda hava sızdırmaz kaptan oluşan bu set, mutfak dolabınız için tam bir düzen çözümüdür. Etiket kartları ile gıda takibi kolaylaşır.",
+      "Aynı seriyle istiflenebilen orta boy dikdörtgen kap, günlük yemeklerinizi taze tutarken buzdolabınızda düzen sağlar.",
     features: [
-      "7 farklı boy hava sızdırmaz kap",
-      "Etiket kartı seti hediye",
-      "Bulaşık makinesi uyumlu",
-      "Modüler istif tasarımı",
+      "1.2 L hacim",
+      "Hava sızdırmaz kilit",
+      "Mikrodalga uyumlu",
     ],
     materials: "PP gövde, silikon conta.",
     care: containerCare,
-    dimensions: "Set kutusu: 38 × 28 × 26 cm",
-    tags: ["set", "7li", "hava-sizdirmaz"],
-    isBestSeller: true,
+    dimensions: "20 × 14 × 8 cm · 1.2 L",
+    tags: ["dikdortgen", "orta"],
+  },
+  {
+    id: "skl-m7",
+    imageCount: 5,
+    name: "Dikdörtgen Saklama Kabı Büyük",
+    category: "saklama-kaplari",
+    subcategory: "dikdortgen-kaplar",
+    price: 189,
+    stock: 89,
+    rating: 4.6,
+    reviewCount: 152,
+    shortDescription: "Geniş hacimli dikdörtgen kap; sebzeler ve hazır yemekler için.",
+    description:
+      "Geniş hacmiyle önceden hazırlanan yemekler ve sebzeler için ideal. Aynı seri tasarım bütünlüğü sunar.",
+    features: ["1.8 L geniş hacim", "Hava sızdırmaz kilit", "Mikrodalga uyumlu"],
+    materials: "PP gövde, silikon conta.",
+    care: containerCare,
+    dimensions: "24 × 16 × 8 cm · 1.8 L",
+    tags: ["dikdortgen", "geniş"],
+  },
+  {
+    id: "skl-m8",
+    imageCount: 3,
+    name: "3'lü Saklama Kabı Seti",
+    category: "saklama-kaplari",
+    subcategory: "saklama-setleri",
+    price: 459,
+    originalPrice: 549,
+    stock: 35,
+    rating: 4.8,
+    reviewCount: 247,
+    shortDescription:
+      "Aynı seriyle uyumlu üç boy saklama kabı seti.",
+    description:
+      "3'lü Saklama Kabı Seti, küçük, orta ve büyük boyutuyla buzdolabı için eksiksiz çözüm sunar. Modüler istif tasarımı yer kazandırır.",
+    features: ["0.9 L + 1.2 L + 1.8 L", "Modüler istif", "Hava sızdırmaz kilit"],
+    materials: "PP gövde, silikon conta.",
+    care: containerCare,
+    dimensions: "Set: 24 × 16 × 20 cm",
+    tags: ["set", "saklama"],
     isFeatured: true,
   },
 
-  // ── Servis & Sofra ──────────────────────────────────────────────────
+  // ── Servis & Sofra ────────────────────────────────────────────────
   {
-    id: "srv-401",
+    id: "srv-kal0001",
+    imageCount: 5,
     name: "Klasik Salata Kasesi Büyük",
     category: "servis-sofra",
     subcategory: "salata-kaseleri",
@@ -609,24 +628,19 @@ const seeds: ProductSeed[] = [
     stock: 38,
     rating: 4.7,
     reviewCount: 156,
-    shortDescription:
-      "Geniş ağız ve derin formuyla servis dostu salata kasesi.",
+    shortDescription: "Geniş ağız ve derin formuyla servis dostu salata kasesi.",
     description:
       "Klasik Salata Kasesi, geniş ağız ve derin formuyla salata, makarna ve meyveleri sergilemek için tasarlandı. Mat parlak yüzeyi sofraya zarif bir hat katar.",
-    features: [
-      "3 L geniş hacim",
-      "Mat parlak yüzey",
-      "Bulaşık makinesi uyumlu",
-      "Mikrodalga uyumlu",
-    ],
+    features: ["3 L geniş hacim", "Mat parlak yüzey", "Bulaşık makinesi uyumlu"],
     materials: "Yüksek dirençli stoneware seramik.",
-    care: "Yumuşak süngerle yıkayın. Aşındırıcı temizleyici kullanmayın.",
+    care: standardCare,
     dimensions: "Ø 28 × 12 cm",
     tags: ["salata", "kase", "buyuk"],
     isFeatured: true,
   },
   {
-    id: "srv-402",
+    id: "srv-kal0002",
+    imageCount: 5,
     name: "Klasik Salata Kasesi Orta",
     category: "servis-sofra",
     subcategory: "salata-kaseleri",
@@ -634,22 +648,18 @@ const seeds: ProductSeed[] = [
     stock: 64,
     rating: 4.6,
     reviewCount: 121,
-    shortDescription:
-      "Orta boy klasik kase; günlük servisler için ideal.",
+    shortDescription: "Orta boy klasik kase; günlük servisler için ideal.",
     description:
       "Klasik kasenin orta boyu, günlük servislerinizi şıklaştırır. Set olarak diğer boylarla uyumlu kullanılabilir.",
-    features: [
-      "2 L hacim",
-      "Aynı seri tasarım uyumu",
-      "Mat parlak yüzey",
-    ],
+    features: ["2 L hacim", "Aynı seri tasarım uyumu", "Mat parlak yüzey"],
     materials: "Stoneware seramik.",
     care: standardCare,
     dimensions: "Ø 24 × 10 cm",
     tags: ["salata", "kase"],
   },
   {
-    id: "srv-403",
+    id: "srv-kal0003",
+    imageCount: 5,
     name: "Klasik Çerez Kasesi",
     category: "servis-sofra",
     subcategory: "salata-kaseleri",
@@ -661,18 +671,15 @@ const seeds: ProductSeed[] = [
       "Küçük boy çerez kasesi; mezeler ve atıştırmalıklar için.",
     description:
       "Küçük boy klasik kase, mezeler ve atıştırmalıklar için zarif bir sunum sunar. Aynı seri ile kombinlenebilir.",
-    features: [
-      "0.6 L hacim",
-      "Aynı seri uyumu",
-      "Mat parlak yüzey",
-    ],
+    features: ["0.6 L hacim", "Aynı seri uyumu", "Mat parlak yüzey"],
     materials: "Stoneware seramik.",
     care: standardCare,
     dimensions: "Ø 14 × 7 cm",
     tags: ["cerez", "kase", "kucuk"],
   },
   {
-    id: "srv-404",
+    id: "srv-kal1001",
+    imageCount: 5,
     name: "Dokulu Servis Kasesi Büyük",
     category: "servis-sofra",
     subcategory: "salata-kaseleri",
@@ -681,24 +688,19 @@ const seeds: ProductSeed[] = [
     stock: 26,
     rating: 4.8,
     reviewCount: 193,
-    shortDescription:
-      "El yapımı dokulu yüzey, doğal mat zemin.",
+    shortDescription: "El yapımı dokulu yüzey, doğal mat zemin.",
     description:
       "Dokulu Servis Kasesi, el yapımı izlenimi veren dokulu yüzeyi ve doğal mat zemin tonuyla minimalist sofralarda öne çıkar.",
-    features: [
-      "El yapımı doku",
-      "Mat doğal ton",
-      "3 L hacim",
-      "Bulaşık makinesi uyumlu",
-    ],
+    features: ["El yapımı doku", "Mat doğal ton", "3 L hacim", "Bulaşık makinesi uyumlu"],
     materials: "Stoneware seramik.",
-    care: "Yumuşak süngerle yıkayın.",
+    care: standardCare,
     dimensions: "Ø 28 × 12 cm",
     tags: ["dokulu", "kase", "buyuk"],
     isBestSeller: true,
   },
   {
-    id: "srv-405",
+    id: "srv-kal1002",
+    imageCount: 5,
     name: "Dokulu Servis Kasesi Orta",
     category: "servis-sofra",
     subcategory: "salata-kaseleri",
@@ -706,22 +708,18 @@ const seeds: ProductSeed[] = [
     stock: 51,
     rating: 4.7,
     reviewCount: 162,
-    shortDescription:
-      "Aynı seriden orta boy dokulu kase.",
+    shortDescription: "Aynı seriden orta boy dokulu kase.",
     description:
       "Dokulu serinin orta boyu, salatalar ve sıcak yemekler için uyumlu sunum sunar.",
-    features: [
-      "El yapımı doku",
-      "2 L hacim",
-      "Mat doğal ton",
-    ],
+    features: ["El yapımı doku", "2 L hacim", "Mat doğal ton"],
     materials: "Stoneware seramik.",
     care: standardCare,
     dimensions: "Ø 24 × 10 cm",
     tags: ["dokulu", "kase"],
   },
   {
-    id: "srv-406",
+    id: "srv-kal1003",
+    imageCount: 5,
     name: "Dokulu Servis Kasesi Küçük",
     category: "servis-sofra",
     subcategory: "salata-kaseleri",
@@ -740,7 +738,27 @@ const seeds: ProductSeed[] = [
     tags: ["dokulu", "kucuk"],
   },
   {
-    id: "srv-407",
+    id: "srv-kas0001",
+    imageCount: 5,
+    name: "Klasik XXL Salata Kasesi",
+    category: "servis-sofra",
+    subcategory: "salata-kaseleri",
+    price: 429,
+    stock: 22,
+    rating: 4.8,
+    reviewCount: 142,
+    shortDescription: "Davet sofraları için ekstra büyük klasik kase.",
+    description:
+      "Klasik serinin XXL boyu, kalabalık sofralar için tasarlandı. Geniş ağzı ile sunum dostudur.",
+    features: ["4.5 L hacim", "Mat parlak yüzey", "Bulaşık makinesi uyumlu"],
+    materials: "Stoneware seramik.",
+    care: standardCare,
+    dimensions: "Ø 32 × 14 cm",
+    tags: ["xxl", "davet", "kase"],
+  },
+  {
+    id: "srv-kas1001",
+    imageCount: 5,
     name: "Dokulu XXL Servis Kasesi",
     category: "servis-sofra",
     subcategory: "salata-kaseleri",
@@ -748,19 +766,19 @@ const seeds: ProductSeed[] = [
     stock: 16,
     rating: 4.9,
     reviewCount: 211,
-    shortDescription:
-      "Davet sofralarına özel ekstra büyük kase.",
+    shortDescription: "Davet sofralarına özel ekstra büyük dokulu kase.",
     description:
       "Dokulu seriden XXL kase, kalabalık davet sofraları için tasarlandı. Geniş ağzı ile sunum dostudur.",
     features: ["4.5 L hacim", "Dokulu zarif yüzey", "Bulaşık makinesi uyumlu"],
     materials: "Stoneware seramik.",
     care: standardCare,
     dimensions: "Ø 32 × 14 cm",
-    tags: ["xxl", "davet", "kase"],
+    tags: ["xxl", "davet", "dokulu"],
     isFeatured: true,
   },
   {
-    id: "srv-408",
+    id: "srv-kau0001",
+    imageCount: 5,
     name: "Klasik Dikdörtgen Servis Tabağı",
     category: "servis-sofra",
     subcategory: "servis-tabaklari",
@@ -779,7 +797,8 @@ const seeds: ProductSeed[] = [
     tags: ["dikdortgen", "servis"],
   },
   {
-    id: "srv-409",
+    id: "srv-kau1001",
+    imageCount: 5,
     name: "Dokulu Dikdörtgen Servis Tabağı",
     category: "servis-sofra",
     subcategory: "servis-tabaklari",
@@ -787,8 +806,7 @@ const seeds: ProductSeed[] = [
     stock: 42,
     rating: 4.7,
     reviewCount: 128,
-    shortDescription:
-      "Dokulu yüzeyli geniş servis tabağı.",
+    shortDescription: "Dokulu yüzeyli geniş servis tabağı.",
     description:
       "Dokulu Servis Tabağı; mezeler, peynir tabakları ve sıcak yemekler için zarif bir alternatif.",
     features: ["El yapımı doku", "Bulaşık makinesi uyumlu"],
@@ -798,18 +816,18 @@ const seeds: ProductSeed[] = [
     tags: ["dokulu", "servis"],
   },
   {
-    id: "srv-410",
-    name: "Oval Servis Kasesi",
+    id: "srv-kav0001",
+    imageCount: 5,
+    name: "Klasik Oval Servis Kasesi",
     category: "servis-sofra",
-    subcategory: "servis-tabaklari",
+    subcategory: "salata-kaseleri",
     price: 329,
     stock: 31,
     rating: 4.6,
     reviewCount: 105,
-    shortDescription:
-      "Salata ve sıcak servisler için oval form.",
+    shortDescription: "Salata ve sıcak servisler için oval form.",
     description:
-      "Oval Servis Kasesi, dengeli oval formuyla salatalar ve sıcak servisler için zarif görünüm sunar.",
+      "Klasik Oval Servis Kasesi, dengeli oval formuyla salatalar ve sıcak servisler için zarif görünüm sunar.",
     features: ["2.4 L hacim", "Oval form"],
     materials: "Stoneware seramik.",
     care: standardCare,
@@ -817,7 +835,28 @@ const seeds: ProductSeed[] = [
     tags: ["oval", "kase"],
   },
   {
-    id: "srv-411",
+    id: "srv-kav1001",
+    imageCount: 5,
+    name: "Dokulu Oval Servis Kasesi",
+    category: "servis-sofra",
+    subcategory: "salata-kaseleri",
+    price: 369,
+    originalPrice: 429,
+    stock: 19,
+    rating: 4.8,
+    reviewCount: 154,
+    shortDescription: "Dokulu yüzeyli oval servis kasesi.",
+    description:
+      "Dokulu Oval Kase, salataları ve ana yemekleri zarif bir oval form ile servis etmenizi sağlar.",
+    features: ["El yapımı doku", "2.4 L hacim", "Mat doğal ton"],
+    materials: "Stoneware seramik.",
+    care: standardCare,
+    dimensions: "30 × 20 × 9 cm",
+    tags: ["dokulu", "oval"],
+  },
+  {
+    id: "srv-sua",
+    imageCount: 5,
     name: "Hava Sızdırmaz Su & Süt Sürahisi",
     category: "servis-sofra",
     subcategory: "surahi-karaf",
@@ -829,11 +868,7 @@ const seeds: ProductSeed[] = [
       "Akmaz hava sızdırmaz kapaklı buzdolabı dostu sürahi.",
     description:
       "Hava Sızdırmaz Sürahi, kapağı sayesinde buzdolabında diğer kokuları emmez. 2 litrelik hacmi ile günlük su, süt veya hazırlanmış içecekler için idealdir.",
-    features: [
-      "Hava sızdırmaz kapak",
-      "Akmaz dökme ağzı",
-      "Buzdolabı dostu narin form",
-    ],
+    features: ["Hava sızdırmaz kapak", "Akmaz dökme ağzı", "Buzdolabı dostu narin form"],
     materials: "BPA içermeyen Tritan™ benzeri plastik.",
     care: containerCare,
     dimensions: "12 × 12 × 28 cm · 2 L",
@@ -841,7 +876,8 @@ const seeds: ProductSeed[] = [
     isBestSeller: true,
   },
   {
-    id: "srv-412",
+    id: "srv-suh",
+    imageCount: 5,
     name: "Ergonomik İçecek Sürahisi",
     category: "servis-sofra",
     subcategory: "surahi-karaf",
@@ -853,20 +889,17 @@ const seeds: ProductSeed[] = [
       "Tek elle kullanım için ergonomik kulplu sürahi.",
     description:
       "Ergonomik İçecek Sürahisi, kulp tasarımı ve dengeli ağırlığıyla kalabalık davetlerde rahat servis sunar.",
-    features: [
-      "Ergonomik kulp",
-      "2.2 L hacim",
-      "Cam görünümlü gövde",
-    ],
+    features: ["Ergonomik kulp", "2.2 L hacim", "Cam görünümlü gövde"],
     materials: "Saydam kompozit plastik.",
     care: containerCare,
     dimensions: "14 × 12 × 26 cm · 2.2 L",
     tags: ["surahi", "ergonomik"],
   },
 
-  // ── Mutfak Aletleri ─────────────────────────────────────────────────
+  // ── Mutfak Aletleri ──────────────────────────────────────────────
   {
-    id: "alt-501",
+    id: "alt-kmn",
+    imageCount: 5,
     name: "Standlı Komple Mutfak Alet Seti",
     category: "mutfak-aletleri",
     subcategory: "spatula-kepce-setleri",
@@ -886,14 +919,16 @@ const seeds: ProductSeed[] = [
       "Bulaşık makinesi uyumlu",
     ],
     materials: "Silikon başlık, bambu sap, ahşap stand.",
-    care: "Silikon kısımlar bulaşık makinesi uyumlu, ahşap saplar elde yıkanmalı.",
+    care:
+      "Silikon kısımlar bulaşık makinesi uyumlu, ahşap saplar elde yıkanmalı ve doğal yağ ile beslenmelidir.",
     dimensions: "Stand: Ø 14 × 30 cm",
     tags: ["set", "spatula", "stand"],
     isBestSeller: true,
     isFeatured: true,
   },
   {
-    id: "alt-502",
+    id: "alt-kpg",
+    imageCount: 5,
     name: "3'lü Ölçü Kabı Seti",
     category: "mutfak-aletleri",
     subcategory: "olcu-kaplari",
@@ -917,7 +952,8 @@ const seeds: ProductSeed[] = [
     tags: ["olcu", "set", "kase"],
   },
   {
-    id: "alt-503",
+    id: "alt-m3",
+    imageCount: 5,
     name: "Geniş Manuel Salata Kurutucu",
     category: "mutfak-aletleri",
     subcategory: "salata-kurutucular",
@@ -943,10 +979,65 @@ const seeds: ProductSeed[] = [
     isFeatured: true,
   },
   {
-    id: "alt-504",
-    name: "Silikon Buz Kalıbı Kapaklı",
+    id: "soy-sol1",
+    imageCount: 5,
+    name: "Klasik Sebze Soyacağı",
     category: "mutfak-aletleri",
-    subcategory: "olcu-kaplari",
+    subcategory: "soyacaklar",
+    price: 89,
+    stock: 142,
+    rating: 4.6,
+    reviewCount: 218,
+    shortDescription:
+      "Keskin paslanmaz çelik bıçaklı, ergonomik kavramalı sebze soyacağı.",
+    description:
+      "Klasik Sebze Soyacağı, dayanıklı paslanmaz çelik bıçağı ve kaymaz tutamağıyla günlük kullanım için pratik bir tercih. Patates, havuç ve elma için ideal.",
+    features: [
+      "Y formlu klasik tasarım",
+      "Paslanmaz çelik bıçak",
+      "Kaymaz silikon tutamak",
+      "Bulaşık makinesinde yıkanabilir",
+    ],
+    materials: "Paslanmaz çelik bıçak, TPR tutamak.",
+    care: metalCare,
+    dimensions: "14 × 7 × 2 cm",
+    tags: ["soyacak", "sebze", "klasik"],
+  },
+  {
+    id: "soy-sol2",
+    imageCount: 5,
+    name: "Premium Çok Yönlü Soyacak",
+    category: "mutfak-aletleri",
+    subcategory: "soyacaklar",
+    price: 129,
+    originalPrice: 159,
+    stock: 96,
+    rating: 4.7,
+    reviewCount: 184,
+    shortDescription:
+      "Çift bıçaklı, jülyen kesim özellikli premium soyacak.",
+    description:
+      "Premium Çok Yönlü Soyacak, klasik soyma ve jülyen kesim bıçaklarını tek üründe sunar. Patates gözü çıkartma aparatı ile çok amaçlıdır.",
+    features: [
+      "Çift fonksiyonlu bıçak",
+      "Jülyen kesim seçeneği",
+      "Patates gözü temizleme aparatı",
+      "Ergonomik premium tutamak",
+    ],
+    materials: "Paslanmaz çelik bıçak, ABS tutamak.",
+    care: metalCare,
+    dimensions: "14 × 7 × 2 cm",
+    tags: ["soyacak", "premium", "julyen"],
+    isNew: true,
+  },
+
+  // ── Mutfak Aksesuarları ─────────────────────────────────────────
+  {
+    id: "aks-m4",
+    imageCount: 5,
+    name: "Silikon Buz Kalıbı Kapaklı",
+    category: "mutfak-aksesuarlari",
+    subcategory: "buz-kaliplari",
     price: 169,
     stock: 198,
     rating: 4.6,
@@ -966,10 +1057,9 @@ const seeds: ProductSeed[] = [
     dimensions: "22 × 12 × 4 cm",
     tags: ["buz", "silikon"],
   },
-
-  // ── Mutfak Aksesuarları ─────────────────────────────────────────────
   {
-    id: "aks-601",
+    id: "aks-kag",
+    imageCount: 5,
     name: "Krom Kağıt Havluluk",
     category: "mutfak-aksesuarlari",
     subcategory: "havluluk-standlar",
@@ -994,6 +1084,9 @@ const seeds: ProductSeed[] = [
   },
 ];
 
+const buildImages = (id: string, count: number) =>
+  Array.from({ length: count }, (_, i) => `/products/${id}/${i}.jpg`);
+
 const ensureSlug = (s: string) => slugify(s);
 
 export const products: Product[] = seeds.map((seed) => {
@@ -1003,7 +1096,7 @@ export const products: Product[] = seeds.map((seed) => {
     ? cat.subcategories.find((x) => x.slug === seed.subcategory)
     : undefined;
 
-  const images = pickImages(seed.category, seed.id + seed.name);
+  const images = buildImages(seed.id, seed.imageCount);
   const cover = images[0];
   const discountPercent = seed.originalPrice
     ? Math.round(
