@@ -621,7 +621,7 @@ export default function CheckoutPage() {
               </div>
 
               <p className="text-[11px] text-foreground/40 font-body flex items-center gap-2 pt-4 border-t border-foreground/10">
-                <Package size={11} /> Tüm siparişler şık Zest hediye paketinde gönderilir.
+                <Package size={11} /> Tüm siparişler şık Zest Kitchene hediye paketinde gönderilir.
               </p>
             </div>
           </aside>

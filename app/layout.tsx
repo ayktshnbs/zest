@@ -27,7 +27,7 @@ const audiowide = Audiowide({
 });
 
 export const metadata: Metadata = {
-  title: "Zest | Premium Mutfak Gereçleri",
+  title: "Zest Kitchene | Premium Mutfak Gereçleri",
   description:
     "Modern ve pratik mutfak gereçleri koleksiyonumuzla mutfak deneyiminizi geliştirin.",
 };
@@ -63,7 +63,7 @@ export default function RootLayout({
                             <span className="font-bold text-xl">Z</span>
                           </div>
                           <span className="font-display text-3xl font-extrabold tracking-tight">
-                            Zest
+                            Zest Kitchene
                           </span>
                         </div>
                         <p className="text-text-secondary max-w-sm mb-10 text-lg leading-relaxed italic">
@@ -144,7 +144,7 @@ export default function RootLayout({
                       </div>
                     </div>
                     <div className="border-t border-border pt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-text-secondary text-sm">
-                      <p>© 2026 Zest Studio. Modern mutfaklar için tasarlandı.</p>
+                      <p>© 2026 Zest Kitchene. Modern mutfaklar için tasarlandı.</p>
                       <div className="flex gap-10">
                         <a href="#" className="hover:text-text-primary transition-colors">
                           Gizlilik

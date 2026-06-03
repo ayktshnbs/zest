@@ -2,7 +2,7 @@ import Link from "next/link";
 import { RefreshCw, ShieldCheck, Clock, AlertCircle } from "lucide-react";
 
 export const metadata = {
-  title: "İade & Değişim | Zest",
+  title: "İade & Değişim | Zest Kitchene",
   description: "İade ve değişim koşulları hakkında bilmeniz gerekenler.",
 };
 

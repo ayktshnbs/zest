@@ -18,7 +18,7 @@ export const MobileNav = () => {
     { name: "Keşfet", href: "/shop", icon: Search },
     { name: "Favori", href: "/favoriler", icon: Heart, badge: wishlistCount },
     { name: "Sepet", href: "/sepet", icon: ShoppingBag, badge: totalItems },
-    { name: "Zest", href: "/about", icon: Sparkles },
+    { name: "Zest Kitchene", href: "/about", icon: Sparkles },
   ];
 
   return (

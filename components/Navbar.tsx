@@ -86,7 +86,7 @@ export const Navbar = () => {
                 isScrolled ? "text-foreground" : "text-foreground/90"
               }`}
             >
-              ZEST
+              ZEST KITCHENE
             </span>
           </Link>
 

@@ -31,7 +31,7 @@ export default function AboutPage() {
               <span className="text-primary italic underline decoration-secondary/30 underline-offset-8">Sanata</span> Dönüştürüyoruz.
             </h1>
             <p className="font-body text-xl text-foreground/60 mb-8 leading-relaxed font-medium">
-              Zest olarak yolculuğumuz, modern mutfakların vazgeçilmezi olan pratik ve estetik gereçleri en yüksek kalite standartlarıyla buluşturma vizyonuyla başladı.
+              Zest Kitchene olarak yolculuğumuz, modern mutfakların vazgeçilmezi olan pratik ve estetik gereçleri en yüksek kalite standartlarıyla buluşturma vizyonuyla başladı.
             </p>
             <p className="font-body text-lg text-foreground/50 mb-12 leading-relaxed italic">
               Koleksiyonumuzdaki her bir ürün, mutfaktaki işlerinizi kolaylaştırırken yaşam alanınıza değer katmak için özenle seçilmiştir.
@@ -62,7 +62,7 @@ export default function AboutPage() {
           >
             <Image 
               src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=1200" 
-              alt="Zest Mutfak" 
+              alt="Zest Kitchene Mutfak"
               fill
               className="object-cover transition-transform duration-[3s] hover:scale-110"
             />
@@ -91,7 +91,7 @@ export default function AboutPage() {
               </div>
               <div className="p-10 bg-white/5 rounded-[3rem] border border-white/10 hover:bg-white/10 transition-colors">
                 <h4 className="font-display font-black text-xl mb-6 text-secondary uppercase tracking-widest">Müşteri Memnuniyeti</h4>
-                <p className="text-neutral-400 font-medium leading-relaxed">Zest ailesi olarak, alışveriş öncesi ve sonrası süreçlerde her zaman yanınızdayız. Sorunsuz teslimat ve hızlı destek temel önceliğimizdir.</p>
+                <p className="text-neutral-400 font-medium leading-relaxed">Zest Kitchene ailesi olarak, alışveriş öncesi ve sonrası süreçlerde her zaman yanınızdayız. Sorunsuz teslimat ve hızlı destek temel önceliğimizdir.</p>
               </div>
             </div>
           </div>

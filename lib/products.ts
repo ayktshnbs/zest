@@ -1117,7 +1117,7 @@ export const products: Product[] = seeds.map((seed) => {
     categoryLabel: cat.label,
     subcategory: seed.subcategory,
     subcategoryLabel: sub?.label,
-    brand: "Zest",
+    brand: "Zest Kitchene",
     sku: `ZST-${seed.id.toUpperCase()}`,
     stock: seed.stock,
     rating: seed.rating,

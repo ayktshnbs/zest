@@ -5,7 +5,7 @@ import { products } from "@/lib/products";
 import { ArrowRight } from "lucide-react";
 
 export const metadata = {
-  title: "Kategoriler | Zest",
+  title: "Kategoriler | Zest Kitchene",
   description: "Mutfak gereçleri kategorilerimizi keşfedin.",
 };
 
