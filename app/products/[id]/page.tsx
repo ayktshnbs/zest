@@ -1,221 +1,506 @@
 "use client";
 
-import { products } from "@/lib/mockData";
+import {
+  products,
+  getProductById,
+  getRelatedProducts,
+} from "@/lib/products";
 import { useCart } from "@/components/CartProvider";
-import { Star, Shield, Truck, RefreshCw, Minus, Plus, ShoppingCart, ArrowLeft, Heart, Share2 } from "lucide-react";
-import { useState } from "react";
+import { useWishlist } from "@/components/WishlistProvider";
+import { useRecentlyViewed } from "@/components/RecentlyViewedProvider";
+import {
+  Star,
+  Shield,
+  Truck,
+  RefreshCw,
+  Minus,
+  Plus,
+  ShoppingCart,
+  ArrowLeft,
+  Heart,
+  Share2,
+  Check,
+  ChevronRight,
+  Package,
+  Sparkles,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { ProductRow } from "@/components/ProductRow";
+import { RecentlyViewedRow } from "@/components/RecentlyViewedRow";
+import { categoryMap } from "@/lib/categories";
+import {
+  estimatedDelivery,
+  formatPrice,
+  FREE_SHIPPING_THRESHOLD,
+} from "@/lib/utils";
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const product = products.find((p) => p.id === params.id);
+  const product = getProductById(params.id);
   const { addToCart } = useCart();
+  const { has: inWishlist, toggle: toggleWishlist } = useWishlist();
+  const { track } = useRecentlyViewed();
+  const router = useRouter();
+
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
-  const [activeTab, setActiveTab] = useState("ozellikler");
-  const [mainImage, setMainImage] = useState(product?.imageUrl || "");
+  const [activeTab, setActiveTab] = useState<"ozellikler" | "materyal" | "bakim">("ozellikler");
+  const [mainImage, setMainImage] = useState(product?.imageUrl ?? "");
+  const [justAdded, setJustAdded] = useState(false);
+  const [showShareToast, setShowShareToast] = useState(false);
 
-  if (!product) {
-    notFound();
-  }
+  useEffect(() => {
+    if (product) track(product.id);
+  }, [product, track]);
 
-  const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addToCart(product);
-    }
-  };
+  if (!product) notFound();
+
+  const wishlisted = inWishlist(product.id);
+  const outOfStock = product.stock <= 0;
+  const lowStock = !outOfStock && product.stock <= 5;
+  const related = getRelatedProducts(product, 4);
+  const cat = categoryMap[product.category];
 
   const productImages = product.images.length > 0 ? product.images : [product.imageUrl];
 
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 1600);
+  };
+
+  const handleBuyNow = () => {
+    addToCart(product, quantity);
+    router.push("/sepet");
+  };
+
+  const handleShare = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: product.name, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setShowShareToast(true);
+        setTimeout(() => setShowShareToast(false), 1800);
+      }
+    } catch {}
+  };
+
   return (
-    <main className="min-h-screen pt-32 pb-24 bg-background">
+    <main className="min-h-screen pt-28 md:pt-32 pb-24 bg-background">
       <div className="max-w-7xl mx-auto px-5 md:px-16">
-        {/* Breadcrumbs / Back */}
-        <motion.div 
+        {/* Breadcrumbs */}
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="mb-12 flex items-center justify-between"
+          className="mb-10 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-audiowide text-foreground/40"
         >
-          <Link 
-            href="/shop" 
-            className="inline-flex items-center gap-3 text-foreground/40 hover:text-primary font-bold text-xs uppercase tracking-[0.2em] transition-all group"
-          >
-            <div className="p-3 bg-white dark:bg-neutral-900 rounded-full shadow-sm group-hover:shadow-lg group-hover:scale-110 transition-all">
-              <ArrowLeft size={18} />
-            </div>
-            Alışverişe Dön
+          <Link href="/" className="hover:text-foreground transition-colors">
+            Anasayfa
           </Link>
-          <div className="flex gap-3">
-            <button className="p-3 bg-white dark:bg-neutral-900 rounded-full shadow-sm hover:text-primary transition-all">
-              <Share2 size={18} />
-            </button>
-            <button 
-              onClick={() => setIsWishlisted(!isWishlisted)}
-              className={`p-3 rounded-full shadow-sm transition-all ${isWishlisted ? "bg-primary text-white" : "bg-white dark:bg-neutral-900 hover:text-primary"}`}
-            >
-              <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
-            </button>
-          </div>
+          <ChevronRight size={12} />
+          <Link href="/shop" className="hover:text-foreground transition-colors">
+            Alışveriş
+          </Link>
+          <ChevronRight size={12} />
+          {cat ? (
+            <>
+              <Link
+                href={`/shop/${cat.slug}`}
+                className="hover:text-foreground transition-colors"
+              >
+                {cat.label}
+              </Link>
+              <ChevronRight size={12} />
+            </>
+          ) : null}
+          <span className="text-foreground/70 truncate max-w-[180px] md:max-w-none">{product.name}</span>
         </motion.div>
 
-        <div className="grid lg:grid-cols-12 gap-16 items-start">
-          {/* Image Section */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          {/* Gallery */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
             className="lg:col-span-7"
           >
-            <div className="relative aspect-square rounded-[4rem] overflow-hidden shadow-2xl bg-white dark:bg-neutral-900 group">
-              <Image 
-                src={mainImage || product.imageUrl} 
-                alt={product.name} 
-                fill
-                className="object-cover transition-transform duration-[2s] group-hover:scale-105"
-                priority
-              />
-              <div className="absolute top-10 left-10">
-                <span className="bg-secondary text-secondary-foreground px-6 py-2 rounded-full font-black text-[10px] uppercase tracking-widest shadow-xl">
-                  {product.category}
-                </span>
+            <div className="relative aspect-square overflow-hidden bg-secondary/30">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={mainImage}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src={mainImage || product.imageUrl}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 60vw"
+                  />
+                </motion.div>
+              </AnimatePresence>
+              {/* Badge stack */}
+              <div className="absolute top-5 left-5 flex flex-col gap-2 items-start z-10">
+                {product.discountPercent ? (
+                  <span className="bg-foreground text-background font-audiowide text-[10px] tracking-[0.2em] uppercase px-3 py-1.5">
+                    -%{product.discountPercent}
+                  </span>
+                ) : null}
+                {product.isNew ? (
+                  <span className="bg-background text-foreground font-audiowide text-[9px] tracking-[0.25em] uppercase px-3 py-1.5 border border-foreground/10">
+                    Yeni
+                  </span>
+                ) : null}
+                {product.isBestSeller ? (
+                  <span className="bg-background text-foreground font-audiowide text-[9px] tracking-[0.25em] uppercase px-3 py-1.5 border border-foreground/10">
+                    Çok Satan
+                  </span>
+                ) : null}
               </div>
             </div>
-            
-            {/* Thumbnails */}
-            <div className="grid grid-cols-5 gap-4 mt-8">
-              {productImages.map((img, i) => (
-                <div 
-                  key={i} 
-                  onClick={() => setMainImage(img)}
-                  className={`aspect-square rounded-3xl overflow-hidden cursor-pointer border-2 transition-all ${mainImage === img ? "border-primary shadow-lg" : "border-transparent opacity-60 hover:opacity-100"}`}
-                >
-                  <Image src={img} alt={`${product.name} view ${i + 1}`} width={200} height={200} className="object-cover w-full h-full" />
-                </div>
-              ))}
-            </div>
-          </motion.div>
 
-          {/* Info Section */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="lg:col-span-5 flex flex-col"
-          >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="flex items-center gap-1 bg-secondary/10 px-3 py-1 rounded-full">
-                {[...Array(5)].map((_, i) => (
-                  <Star 
-                    key={i} 
-                    size={14} 
-                    className={i < product.rating ? "fill-secondary text-secondary" : "text-gray-300 dark:text-gray-700"} 
-                  />
+            {/* Thumbnails */}
+            {productImages.length > 1 ? (
+              <div className="grid grid-cols-4 sm:grid-cols-5 gap-3 mt-5">
+                {productImages.map((img, i) => (
+                  <button
+                    key={img + i}
+                    onClick={() => setMainImage(img)}
+                    className={`aspect-square overflow-hidden cursor-pointer border transition-all ${
+                      mainImage === img
+                        ? "border-foreground"
+                        : "border-foreground/10 opacity-60 hover:opacity-100"
+                    }`}
+                    aria-label={`Görsel ${i + 1}`}
+                  >
+                    <Image
+                      src={img}
+                      alt={`${product.name} görsel ${i + 1}`}
+                      width={200}
+                      height={200}
+                      className="object-cover w-full h-full"
+                    />
+                  </button>
                 ))}
               </div>
-              <span className="text-foreground/40 font-bold text-xs uppercase tracking-widest">48 Değerlendirme</span>
+            ) : null}
+          </motion.div>
+
+          {/* Info */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="lg:col-span-5 flex flex-col"
+          >
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <span className="font-audiowide text-[10px] uppercase tracking-[0.4em] text-foreground/40">
+                {product.categoryLabel}
+                {product.subcategoryLabel ? ` · ${product.subcategoryLabel}` : ""}
+              </span>
+              <div className="flex gap-2 -mt-1">
+                <button
+                  onClick={handleShare}
+                  className="p-2 text-foreground/40 hover:text-foreground transition-colors"
+                  aria-label="Paylaş"
+                >
+                  <Share2 size={16} />
+                </button>
+                <button
+                  onClick={() => toggleWishlist(product.id)}
+                  className={`p-2 transition-colors ${
+                    wishlisted ? "text-foreground" : "text-foreground/40 hover:text-foreground"
+                  }`}
+                  aria-label={wishlisted ? "Favorilerden çıkar" : "Favorilere ekle"}
+                >
+                  <Heart size={16} fill={wishlisted ? "currentColor" : "none"} />
+                </button>
+              </div>
             </div>
 
-            <h1 className="font-display text-5xl md:text-6xl font-black text-foreground mb-4 tracking-tighter leading-tight">
+            <h1 className="font-audiowide text-3xl md:text-5xl text-foreground mb-4 uppercase tracking-tight leading-tight">
               {product.name}
             </h1>
 
-            <div className="flex items-baseline gap-4 mb-10">
-              <p className="font-display text-4xl font-black text-primary">
-                {product.price} TL
-              </p>
-              <p className="text-foreground/30 line-through font-bold">{(product.price * 1.2).toFixed(0)} TL</p>
+            <div className="flex items-center gap-3 mb-6 text-xs">
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    size={12}
+                    className={
+                      i < Math.round(product.rating)
+                        ? "fill-foreground text-foreground"
+                        : "text-foreground/20"
+                    }
+                  />
+                ))}
+              </div>
+              <span className="text-foreground/40 font-body">
+                {product.rating.toFixed(1)} · {product.reviewCount} değerlendirme
+              </span>
             </div>
 
-            <p className="font-body text-xl text-foreground/60 mb-12 leading-relaxed font-medium italic">
-              "{product.description}"
+            <p className="text-foreground/60 text-base leading-relaxed mb-8">
+              {product.shortDescription}
             </p>
 
-            {/* Selection Tabs */}
-            <div className="flex gap-8 border-b border-border mb-8">
-              {["ozellikler", "materyal", "bakim"].map((tab) => (
+            {/* Price */}
+            <div className="flex items-baseline gap-4 mb-3">
+              <p className="font-audiowide text-3xl md:text-4xl text-foreground tracking-tight">
+                {formatPrice(product.price)}
+              </p>
+              {product.originalPrice ? (
+                <>
+                  <p className="text-foreground/30 line-through text-lg">
+                    {formatPrice(product.originalPrice)}
+                  </p>
+                  {product.discountPercent ? (
+                    <span className="bg-foreground text-background font-audiowide text-[9px] tracking-[0.2em] uppercase px-2 py-1">
+                      %{product.discountPercent} indirim
+                    </span>
+                  ) : null}
+                </>
+              ) : null}
+            </div>
+            <p className="text-foreground/40 text-xs font-body mb-8">
+              KDV dahil · {product.sku}
+            </p>
+
+            {/* Stock */}
+            <div className="flex items-center gap-3 mb-8 pb-8 border-b border-foreground/5">
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  outOfStock
+                    ? "bg-foreground/30"
+                    : lowStock
+                    ? "bg-yellow-500"
+                    : "bg-green-500"
+                }`}
+              />
+              <span className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/70">
+                {outOfStock
+                  ? "Stokta Yok"
+                  : lowStock
+                  ? `Son ${product.stock} adet · Hızla tükenebilir`
+                  : `Stokta · ${product.stock} adet hazır`}
+              </span>
+            </div>
+
+            {/* Shipping note */}
+            <div className="space-y-2 mb-8">
+              <div className="flex items-center gap-3 text-sm text-foreground/60">
+                <Truck size={16} className="text-foreground/40" />
+                <span>
+                  {product.price >= FREE_SHIPPING_THRESHOLD ? (
+                    <>
+                      <strong className="text-foreground">Ücretsiz kargo</strong> · Bu üründe geçerli
+                    </>
+                  ) : (
+                    <>
+                      {formatPrice(FREE_SHIPPING_THRESHOLD - product.price)} daha eklerseniz kargo
+                      ücretsiz olur
+                    </>
+                  )}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-foreground/60">
+                <Package size={16} className="text-foreground/40" />
+                <span>
+                  Tahmini teslimat:{" "}
+                  <strong className="text-foreground">{estimatedDelivery()}</strong>
+                </span>
+              </div>
+            </div>
+
+            {/* Quantity + CTAs */}
+            <div className="flex flex-col gap-4 mb-10">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center border border-foreground/15">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="p-3 hover:bg-foreground/5 transition-colors"
+                    disabled={outOfStock}
+                    aria-label="Azalt"
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span className="w-12 text-center font-audiowide text-sm">{quantity}</span>
+                  <button
+                    onClick={() =>
+                      setQuantity(Math.min(product.stock || 1, quantity + 1))
+                    }
+                    className="p-3 hover:bg-foreground/5 transition-colors"
+                    disabled={outOfStock || quantity >= product.stock}
+                    aria-label="Arttır"
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+                <span className="text-[10px] font-audiowide uppercase tracking-[0.3em] text-foreground/40">
+                  Ara toplam: {formatPrice(product.price * quantity)}
+                </span>
+              </div>
+
+              <button
+                onClick={handleAddToCart}
+                disabled={outOfStock}
+                className="w-full py-5 bg-foreground text-background font-audiowide text-[11px] uppercase tracking-[0.3em] hover:opacity-90 transition-all flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {justAdded ? (
+                  <>
+                    <Check size={16} /> Sepete Eklendi
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart size={16} /> Sepete Ekle
+                  </>
+                )}
+              </button>
+              <button
+                onClick={handleBuyNow}
+                disabled={outOfStock}
+                className="w-full py-5 bg-transparent border border-foreground/20 text-foreground font-audiowide text-[11px] uppercase tracking-[0.3em] hover:bg-foreground hover:text-background transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Hemen Satın Al
+              </button>
+            </div>
+
+            {/* Info tabs */}
+            <div className="flex gap-8 border-b border-foreground/10 mb-6">
+              {(
+                [
+                  ["ozellikler", "Özellikler"],
+                  ["materyal", "Materyal"],
+                  ["bakim", "Bakım"],
+                ] as const
+              ).map(([tab, label]) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`pb-4 text-xs font-black uppercase tracking-[0.2em] transition-all relative ${activeTab === tab ? "text-primary" : "text-foreground/40 hover:text-foreground"}`}
+                  className={`pb-3 font-audiowide text-[10px] uppercase tracking-[0.3em] transition-colors relative ${
+                    activeTab === tab ? "text-foreground" : "text-foreground/40 hover:text-foreground"
+                  }`}
                 >
-                  {tab === "ozellikler" ? "Özellikler" : tab === "materyal" ? "Materyal" : "Bakım"}
+                  {label}
                   {activeTab === tab && (
-                    <motion.div layoutId="tabLine" className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-full" />
+                    <motion.div
+                      layoutId="tabLine"
+                      className="absolute -bottom-px left-0 right-0 h-px bg-foreground"
+                    />
                   )}
                 </button>
               ))}
             </div>
 
-            <div className="mb-12 min-h-[100px]">
+            <div className="mb-10 min-h-[120px]">
               <AnimatePresence mode="wait">
-                <motion.p 
+                <motion.div
                   key={activeTab}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="text-foreground/50 font-medium leading-relaxed"
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-foreground/60 leading-relaxed text-sm"
                 >
-                  {activeTab === "ozellikler" && "Profesyonel mutfak gereçleri koleksiyonumuzun bu nadide parçası, hem estetik hem de fonksiyonellik arayanlar için tasarlandı. Uzun ömürlü kullanım ve üstün performans vaat eder."}
-                  {activeTab === "materyal" && "En yüksek kalitede dövme çelik ve sürdürülebilir ceviz ağacı kullanılarak elde üretilmiştir. Paslanmaya karşı dirençli ve gıda ile temasa %100 uygundur."}
-                  {activeTab === "bakim" && "Elde yıkanması tavsiye edilir. Her kullanımdan sonra kurulayarak ömrünü uzatabilirsiniz. Ahşap kısımları belirli aralıklarla doğal yağlar ile yağlamanız önerilir."}
-                </motion.p>
+                  {activeTab === "ozellikler" ? (
+                    <ul className="space-y-2">
+                      {product.features.map((f) => (
+                        <li key={f} className="flex items-start gap-2">
+                          <span className="mt-2 w-1 h-1 rounded-full bg-foreground/60 flex-shrink-0" />
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {activeTab === "materyal" ? (
+                    <div className="space-y-3">
+                      <p>{product.materials}</p>
+                      {product.dimensions ? (
+                        <p className="text-foreground/40">
+                          <strong className="text-foreground/70">Boyutlar:</strong>{" "}
+                          {product.dimensions}
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  {activeTab === "bakim" ? <p>{product.care}</p> : null}
+                </motion.div>
               </AnimatePresence>
             </div>
 
-            {/* Quantity and Add to Cart */}
-            <div className="flex flex-col sm:flex-row gap-6 mb-16">
-              <div className="flex items-center justify-between bg-accent rounded-3xl px-4 py-2 border-2 border-transparent focus-within:border-primary/20 transition-all sm:w-40">
-                <button 
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="p-4 hover:text-primary transition-colors"
-                >
-                  <Minus size={20} />
-                </button>
-                <span className="text-xl font-black">{quantity}</span>
-                <button 
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="p-4 hover:text-primary transition-colors"
-                >
-                  <Plus size={20} />
-                </button>
+            {/* Trust */}
+            <div className="grid grid-cols-3 gap-4 pt-8 border-t border-foreground/5">
+              <div className="flex flex-col items-center gap-2 text-center">
+                <Truck size={18} className="text-foreground/60" />
+                <span className="text-[9px] font-audiowide uppercase tracking-[0.2em] text-foreground/60 leading-tight">
+                  750 TL üzeri ücretsiz kargo
+                </span>
               </div>
-
-              <button 
-                onClick={handleAddToCart}
-                className="flex-1 btn-primary py-6 text-lg tracking-widest uppercase"
-              >
-                <ShoppingCart size={24} />
-                Sepete Ekle
-              </button>
-            </div>
-
-            {/* Trust Badges */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10 border-t border-border">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-secondary/10 rounded-2xl text-secondary-foreground">
-                  <Truck size={20} />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest leading-tight">Ücretsiz <br/>Kargo</span>
+              <div className="flex flex-col items-center gap-2 text-center">
+                <Shield size={18} className="text-foreground/60" />
+                <span className="text-[9px] font-audiowide uppercase tracking-[0.2em] text-foreground/60 leading-tight">
+                  2 Yıl Garanti
+                </span>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-primary/10 rounded-2xl text-primary">
-                  <Shield size={20} />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest leading-tight">Ömür Boyu <br/>Garanti</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-foreground/5 rounded-2xl text-foreground/60">
-                  <RefreshCw size={20} />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest leading-tight">Kolay <br/>İade</span>
+              <div className="flex flex-col items-center gap-2 text-center">
+                <RefreshCw size={18} className="text-foreground/60" />
+                <span className="text-[9px] font-audiowide uppercase tracking-[0.2em] text-foreground/60 leading-tight">
+                  14 Gün İade
+                </span>
               </div>
             </div>
           </motion.div>
         </div>
+
+        {/* Detail prose */}
+        <section className="mt-32 max-w-3xl">
+          <span className="font-audiowide text-[10px] uppercase tracking-[0.4em] text-foreground/30">
+            Ürün Hakkında
+          </span>
+          <h2 className="font-audiowide text-2xl md:text-3xl uppercase tracking-tight mt-4 mb-6 text-foreground">
+            Detaylı Bilgi
+          </h2>
+          <p className="text-foreground/60 text-base md:text-lg leading-relaxed">
+            {product.description}
+          </p>
+        </section>
       </div>
+
+      {/* Related */}
+      <ProductRow
+        eyebrow="Benzer Ürünler"
+        title="Bunlar da İlginizi Çekebilir"
+        products={related}
+        href={cat ? `/shop/${cat.slug}` : "/shop"}
+        hrefLabel="Kategoriyi Görüntüle"
+      />
+
+      {/* Recently viewed */}
+      <RecentlyViewedRow excludeId={product.id} />
+
+      {/* Share toast */}
+      <AnimatePresence>
+        {showShareToast ? (
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 20, opacity: 0 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-foreground text-background px-4 py-2 font-audiowide text-[10px] uppercase tracking-[0.3em] z-50 flex items-center gap-2"
+          >
+            <Sparkles size={12} /> Bağlantı kopyalandı
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </main>
   );
 }
-

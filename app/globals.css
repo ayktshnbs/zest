@@ -72,6 +72,17 @@
   .btn-ghost {
     @apply hover:bg-white/5 text-text-secondary hover:text-text-primary transition-all duration-400 ease-luxury p-3 rounded-full;
   }
+
+  .form-input {
+    @apply w-full bg-transparent px-4 py-3.5 text-sm font-body text-foreground transition-colors focus:outline-none focus:border-foreground;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+  }
+  .form-input::placeholder {
+    color: rgba(0, 0, 0, 0.35);
+  }
+  .form-input:focus {
+    border-color: var(--foreground);
+  }
 }
 
 .font-audiowide {

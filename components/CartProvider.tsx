@@ -1,34 +1,70 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import { Product, CartItem } from "@/types";
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: Product) => void;
+  addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
+  isHydrated: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const STORAGE_KEY = "zest:cart";
+
+const sanitizeQuantity = (product: Product, requested: number) => {
+  const max = product.stock > 0 ? product.stock : 0;
+  if (max === 0) return 0;
+  return Math.min(Math.max(1, requested), max);
+};
+
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  const addToCart = (product: Product) => {
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) setCart(parsed);
+      }
+    } catch {}
+    setIsHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
+    } catch {}
+  }, [cart, isHydrated]);
+
+  const addToCart = (product: Product, quantity = 1) => {
+    if (product.stock <= 0) return;
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
       if (existingItem) {
+        const next = sanitizeQuantity(product, existingItem.quantity + quantity);
         return prevCart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+          item.id === product.id ? { ...item, quantity: next } : item,
         );
       }
-      return [...prevCart, { ...product, quantity: 1 }];
+      const next = sanitizeQuantity(product, quantity);
+      if (next === 0) return prevCart;
+      return [...prevCart, { ...product, quantity: next }];
     });
   };
 
@@ -43,15 +79,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.id === productId ? { ...item, quantity } : item
-      )
+        item.id === productId
+          ? { ...item, quantity: sanitizeQuantity(item, quantity) }
+          : item,
+      ),
     );
   };
 
   const clearCart = () => setCart([]);
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
 
   return (
     <CartContext.Provider
@@ -63,6 +104,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         clearCart,
         totalItems,
         totalPrice,
+        isHydrated,
       }}
     >
       {children}
