@@ -88,6 +88,7 @@ export const Navbar = () => {
               <span className="font-audiowide text-sm md:text-base leading-none">Z</span>
             </span>
             <span
+              lang="en"
               className={`font-audiowide text-[11px] md:text-base tracking-[0.25em] md:tracking-[0.3em] uppercase truncate transition-colors duration-500 ${
                 isScrolled ? "text-foreground" : "text-foreground/90"
               }`}

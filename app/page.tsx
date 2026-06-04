@@ -272,7 +272,7 @@ export default function Home() {
           </p>
           <div className="mt-12 flex flex-col items-center gap-4">
             <div className="w-12 h-px bg-black/10" />
-            <span className="font-audiowide text-[9px] uppercase tracking-[0.5em] text-black/30">
+            <span lang="en" className="font-audiowide text-[9px] uppercase tracking-[0.5em] text-black/30">
               Zest Kitchene Philosophy
             </span>
           </div>
