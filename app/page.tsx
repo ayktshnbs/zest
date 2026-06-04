@@ -81,13 +81,13 @@ export default function Home() {
                 ease: "easeInOut",
               }}
             >
-              <h1 className="font-audiowide text-2xl sm:text-4xl md:text-7xl lg:text-8xl leading-[1.1] mb-4 md:mb-6 tracking-tight text-[#1d1d1f]">
+              <h1 className="font-audiowide text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-5 md:mb-6 tracking-[-0.01em] text-[#1d1d1f] [text-wrap:balance]">
                 Profesyonel Gereçler.
                 <br />
-                <span className="text-[#1d1d1f]/60">Zahmetsiz Yemek.</span>
+                <span className="text-[#1d1d1f]/55">Zahmetsiz Yemek.</span>
               </h1>
 
-              <p className="font-body text-sm sm:text-lg md:text-2xl text-[#1d1d1f]/60 max-w-xl mx-auto mb-8 md:mb-10 leading-relaxed font-medium">
+              <p className="font-body text-base md:text-lg lg:text-xl text-[#1d1d1f]/60 max-w-xl mx-auto mb-8 md:mb-10 leading-relaxed font-medium [text-wrap:pretty]">
                 Modern mutfak gereçlerinden oluşan, minimalist lüks bir deneyim için tasarlanmış
                 özel koleksiyon.
               </p>
