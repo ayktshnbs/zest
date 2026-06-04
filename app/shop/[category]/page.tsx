@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { categories, categoryMap } from "@/lib/categories";
 import { getProductsByCategory } from "@/lib/products";
 import { ChevronRight } from "lucide-react";
@@ -79,7 +80,9 @@ export default function CategoryPage({ params }: { params: { category: string } 
           </div>
         </div>
 
-        <CategoryShop category={cat} products={list} />
+        <Suspense fallback={null}>
+          <CategoryShop category={cat} products={list} />
+        </Suspense>
       </div>
     </main>
   );

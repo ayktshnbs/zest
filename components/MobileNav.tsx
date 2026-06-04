@@ -221,7 +221,7 @@ export const MobileNav = () => {
                             {c.subcategories.map((sub) => (
                               <Link
                                 key={sub.slug}
-                                href={`/shop/${c.slug}/${sub.slug}`}
+                                href={`/shop/${c.slug}?sub=${sub.slug}`}
                                 onClick={() => setIsMenuOpen(false)}
                                 className="text-[10px] font-body border border-foreground/10 px-3 py-1.5 text-foreground/70 hover:border-foreground hover:text-foreground transition-colors"
                               >

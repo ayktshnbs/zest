@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Category, Product, SortKey } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,9 +24,30 @@ export const CategoryShop = ({
   category: Category;
   products: Product[];
 }) => {
-  const [selectedSub, setSelectedSub] = useState<string>("all");
+  const searchParams = useSearchParams();
+  const initialSub = (() => {
+    const fromUrl = searchParams.get("sub");
+    if (fromUrl && category.subcategories.some((s) => s.slug === fromUrl)) {
+      return fromUrl;
+    }
+    return "all";
+  })();
+  const [selectedSub, setSelectedSub] = useState<string>(initialSub);
   const [sortBy, setSortBy] = useState<SortKey>("featured");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  // Keep selectedSub in sync if the URL changes (e.g. navigating back/forward
+  // between subcategory deep-links).
+  useEffect(() => {
+    const fromUrl = searchParams.get("sub");
+    if (!fromUrl) {
+      setSelectedSub("all");
+      return;
+    }
+    if (category.subcategories.some((s) => s.slug === fromUrl)) {
+      setSelectedSub(fromUrl);
+    }
+  }, [searchParams, category.subcategories]);
 
   const filtered = useMemo(() => {
     const base =
