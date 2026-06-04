@@ -11,9 +11,11 @@ import {
   Menu as MenuIcon,
   X,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
 import { useCart } from "./CartProvider";
 import { useWishlist } from "./WishlistProvider";
+import { useAuth } from "./AuthProvider";
 import { motion, AnimatePresence } from "framer-motion";
 import { categories } from "@/lib/categories";
 
@@ -21,7 +23,10 @@ export const MobileNav = () => {
   const pathname = usePathname();
   const { totalItems } = useCart();
   const { count: wishlistCount } = useWishlist();
+  const { user, isAuthenticated, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const loginHref = `/giris?next=${encodeURIComponent(pathname || "/")}`;
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -173,6 +178,60 @@ export const MobileNav = () => {
               </div>
 
               <div className="flex-1 overflow-y-auto px-6 py-6 space-y-10 pb-28 scrollbar-hide">
+                <section className="border border-foreground/10 p-5 -mx-1">
+                  {isAuthenticated ? (
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center font-audiowide text-xs shrink-0">
+                          {(user?.name || user?.email || "?").slice(0, 1).toUpperCase()}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="font-audiowide text-[11px] uppercase tracking-[0.25em] text-foreground truncate">
+                            {user?.name || "Hesabım"}
+                          </p>
+                          <p className="text-[11px] text-foreground/40 truncate">{user?.email}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          await logout();
+                          setIsMenuOpen(false);
+                        }}
+                        className="p-2 text-foreground/60 hover:text-foreground transition-colors"
+                        aria-label="Çıkış yap"
+                      >
+                        <LogOut size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <p className="font-audiowide text-[9px] uppercase tracking-[0.4em] text-foreground/40">
+                        Hesabım
+                      </p>
+                      <p className="text-[12px] text-foreground/60 leading-relaxed">
+                        Giriş yaparak favori ürünlerinizi tüm cihazlarınızda senkronize edin.
+                      </p>
+                      <div className="flex gap-2 pt-1">
+                        <Link
+                          href={loginHref}
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex-1 text-center bg-foreground text-background font-audiowide text-[10px] uppercase tracking-[0.25em] py-3"
+                        >
+                          Giriş Yap
+                        </Link>
+                        <Link
+                          href={`/uye-ol?next=${encodeURIComponent(pathname || "/")}`}
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex-1 text-center border border-foreground/15 font-audiowide text-[10px] uppercase tracking-[0.25em] py-3 hover:border-foreground transition-colors"
+                        >
+                          Üye Ol
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </section>
+
                 <section>
                   <p className="font-audiowide text-[9px] uppercase tracking-[0.4em] text-foreground/40 mb-4">
                     Gezin

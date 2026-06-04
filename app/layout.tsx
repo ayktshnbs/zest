@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, Audiowide } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/components/AuthProvider";
 import { CartProvider } from "@/components/CartProvider";
 import { WishlistProvider } from "@/components/WishlistProvider";
 import { RecentlyViewedProvider } from "@/components/RecentlyViewedProvider";
@@ -48,9 +49,10 @@ export default function RootLayout({
       </head>
       <body className="font-body bg-background text-text-primary antialiased selection:bg-primary/20 selection:text-primary">
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false}>
-          <WishlistProvider>
-            <RecentlyViewedProvider>
-              <CartProvider>
+          <AuthProvider>
+            <WishlistProvider>
+              <RecentlyViewedProvider>
+                <CartProvider>
                 <Navbar />
                 <div className="min-h-screen pb-24 md:pb-0">{children}</div>
                 <MobileNav />
@@ -156,9 +158,10 @@ export default function RootLayout({
                     </div>
                   </div>
                 </footer>
-              </CartProvider>
-            </RecentlyViewedProvider>
-          </WishlistProvider>
+                </CartProvider>
+              </RecentlyViewedProvider>
+            </WishlistProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

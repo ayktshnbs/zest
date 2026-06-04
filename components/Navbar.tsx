@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { ShoppingBag, Search, Heart, X } from "lucide-react";
+import { ShoppingBag, Search, Heart, X, User } from "lucide-react";
 import { useCart } from "./CartProvider";
 import { useWishlist } from "./WishlistProvider";
+import { useAuth } from "./AuthProvider";
 import { CartSidebar } from "./CartSidebar";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,6 +17,7 @@ import { formatPrice } from "@/lib/utils";
 export const Navbar = () => {
   const { totalItems } = useCart();
   const { count: wishlistCount } = useWishlist();
+  const { user, isAuthenticated } = useAuth();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -132,6 +134,17 @@ export const Navbar = () => {
             >
               <Search size={18} strokeWidth={1.5} />
             </button>
+
+            <Link
+              href={isAuthenticated ? "/hesabim" : `/giris?next=${encodeURIComponent(pathname || "/")}`}
+              aria-label={isAuthenticated ? `Hesabım — ${user?.name}` : "Giriş yap"}
+              title={isAuthenticated ? user?.name : "Giriş yap"}
+              className={`p-2 transition-all duration-500 hidden sm:block ${
+                isScrolled ? "text-foreground" : "text-foreground/90"
+              }`}
+            >
+              <User size={18} strokeWidth={1.5} />
+            </Link>
 
             <Link
               href="/favoriler"
