@@ -1,26 +1,49 @@
 /**
- * Extracts up to 5 unique product images per item from `zest foto/<folder>`,
- * preferring JPG > PNG > TIFF, resizes to 1200px max, writes JPEG files to
- * public/products/{productId}/0.jpg ... 4.jpg.
+ * Extracts the DISTINCT product images for each item from `zest foto/<folder>`.
  *
- * Run: node scripts/build-product-images.js
+ * For every product it:
+ *   1. collects candidate files (jpg/jpeg/png, falling back to tiff only when
+ *      there aren't enough raster files), de-duped by filename stem,
+ *   2. walks them in a stable order (jpg first, then alphabetical) and keeps an
+ *      image only if it is visually distinct from the ones already kept, using a
+ *      64-bit difference hash (dHash) with a Hamming-distance gate — this drops
+ *      exact dupes, "… copy" files and near-identical / colour-variant frames,
+ *   3. resizes to 1200px max and writes JPEGs to public/products/{id}/0..n.jpg,
+ *   4. records the produced paths in lib/productImages.json (the catalog reads
+ *      this manifest, so image counts are never hardcoded).
+ *
+ * The first kept image (0.jpg) is unchanged from the previous 5-image run, so
+ * category hero images that point at /products/<id>/0.jpg stay stable.
+ *
+ * Run: node --max-old-space-size=4096 scripts/build-product-images.js
  */
 
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
 
-// Allow loading huge TIFFs into memory (some product shots are 60–90 MB).
 sharp.cache(false);
 sharp.concurrency(1);
 
 const SRC = "C:/Users/Aykut/Desktop/zest foto";
 const OUT = path.join(__dirname, "..", "public", "products");
-const MAX_PER_PRODUCT = 5;
+const MANIFEST = path.join(__dirname, "..", "lib", "productImages.json");
+
+const MAX_PER_PRODUCT = 12; // upper bound on distinct shots kept per product
+const MAX_CANDIDATES = 48; // cap files we bother hashing per product
+const MIN_RASTER_BEFORE_TIFF = 4; // only read slow TIFFs when raster is scarce
+// Two images count as "the same / similar" only when BOTH the structure
+// (grayscale difference hash) AND the colour are near-identical. This drops
+// exact dupes and "… copy" frames while KEEPING genuine colour/finish variants
+// (gold vs silver rim, dark vs light wood lid) and different angles.
+const STRUCT_THRESHOLD = 10; // max dHash Hamming distance to be "same shape"
+const COLOR_THRESHOLD = 45; // max per-cell RGB delta to be "same colour"
 const MAX_DIM = 1200;
 const QUALITY = 78;
 
-// Each value is the folder name under SRC.
+// Each value is either a folder name under SRC, or an object describing one or
+// more folders plus an optional filename filter (used when a folder holds
+// several colour variants that belong to separate products).
 const PRODUCT_SOURCES = {
   // Doğrayıcılar & Rondolar
   "dor-m1":   "M-14",
@@ -37,9 +60,12 @@ const PRODUCT_SOURCES = {
   "skl-esk0001": "M-ESK-0001",
   "skl-esk0002": "M-ESK-0002",
   "skl-esk0003": "M-ESK-0003",
-  "skl-esk0101": "M-ESK-0101",
-  "skl-esk0102": "M-ESK-0102",
-  "skl-esk0103": "M-ESK-0103",
+  // The 0101/0102/0103 folders are organised by camera angle and each holds the
+  // gold / gümüş / roze finishes. The three products are split by colour, so
+  // pull the matching finish across all three angle folders.
+  "skl-esk0101": { folders: ["M-ESK-0101", "M-ESK-0102", "M-ESK-0103"], match: /gold/i },
+  "skl-esk0102": { folders: ["M-ESK-0101", "M-ESK-0102", "M-ESK-0103"], match: /gumus/i },
+  "skl-esk0103": { folders: ["M-ESK-0101", "M-ESK-0102", "M-ESK-0103"], match: /roze/i },
   "skl-esk0211": "M-ESK-0211",
   "skl-esk0212": "M-ESK-0212",
   "skl-esk0213": "M-ESK-0213",
@@ -79,9 +105,11 @@ const PRODUCT_SOURCES = {
   "aks-kag":  "M-KAG-3001",
 };
 
-const EXT_PRIORITY = [".jpg", ".jpeg", ".png", ".tif", ".tiff"];
-// Skip "_copy" or "P11"-style flat layout markers when a base shot exists
-const SKIP_PSD = (name) => /\.psd$/i.test(name);
+const RASTER_EXTS = [".jpg", ".jpeg", ".png"];
+const TIFF_EXTS = [".tif", ".tiff"];
+const EXT_PRIORITY = [...RASTER_EXTS, ...TIFF_EXTS];
+
+const isPsd = (name) => /\.psd$/i.test(name);
 
 function walkFiles(dir) {
   const out = [];
@@ -97,50 +125,147 @@ function walkFiles(dir) {
     for (const it of items) {
       const full = path.join(d, it.name);
       if (it.isDirectory()) stack.push(full);
-      else if (!SKIP_PSD(it.name)) out.push(full);
+      else if (!isPsd(it.name)) out.push(full);
     }
   }
   return out;
 }
 
-function pick(files) {
-  // Group by stem (filename without ext), keep highest priority extension
+// De-dupe by filename stem (prefer higher-priority extension), then sort
+// jpg-first and alphabetically for a stable cover image. Accepts files from one
+// or more folders and an optional filename filter.
+function orderedCandidates(files, match) {
   const byStem = new Map();
   for (const f of files) {
     const ext = path.extname(f).toLowerCase();
     if (!EXT_PRIORITY.includes(ext)) continue;
-    const stem = path.basename(f, ext).toLowerCase();
+    if (match && !match.test(path.basename(f))) continue;
+    // Stem is folder-qualified so identical names in sibling folders don't clash.
+    const stem = (path.basename(path.dirname(f)) + "/" + path.basename(f, ext)).toLowerCase();
     const score = EXT_PRIORITY.indexOf(ext);
     const existing = byStem.get(stem);
-    if (!existing || existing.score > score) {
-      byStem.set(stem, { file: f, score });
-    }
+    if (!existing || existing.score > score) byStem.set(stem, { file: f, score });
   }
-
-  const chosen = Array.from(byStem.values()).sort((a, b) => {
-    // Prefer JPG-priority files first, then alphabetical for stability
+  const all = Array.from(byStem.values()).sort((a, b) => {
     if (a.score !== b.score) return a.score - b.score;
     return a.file.localeCompare(b.file, "en");
   });
 
-  // Avoid near-duplicates: filter out files that look like color variants
-  // (e.g. "_copy", roze/gold/gumus same shot). Take by deduped stem alone.
-  return chosen.slice(0, MAX_PER_PRODUCT).map((c) => c.file);
+  const raster = all.filter((c) => RASTER_EXTS.includes(path.extname(c.file).toLowerCase()));
+  const list = raster.length >= MIN_RASTER_BEFORE_TIFF ? raster : all;
+  return list.slice(0, MAX_CANDIDATES).map((c) => c.file);
 }
 
-async function processOne(id, folderName) {
-  const folder = path.join(SRC, folderName);
-  if (!fs.existsSync(folder)) {
-    console.warn(`  ! missing folder: ${folder}`);
-    return 0;
+// One read per file → a 9x8 RGB thumbnail, from which we derive both a
+// structural difference hash (grayscale) and a per-cell colour signature.
+async function signature(file) {
+  const ext = path.extname(file).toLowerCase();
+  const opts = { limitInputPixels: 5_000_000_000, sequentialRead: true, failOn: "none" };
+  if (TIFF_EXTS.includes(ext)) opts.unlimited = true;
+  const w = 9;
+  const h = 8;
+  const buf = await sharp(file, opts)
+    .flatten({ background: "#ffffff" })
+    .resize(w, h, { fit: "fill" })
+    .removeAlpha()
+    .raw()
+    .toBuffer(); // w*h*3 bytes
+  const gray = new Uint8Array(w * h);
+  for (let i = 0; i < w * h; i++) {
+    gray[i] = (buf[i * 3] + buf[i * 3 + 1] + buf[i * 3 + 2]) / 3;
   }
-  const all = walkFiles(folder);
-  const picks = pick(all);
-  if (picks.length === 0) {
-    console.warn(`  ! no usable images in ${folderName}`);
-    return 0;
+  const struct = new Uint8Array(64);
+  let k = 0;
+  for (let row = 0; row < h; row++) {
+    for (let col = 0; col < w - 1; col++) {
+      struct[k++] = gray[row * w + col] < gray[row * w + col + 1] ? 1 : 0;
+    }
+  }
+  return { struct, rgb: buf, cells: w * h };
+}
+
+function hamming(a, b) {
+  let d = 0;
+  for (let i = 0; i < 64; i++) if (a[i] !== b[i]) d++;
+  return d;
+}
+
+// Largest per-cell RGB delta between two signatures (0–765).
+function colorMaxDelta(a, b) {
+  let max = 0;
+  for (let i = 0; i < a.cells; i++) {
+    const d =
+      Math.abs(a.rgb[i * 3] - b.rgb[i * 3]) +
+      Math.abs(a.rgb[i * 3 + 1] - b.rgb[i * 3 + 1]) +
+      Math.abs(a.rgb[i * 3 + 2] - b.rgb[i * 3 + 2]);
+    if (d > max) max = d;
+  }
+  return max;
+}
+
+// "Same / similar" only when shape AND colour are both near-identical.
+function isDuplicate(a, b) {
+  return hamming(a.struct, b.struct) < STRUCT_THRESHOLD && colorMaxDelta(a, b) < COLOR_THRESHOLD;
+}
+
+async function writeImage(file, outPath) {
+  const ext = path.extname(file).toLowerCase();
+  const opts = { limitInputPixels: 5_000_000_000, sequentialRead: true, failOn: "none" };
+  if (TIFF_EXTS.includes(ext)) opts.unlimited = true;
+  await sharp(file, opts)
+    .rotate()
+    .flatten({ background: "#ffffff" })
+    .resize(MAX_DIM, MAX_DIM, { fit: "inside", withoutEnlargement: true })
+    .jpeg({ quality: QUALITY, mozjpeg: true, progressive: true })
+    .toFile(outPath);
+}
+
+function resolveSource(spec) {
+  if (typeof spec === "string") return { folders: [spec], match: undefined };
+  return { folders: spec.folders, match: spec.match };
+}
+
+async function processOne(id, spec) {
+  const { folders, match } = resolveSource(spec);
+  const files = [];
+  for (const folderName of folders) {
+    const folder = path.join(SRC, folderName);
+    if (!fs.existsSync(folder)) {
+      console.warn(`  ! missing folder: ${folder}`);
+      continue;
+    }
+    files.push(...walkFiles(folder));
+  }
+  const label = folders.join("+");
+
+  const candidates = orderedCandidates(files, match);
+  if (candidates.length === 0) {
+    console.warn(`  ! no usable images for ${id} (${label})`);
+    return [];
   }
 
+  // Select visually-distinct files in order.
+  const keptSigs = [];
+  const keptFiles = [];
+  let skipped = 0;
+  for (const file of candidates) {
+    if (keptFiles.length >= MAX_PER_PRODUCT) break;
+    let sig;
+    try {
+      sig = await signature(file);
+    } catch {
+      continue; // unreadable, skip
+    }
+    const dup = keptSigs.some((ks) => isDuplicate(ks, sig));
+    if (dup) {
+      skipped++;
+      continue;
+    }
+    keptSigs.push(sig);
+    keptFiles.push(file);
+  }
+
+  // Write outputs.
   const outDir = path.join(OUT, id);
   if (fs.existsSync(outDir)) {
     for (const f of fs.readdirSync(outDir)) fs.unlinkSync(path.join(outDir, f));
@@ -148,46 +273,43 @@ async function processOne(id, folderName) {
     fs.mkdirSync(outDir, { recursive: true });
   }
 
+  const webPaths = [];
   let n = 0;
-  for (const file of picks) {
+  for (const file of keptFiles) {
     const outPath = path.join(outDir, `${n}.jpg`);
     try {
-      // Force RGB for TIFF, flatten any alpha against white
-      const ext = path.extname(file).toLowerCase();
-      const opts = {
-        limitInputPixels: 5_000_000_000,
-        sequentialRead: true,
-        failOn: "none",
-      };
-      if (ext === ".tif" || ext === ".tiff") {
-        opts.unlimited = true;
-      }
-      await sharp(file, opts)
-        .rotate()
-        .flatten({ background: "#ffffff" })
-        .resize(MAX_DIM, MAX_DIM, { fit: "inside", withoutEnlargement: true })
-        .jpeg({ quality: QUALITY, mozjpeg: true, progressive: true })
-        .toFile(outPath);
+      await writeImage(file, outPath);
+      webPaths.push(`/products/${id}/${n}.jpg`);
       n++;
     } catch (err) {
       console.warn(`    ! ${path.basename(file)} skipped: ${err.message}`);
     }
   }
-  console.log(`  ✓ ${id}: ${n} images (from ${folderName}/${picks.length} candidates)`);
-  return n;
+
+  console.log(
+    `  ✓ ${id}: ${n} distinct images (${label}, ${candidates.length} candidates, ${skipped} similar dropped)`,
+  );
+  return webPaths;
 }
 
 (async () => {
   if (!fs.existsSync(OUT)) fs.mkdirSync(OUT, { recursive: true });
   const entries = Object.entries(PRODUCT_SOURCES);
   console.log(`Processing ${entries.length} products...`);
-  let ok = 0,
-    missing = [];
+  const manifest = {};
+  const missing = [];
   for (const [id, folder] of entries) {
-    const n = await processOne(id, folder);
-    if (n > 0) ok++;
+    const paths = await processOne(id, folder);
+    if (paths.length > 0) manifest[id] = paths;
     else missing.push(id);
   }
-  console.log(`\nDone. ${ok}/${entries.length} processed.`);
+
+  const sorted = {};
+  for (const key of Object.keys(manifest).sort()) sorted[key] = manifest[key];
+  fs.writeFileSync(MANIFEST, JSON.stringify(sorted, null, 2) + "\n");
+
+  const total = Object.values(manifest).reduce((s, a) => s + a.length, 0);
+  console.log(`\nDone. ${Object.keys(manifest).length}/${entries.length} products, ${total} images.`);
+  console.log(`Manifest written to ${path.relative(process.cwd(), MANIFEST)}`);
   if (missing.length) console.log(`Missing/empty: ${missing.join(", ")}`);
 })();
