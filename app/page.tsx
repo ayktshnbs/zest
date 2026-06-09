@@ -50,7 +50,7 @@ export default function Home() {
       >
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1764526624453-db32c24eca55?auto=format&fit=crop&q=80&w=2000"
+            src="/hero.jpg"
             alt="Modern Bright Kitchen Lifestyle Background"
             fill
             className="object-cover opacity-60 md:opacity-80 contrast-[1.05] saturate-[1.05] object-center"
