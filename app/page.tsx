@@ -83,14 +83,14 @@ export default function Home() {
               }}
             >
               <h1 className="font-audiowide text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-5 md:mb-6 tracking-[-0.01em] text-[#1d1d1f] [text-wrap:balance]">
-                Seçkin Ev Gereçleri.
+                Seçkin Ev Gereçleri
                 <br />
-                <span className="text-[#1d1d1f]/55">Zahmetsiz Yaşam.</span>
+                <span className="text-[#1d1d1f]/55">Zahmetsiz Yaşam</span>
               </h1>
 
-              <p className="font-body text-base md:text-lg lg:text-xl text-[#1d1d1f]/60 max-w-xl mx-auto mb-8 md:mb-10 leading-relaxed font-medium [text-wrap:pretty]">
+              <p className="font-body text-base md:text-lg lg:text-xl text-[#1d1d1f]/90 max-w-xl mx-auto mb-8 md:mb-10 leading-relaxed font-medium [text-wrap:pretty]">
                 Mutfaktan tüm yaşam alanlarınıza uzanan, minimalist lüks bir deneyim için
-                tasarlanmış özel koleksiyon.
+                tasarlanmış özel koleksiyon
               </p>
             </motion.div>
 
