@@ -1,7 +1,7 @@
-# Zest Kitchene — Backend
+# Zest Home — Backend
 
 Authentication, user management, orders, and payments service for the
-Zest Kitchene storefront. Built on **Node.js 20+ / Express / PostgreSQL**.
+Zest Home storefront. Built on **Node.js 20+ / Express / PostgreSQL**.
 
 ## Layout
 

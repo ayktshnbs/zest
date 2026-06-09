@@ -96,8 +96,8 @@ const timeline = [
   },
   {
     year: "2022",
-    title: "Zest Kitchene Doğuyor",
-    en: "Birth of Zest Kitchene",
+    title: "Zest Home Doğuyor",
+    en: "Birth of Zest Home",
     body: "Atölyenin bilgi birikimini modern mutfak sahnesine taşıdık. Pratik, estetik ve dayanıklı gereçler bir markada birleşti.",
   },
   {
@@ -146,7 +146,7 @@ export default function AboutPage() {
               Better for the kitchen.
             </p>
             <p className="text-foreground/60 text-base md:text-lg max-w-2xl leading-relaxed">
-              Zest Kitchene; mühendislik atölyesinden doğan, mutfak sahnesine
+              Zest Home; mühendislik atölyesinden doğan, mutfak sahnesine
               taşınan bir markadır. Bıçağı tutan ele, tezgâhın üzerine, kapağın
               tıkırtısına kadar her detayı tasarlıyor; tasarımdan sevkiyata kadar
               her aşamayı kendi çatımız altında üretiyoruz.
@@ -173,7 +173,7 @@ export default function AboutPage() {
             <div className="relative aspect-[4/5] overflow-hidden bg-secondary/30">
               <Image
                 src="/products/srv-kal1001/0.jpg"
-                alt="Zest Kitchene atölyesinden bir kare"
+                alt="Zest Home atölyesinden bir kare"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 40vw"
@@ -218,7 +218,7 @@ export default function AboutPage() {
               demekti.
             </p>
             <p>
-              2022'de bu birikimi Zest Kitchene markasıyla bir araya getirdik.
+              2022'de bu birikimi Zest Home markasıyla bir araya getirdik.
               Doğrayıcılardan saklama kaplarına, rendelerden servis tabaklarına
               uzanan ürün ailemizi; günlük kullanımda yıpranmayan, tezgâhın
               üzerinde sade durmayı bilen, elinize doğal yerleşen detaylarla
@@ -248,7 +248,7 @@ export default function AboutPage() {
               </p>
             </div>
             <p className="text-foreground/50 text-sm md:text-base max-w-md leading-relaxed">
-              Bir Zest Kitchene ürünü, sizin elinize ulaşana kadar bizimle beş
+              Bir Zest Home ürünü, sizin elinize ulaşana kadar bizimle beş
               durakta buluşur. Hepsi de aynı kapının altında.
             </p>
           </div>

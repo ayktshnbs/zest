@@ -164,7 +164,7 @@ export const MobileNav = () => {
                     Menü
                   </p>
                   <p className="text-[10px] text-foreground/40 font-body mt-0.5">
-                    Zest Kitchene
+                    Zest Home
                   </p>
                 </div>
                 <button

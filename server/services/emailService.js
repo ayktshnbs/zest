@@ -32,7 +32,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
 };
 
 export const sendPasswordResetEmail = async ({ to, name, resetUrl }) => {
-  const subject = "Zest Kitchene · Şifrenizi sıfırlayın";
+  const subject = "Zest Home · Şifrenizi sıfırlayın";
   const text = `Merhaba ${name},
 
 Şifre sıfırlama talebinde bulundunuz. Aşağıdaki bağlantı 1 saat geçerlidir:
@@ -41,11 +41,11 @@ ${resetUrl}
 
 Bu işlemi siz başlatmadıysanız bu e-postayı yok sayabilirsiniz.
 
-— Zest Kitchene
+— Zest Home
 `;
   const html = `
     <div style="font-family:system-ui,sans-serif;max-width:520px;margin:0 auto;padding:32px;color:#111">
-      <p style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#888;margin:0 0 24px">Zest Kitchene</p>
+      <p style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#888;margin:0 0 24px">Zest Home</p>
       <h1 style="font-size:22px;margin:0 0 16px">Şifrenizi sıfırlayın</h1>
       <p>Merhaba ${escapeHtml(name)},</p>
       <p>Şifre sıfırlama talebinde bulundunuz. Aşağıdaki bağlantı <strong>1 saat</strong> geçerlidir:</p>
@@ -56,29 +56,29 @@ Bu işlemi siz başlatmadıysanız bu e-postayı yok sayabilirsiniz.
         <span style="word-break:break-all">${resetUrl}</span>
       </p>
       <p style="font-size:13px;color:#666">Bu işlemi siz başlatmadıysanız bu e-postayı yok sayabilirsiniz.</p>
-      <p style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#aaa;margin-top:32px">— Zest Kitchene</p>
+      <p style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#aaa;margin-top:32px">— Zest Home</p>
     </div>
   `;
   return sendEmail({ to, subject, html, text });
 };
 
 export const sendWelcomeEmail = async ({ to, name, loginUrl }) => {
-  const subject = "Zest Kitchene'e hoş geldiniz";
+  const subject = "Zest Home'e hoş geldiniz";
   const text = `Hoş geldiniz ${name}!
 
 Hesabınız oluşturuldu. Buradan giriş yapabilirsiniz: ${loginUrl}
 
-— Zest Kitchene
+— Zest Home
 `;
   const html = `
     <div style="font-family:system-ui,sans-serif;max-width:520px;margin:0 auto;padding:32px;color:#111">
-      <p style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#888;margin:0 0 24px">Zest Kitchene</p>
+      <p style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#888;margin:0 0 24px">Zest Home</p>
       <h1 style="font-size:22px;margin:0 0 16px">Hoş geldiniz, ${escapeHtml(name)}</h1>
       <p>Hesabınız oluşturuldu. Mutfak için daha iyisini keşfetmeye hazırsınız.</p>
       <p style="margin:24px 0">
         <a href="${loginUrl}" style="display:inline-block;padding:12px 20px;background:#111;color:#fff;text-decoration:none;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Giriş Yap</a>
       </p>
-      <p style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#aaa;margin-top:32px">— Zest Kitchene</p>
+      <p style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#aaa;margin-top:32px">— Zest Home</p>
     </div>
   `;
   return sendEmail({ to, subject, html, text });

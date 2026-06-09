@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Truck, Package, Clock, MapPin } from "lucide-react";
 
 export const metadata = {
-  title: "Kargo & Teslimat | Zest Kitchene",
+  title: "Kargo & Teslimat | Zest Home",
   description: "Kargo ve teslimat süreçleri hakkında bilmeniz gerekenler.",
 };
 

@@ -1,4 +1,4 @@
-// Thin fetch wrapper for the Zest Kitchene backend.
+// Thin fetch wrapper for the Zest Home backend.
 //
 // All requests include credentials so HTTP-only cookies travel. For
 // state-changing requests we read the `csrf` cookie (set by GET

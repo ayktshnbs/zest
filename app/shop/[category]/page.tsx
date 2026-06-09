@@ -15,9 +15,9 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { category: string } }) {
   const cat = categoryMap[params.category];
-  if (!cat) return { title: "Kategori | Zest Kitchene" };
+  if (!cat) return { title: "Kategori | Zest Home" };
   return {
-    title: `${cat.label} | Zest Kitchene`,
+    title: `${cat.label} | Zest Home`,
     description: cat.description,
   };
 }
