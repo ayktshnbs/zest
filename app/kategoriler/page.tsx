@@ -30,52 +30,58 @@ export default function CategoriesPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-          {categories.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/shop/${cat.slug}`}
-              className="group block"
-            >
-              <div className="relative aspect-[4/5] overflow-hidden bg-secondary/30 mb-6">
-                <Image
-                  src={cat.image}
-                  alt={cat.label}
-                  fill
-                  className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 text-white">
-                  <span className="font-audiowide text-[9px] uppercase tracking-[0.4em] opacity-70">
-                    {productCounts[cat.slug] ?? 0} ürün
-                  </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-5xl mx-auto">
+          {categories.map((cat) => {
+            const count = productCounts[cat.slug] ?? 0;
+            const comingSoon = count === 0;
+            return (
+              <Link
+                key={cat.slug}
+                href={`/shop/${cat.slug}`}
+                className="group block"
+              >
+                <div className="relative aspect-[4/5] overflow-hidden bg-secondary/30 mb-6">
+                  <Image
+                    src={cat.image}
+                    alt={cat.label}
+                    fill
+                    className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  <div className="absolute bottom-6 left-6 right-6 text-white">
+                    <span className="font-audiowide text-[9px] uppercase tracking-[0.4em] opacity-70">
+                      {comingSoon ? "Çok Yakında" : `${count} ürün`}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h3 className="font-audiowide text-lg uppercase tracking-wider text-foreground mb-2">
-                    {cat.label}
-                  </h3>
-                  <p className="text-foreground/40 text-sm leading-relaxed">{cat.description}</p>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="font-audiowide text-lg uppercase tracking-wider text-foreground mb-2">
+                      {cat.label}
+                    </h3>
+                    <p className="text-foreground/40 text-sm leading-relaxed">{cat.description}</p>
+                  </div>
+                  <ArrowRight
+                    size={20}
+                    className="text-foreground/30 group-hover:text-foreground group-hover:translate-x-1 transition-all mt-1 flex-shrink-0"
+                  />
                 </div>
-                <ArrowRight
-                  size={20}
-                  className="text-foreground/30 group-hover:text-foreground group-hover:translate-x-1 transition-all mt-1 flex-shrink-0"
-                />
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {cat.subcategories.slice(0, 3).map((s) => (
-                  <span
-                    key={s.slug}
-                    className="text-[10px] font-body uppercase tracking-[0.2em] text-foreground/40 border border-foreground/10 px-2.5 py-1"
-                  >
-                    {s.label}
-                  </span>
-                ))}
-              </div>
-            </Link>
-          ))}
+                {cat.subcategories.length > 0 ? (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {cat.subcategories.slice(0, 4).map((s) => (
+                      <span
+                        key={s.slug}
+                        className="text-[10px] font-body uppercase tracking-[0.2em] text-foreground/40 border border-foreground/10 px-2.5 py-1"
+                      >
+                        {s.label}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </main>

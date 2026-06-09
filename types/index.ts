@@ -38,6 +38,7 @@ export interface Subcategory {
   slug: string;
   label: string;
   description?: string;
+  image?: string;
 }
 
 export interface Category {

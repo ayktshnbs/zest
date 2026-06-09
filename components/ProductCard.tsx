@@ -112,7 +112,7 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
 
       <div className={`pt-6 flex flex-col items-center text-center ${compact ? "px-1" : "px-2"}`}>
         <span className="font-audiowide text-[8px] uppercase tracking-[0.4em] text-foreground/30 mb-2">
-          {product.categoryLabel}
+          {product.subcategoryLabel ?? product.categoryLabel}
         </span>
 
         <Link href={`/products/${product.id}`} className="block mb-2 w-full">

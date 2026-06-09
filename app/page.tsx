@@ -7,7 +7,7 @@ import {
   discountedProducts,
   products,
 } from "@/lib/products";
-import { categories } from "@/lib/categories";
+import { categoryMap } from "@/lib/categories";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductRow } from "@/components/ProductRow";
 import { RecentlyViewedRow } from "@/components/RecentlyViewedRow";
@@ -39,6 +39,7 @@ export default function Home() {
   const newArrivalsRow = newArrivals.length > 0 ? newArrivals : products.slice(0, 4);
   const discountedRow =
     discountedProducts.length > 0 ? discountedProducts : products.slice(0, 4);
+  const kitchenGroups = categoryMap["mutfak"]?.subcategories ?? [];
 
   return (
     <main className="min-h-screen bg-background relative">
@@ -49,8 +50,8 @@ export default function Home() {
       >
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=80&w=2000"
-            alt="Modern Kitchen Essentials Background"
+            src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&q=80&w=2000"
+            alt="Modern Home Lifestyle Background"
             fill
             className="object-cover opacity-60 md:opacity-80 contrast-[1.05] saturate-[1.05] object-center"
             priority
@@ -156,16 +157,16 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
-            {categories.map((cat) => (
+            {kitchenGroups.map((sub) => (
               <Link
-                key={cat.slug}
-                href={`/shop/${cat.slug}`}
+                key={sub.slug}
+                href={`/shop/mutfak?sub=${sub.slug}`}
                 className="group block"
               >
                 <div className="relative aspect-square overflow-hidden bg-[#f5f5f7]">
                   <Image
-                    src={cat.image}
-                    alt={cat.label}
+                    src={sub.image ?? categoryMap["mutfak"].image}
+                    alt={sub.label}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
@@ -173,7 +174,7 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 </div>
                 <p className="font-audiowide text-[10px] uppercase tracking-[0.25em] text-black mt-3 group-hover:opacity-60 transition-opacity">
-                  {cat.label}
+                  {sub.label}
                 </p>
               </Link>
             ))}

@@ -9,7 +9,9 @@ import { Navbar } from "@/components/Navbar";
 import { MobileNav } from "@/components/MobileNav";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Link from "next/link";
-import { categories } from "@/lib/categories";
+import { categoryMap } from "@/lib/categories";
+
+const kitchenGroups = categoryMap["mutfak"]?.subcategories ?? [];
 
 const inter = Inter({
   subsets: ["latin"],
@@ -83,13 +85,13 @@ export default function RootLayout({
                               Tüm Ürünler
                             </Link>
                           </li>
-                          {categories.slice(0, 4).map((c) => (
-                            <li key={c.slug}>
+                          {kitchenGroups.slice(0, 4).map((s) => (
+                            <li key={s.slug}>
                               <Link
-                                href={`/shop/${c.slug}`}
+                                href={`/shop/mutfak?sub=${s.slug}`}
                                 className="hover:text-primary transition-colors"
                               >
-                                {c.label}
+                                {s.label}
                               </Link>
                             </li>
                           ))}

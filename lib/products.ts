@@ -1089,12 +1089,41 @@ const buildImages = (id: string, count: number) =>
 
 const ensureSlug = (s: string) => slugify(s);
 
+// Every existing product belongs to the "Mutfak" (kitchen) top-level category.
+// The seed's `category` field (the former top-level group) becomes a
+// subcategory of Mutfak; its former fine-grained `subcategory` is preserved as
+// a search tag so the older groupings stay discoverable via search.
+const KITCHEN_CATEGORY = "mutfak";
+
+const FINE_SUBCATEGORY_LABELS: Record<string, string> = {
+  "vakumlu-kavanozlar": "Vakumlu Kavanozlar",
+  "dikdortgen-kaplar": "Dikdörtgen Kaplar",
+  "cam-gorunumlu": "Cam Görünümlü Kaplar",
+  "ahsap-kapakli": "Ahşap Kapaklı Kavanozlar",
+  "saklama-setleri": "Saklama Setleri",
+  "manuel-dograyicilar": "Manuel Doğrayıcılar",
+  "el-rondolari": "El Rondoları",
+  "ipli-dograyicilar": "İpli Doğrayıcılar",
+  "mandolin-dilimleyiciler": "Mandolin Dilimleyiciler",
+  "cok-yonlu-rendeler": "Çok Yönlü Rendeler",
+  "profesyonel-setler": "Profesyonel Setler",
+  "salata-kaseleri": "Salata & Servis Kaseleri",
+  "servis-tabaklari": "Servis Tabakları",
+  "surahi-karaf": "Sürahi & Karaflar",
+  "spatula-kepce-setleri": "Spatula & Kepçe Setleri",
+  "olcu-kaplari": "Ölçü Kapları",
+  "salata-kurutucular": "Salata Kurutucular",
+  "soyacaklar": "Soyacaklar",
+  "havluluk-standlar": "Havluluk & Standlar",
+  "buz-kaliplari": "Buz Kalıpları",
+};
+
 export const products: Product[] = seeds.map((seed) => {
-  const cat = categoryMap[seed.category];
-  if (!cat) throw new Error(`Unknown category: ${seed.category}`);
-  const sub = seed.subcategory
-    ? cat.subcategories.find((x) => x.slug === seed.subcategory)
-    : undefined;
+  const cat = categoryMap[KITCHEN_CATEGORY];
+  if (!cat) throw new Error(`Unknown category: ${KITCHEN_CATEGORY}`);
+  // The former top-level group is now a subcategory of Mutfak.
+  const subSlug = seed.category;
+  const sub = cat.subcategories.find((x) => x.slug === subSlug);
 
   const images = buildImages(seed.id, seed.imageCount);
   const cover = images[0];
@@ -1103,6 +1132,16 @@ export const products: Product[] = seeds.map((seed) => {
         ((seed.originalPrice - seed.price) / seed.originalPrice) * 100,
       )
     : undefined;
+
+  // Keep the former fine-grained grouping searchable via tags.
+  const fineLabel = seed.subcategory
+    ? FINE_SUBCATEGORY_LABELS[seed.subcategory]
+    : undefined;
+  const tags = [
+    ...(seed.tags ?? []),
+    ...(seed.subcategory ? [seed.subcategory] : []),
+    ...(fineLabel ? [fineLabel] : []),
+  ];
 
   return {
     id: seed.id,
@@ -1113,9 +1152,9 @@ export const products: Product[] = seeds.map((seed) => {
     price: seed.price,
     originalPrice: seed.originalPrice,
     discountPercent,
-    category: seed.category,
+    category: KITCHEN_CATEGORY,
     categoryLabel: cat.label,
-    subcategory: seed.subcategory,
+    subcategory: subSlug,
     subcategoryLabel: sub?.label,
     brand: "Zest Home",
     sku: `ZST-${seed.id.toUpperCase()}`,
@@ -1124,7 +1163,7 @@ export const products: Product[] = seeds.map((seed) => {
     reviewCount: seed.reviewCount,
     imageUrl: cover,
     images,
-    tags: seed.tags ?? [],
+    tags,
     features: seed.features,
     materials: seed.materials,
     care: seed.care,

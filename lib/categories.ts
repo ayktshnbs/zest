@@ -2,84 +2,54 @@ import { Category } from "@/types";
 
 export const categories: Category[] = [
   {
-    slug: "saklama-kaplari",
-    shortLabel: "Saklama",
-    label: "Saklama Kapları",
+    slug: "mutfak",
+    shortLabel: "Mutfak",
+    label: "Mutfak",
     description:
-      "Vakumlu kapaklı, modüler ve hava geçirmez saklama çözümleriyle mutfağınız her zaman düzenli kalsın.",
-    image: "/products/skl-esk1001/0.jpg",
-    subcategories: [
-      { slug: "vakumlu-kavanozlar", label: "Vakumlu Kavanozlar" },
-      { slug: "dikdortgen-kaplar", label: "Dikdörtgen Kaplar" },
-      { slug: "cam-gorunumlu", label: "Cam Görünümlü Kaplar" },
-      { slug: "ahsap-kapakli", label: "Ahşap Kapaklı Kavanozlar" },
-      { slug: "saklama-setleri", label: "Saklama Setleri" },
-    ],
-  },
-  {
-    slug: "dograyicilar",
-    shortLabel: "Doğrayıcı",
-    label: "Doğrayıcılar & Rondolar",
-    description:
-      "Manuel doğrayıcılar, ipli rondolar ve çok bıçaklı sistemlerle hızlı hazırlık.",
-    image: "/products/dor-m1/0.jpg",
-    subcategories: [
-      { slug: "manuel-dograyicilar", label: "Manuel Doğrayıcılar" },
-      { slug: "el-rondolari", label: "El Rondoları" },
-      { slug: "ipli-dograyicilar", label: "İpli Doğrayıcılar" },
-    ],
-  },
-  {
-    slug: "rendeler-dilimleyiciler",
-    shortLabel: "Rende",
-    label: "Rendeler & Dilimleyiciler",
-    description:
-      "Mandolin dilimleyiciler ve çok yönlü rendelerle pratik ön hazırlık.",
-    image: "/products/rnd-rev/0.jpg",
-    subcategories: [
-      { slug: "mandolin-dilimleyiciler", label: "Mandolin Dilimleyiciler" },
-      { slug: "cok-yonlu-rendeler", label: "Çok Yönlü Rendeler" },
-      { slug: "profesyonel-setler", label: "Profesyonel Setler" },
-    ],
-  },
-  {
-    slug: "servis-sofra",
-    shortLabel: "Servis",
-    label: "Servis & Sofra",
-    description:
-      "Salata kaseleri, servis tabakları ve sürahilerle sofralarınıza özen.",
-    image: "/products/srv-kal1001/0.jpg",
-    subcategories: [
-      { slug: "salata-kaseleri", label: "Salata & Servis Kaseleri" },
-      { slug: "servis-tabaklari", label: "Servis Tabakları" },
-      { slug: "surahi-karaf", label: "Sürahi & Karaflar" },
-    ],
-  },
-  {
-    slug: "mutfak-aletleri",
-    shortLabel: "Aletler",
-    label: "Mutfak Aletleri",
-    description:
-      "Spatula, kepçe, ölçü kabı, salata kurutucu ve soyacaklarla vazgeçilmez mutfak araçları.",
+      "Doğrayıcılardan saklama kaplarına, servis gereçlerinden mutfak aletlerine kadar mutfağınızın her köşesi için özenle seçilmiş ürünler.",
     image: "/products/alt-kmn/0.jpg",
     subcategories: [
-      { slug: "spatula-kepce-setleri", label: "Spatula & Kepçe Setleri" },
-      { slug: "olcu-kaplari", label: "Ölçü Kapları" },
-      { slug: "salata-kurutucular", label: "Salata Kurutucular" },
-      { slug: "soyacaklar", label: "Soyacaklar" },
+      {
+        slug: "saklama-kaplari",
+        label: "Saklama Kapları",
+        image: "/products/skl-esk1001/0.jpg",
+      },
+      {
+        slug: "dograyicilar",
+        label: "Doğrayıcılar & Rondolar",
+        image: "/products/dor-m1/0.jpg",
+      },
+      {
+        slug: "rendeler-dilimleyiciler",
+        label: "Rendeler & Dilimleyiciler",
+        image: "/products/rnd-rev/0.jpg",
+      },
+      {
+        slug: "servis-sofra",
+        label: "Servis & Sofra",
+        image: "/products/srv-kal1001/0.jpg",
+      },
+      {
+        slug: "mutfak-aletleri",
+        label: "Mutfak Aletleri",
+        image: "/products/alt-kmn/0.jpg",
+      },
+      {
+        slug: "mutfak-aksesuarlari",
+        label: "Mutfak Aksesuarları",
+        image: "/products/aks-kag/0.jpg",
+      },
     ],
   },
   {
-    slug: "mutfak-aksesuarlari",
-    shortLabel: "Aksesuar",
-    label: "Mutfak Aksesuarları",
+    slug: "genel-ev-urunleri",
+    shortLabel: "Ev",
+    label: "Genel Ev Ürünleri",
     description:
-      "Havluluklar, buz kalıpları ve düzenleyiciler ile mutfak detayları.",
-    image: "/products/aks-kag/0.jpg",
-    subcategories: [
-      { slug: "havluluk-standlar", label: "Havluluk & Standlar" },
-      { slug: "buz-kaliplari", label: "Buz Kalıpları" },
-    ],
+      "Evinizin her alanına değer katan pratik ve şık ürünler. Yeni koleksiyon çok yakında sizlerle.",
+    image:
+      "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?auto=format&fit=crop&q=80&w=1200",
+    subcategories: [],
   },
 ];
 
