@@ -72,7 +72,7 @@ export const MobileNav = () => {
 
   return (
     <>
-      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-[440px]">
+      <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-[440px]">
         <nav className="bg-black/85 backdrop-blur-2xl rounded-full border border-white/10 shadow-2xl flex items-center justify-between px-4 py-3">
           {navItems.map((item) => {
             const isActive = isItemActive(item.href);
@@ -146,7 +146,7 @@ export const MobileNav = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]"
+              className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]"
               onClick={() => setIsMenuOpen(false)}
             />
 
@@ -156,7 +156,7 @@ export const MobileNav = () => {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 240 }}
-              className="md:hidden fixed inset-x-0 bottom-0 top-12 bg-background z-[101] shadow-2xl flex flex-col overflow-hidden rounded-t-3xl border-t border-foreground/10"
+              className="lg:hidden fixed inset-x-0 bottom-0 top-12 bg-background z-[101] shadow-2xl flex flex-col overflow-hidden rounded-t-3xl border-t border-foreground/10"
             >
               <div className="px-6 pt-5 pb-4 flex items-center justify-between border-b border-foreground/10">
                 <div>

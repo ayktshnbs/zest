@@ -56,9 +56,9 @@ export default function RootLayout({
               <RecentlyViewedProvider>
                 <CartProvider>
                 <Navbar />
-                <div className="min-h-screen pb-24 md:pb-0">{children}</div>
+                <div className="min-h-screen pb-24 lg:pb-0">{children}</div>
                 <MobileNav />
-                <footer className="bg-surface text-text-primary pt-24 pb-12 hidden md:block border-t border-border">
+                <footer className="bg-surface text-text-primary pt-24 pb-12 hidden lg:block border-t border-border">
                   <div className="max-w-7xl mx-auto px-5 md:px-16">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
                       <div className="col-span-1 md:col-span-2">

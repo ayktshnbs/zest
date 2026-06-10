@@ -128,7 +128,7 @@ export default function CartPage() {
 
         <div className="grid lg:grid-cols-12 gap-12">
           {/* Items */}
-          <section className="lg:col-span-8 space-y-8">
+          <section className="lg:col-span-8 min-w-0 space-y-8">
             <AnimatePresence>
               {cart.map((item) => (
                 <motion.article
@@ -211,7 +211,7 @@ export default function CartPage() {
           </section>
 
           {/* Summary */}
-          <aside className="lg:col-span-4">
+          <aside className="lg:col-span-4 min-w-0">
             <div className="lg:sticky lg:top-32 space-y-6 border border-foreground/10 p-6 md:p-8">
               <h2 className="font-audiowide text-sm uppercase tracking-[0.3em]">
                 Sipariş Özeti
