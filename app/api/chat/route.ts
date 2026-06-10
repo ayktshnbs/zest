@@ -10,10 +10,27 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Free-tier Gemini model. Override with GEMINI_MODEL if this name changes.
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+// Try these free-tier models in order; the first one the key is allowed to
+// use wins. Free-tier quota varies by model/region, so a single hard-coded
+// model can return 429 (RESOURCE_EXHAUSTED) even on the first request.
+// Override with GEMINI_MODEL (single name or comma-separated list).
+const DEFAULT_MODELS = [
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-2.5-flash-lite",
+  "gemini-2.0-flash-lite",
+];
+const ENV_MODELS = (process.env.GEMINI_MODEL || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+const MODEL_CHAIN = ENV_MODELS.length ? ENV_MODELS : DEFAULT_MODELS;
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
+type GeminiContent = { role: "user" | "model"; parts: { text: string }[] };
+type GeminiResult =
+  | { ok: true; model: string; reply: string }
+  | { ok: false; status: number; detail: string; modelsTried: string[] };
 
 // Compact, always-current product catalog injected as context.
 const catalogText = products
@@ -59,6 +76,61 @@ ${categoriesText}
 Ürün kataloğu (ad | kategori | fiyat | stok | açıklama | bağlantı):
 ${catalogText}`;
 
+async function callGemini(
+  apiKey: string,
+  contents: GeminiContent[],
+): Promise<GeminiResult> {
+  let lastStatus = 0;
+  let lastDetail = "no attempt";
+
+  for (const model of MODEL_CHAIN) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents,
+          generationConfig: { temperature: 0.4, maxOutputTokens: 800 },
+        }),
+      });
+    } catch (err) {
+      lastStatus = 0;
+      lastDetail = `fetch failed: ${String(err)}`;
+      continue;
+    }
+
+    if (!res.ok) {
+      lastStatus = res.status;
+      lastDetail = (await res.text()).slice(0, 600);
+      console.error(`Gemini ${model} -> ${res.status}: ${lastDetail}`);
+      continue; // try the next model (404 = no such model, 429 = no quota)
+    }
+
+    const data = (await res.json()) as {
+      candidates?: {
+        content?: { parts?: { text?: string }[] };
+        finishReason?: string;
+      }[];
+    };
+    const reply =
+      data.candidates?.[0]?.content?.parts
+        ?.map((p) => p.text ?? "")
+        .join("")
+        .trim() ?? "";
+
+    if (reply) return { ok: true, model, reply };
+
+    lastStatus = 200;
+    lastDetail = `empty reply (finishReason=${data.candidates?.[0]?.finishReason ?? "?"})`;
+    console.error(`Gemini ${model} -> ${lastDetail}`);
+  }
+
+  return { ok: false, status: lastStatus, detail: lastDetail, modelsTried: MODEL_CHAIN };
+}
+
 export async function POST(req: NextRequest) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -83,7 +155,7 @@ export async function POST(req: NextRequest) {
     ? (rawMessages as ChatMessage[])
     : [];
 
-  const contents = messages
+  const contents: GeminiContent[] = messages
     .filter(
       (m): m is ChatMessage =>
         !!m &&
@@ -104,51 +176,36 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Mesaj boş." }, { status: 400 });
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`;
+  const result = await callGemini(apiKey, contents);
+  if (result.ok) return Response.json({ reply: result.reply });
 
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents,
-        generationConfig: { temperature: 0.4, maxOutputTokens: 800 },
-      }),
-    });
+  const error =
+    result.status === 429
+      ? "Asistan şu anda çok yoğun, lütfen birazdan tekrar deneyin."
+      : result.status === 400 || result.status === 403
+        ? "Asistan yapılandırmasında bir sorun oluştu."
+        : "Asistan şu anda yanıt veremiyor, lütfen tekrar deneyin.";
+  return Response.json({ error }, { status: 502 });
+}
 
-    if (!res.ok) {
-      const detail = await res.text();
-      console.error("Gemini API error", res.status, detail);
-      const error =
-        res.status === 429
-          ? "Şu anda yoğunluk var, lütfen birazdan tekrar deneyin."
-          : "Asistan şu anda yanıt veremiyor.";
-      return Response.json({ error }, { status: 502 });
-    }
-
-    const data = (await res.json()) as {
-      candidates?: { content?: { parts?: { text?: string }[] } }[];
-    };
-    const reply =
-      data.candidates?.[0]?.content?.parts
-        ?.map((p) => p.text ?? "")
-        .join("")
-        .trim() ?? "";
-
-    if (!reply) {
-      return Response.json(
-        { error: "Asistan boş yanıt verdi, lütfen tekrar deneyin." },
-        { status: 502 },
-      );
-    }
-
-    return Response.json({ reply });
-  } catch (err) {
-    console.error("Chat route error", err);
-    return Response.json(
-      { error: "Bağlantı hatası, lütfen tekrar deneyin." },
-      { status: 502 },
-    );
+// Diagnostic: visit /api/chat in a browser to see whether the key works and
+// which model responds (or the exact Gemini error). No secrets are exposed.
+export async function GET() {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return Response.json({ configured: false, modelsTried: MODEL_CHAIN });
   }
+  const result = await callGemini(apiKey, [
+    { role: "user", parts: [{ text: "Test: merhaba" }] },
+  ]);
+  if (result.ok) {
+    return Response.json({ configured: true, ok: true, model: result.model });
+  }
+  return Response.json({
+    configured: true,
+    ok: false,
+    status: result.status,
+    detail: result.detail,
+    modelsTried: result.modelsTried,
+  });
 }
