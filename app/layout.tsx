@@ -7,6 +7,7 @@ import { WishlistProvider } from "@/components/WishlistProvider";
 import { RecentlyViewedProvider } from "@/components/RecentlyViewedProvider";
 import { Navbar } from "@/components/Navbar";
 import { MobileNav } from "@/components/MobileNav";
+import { ChatWidget } from "@/components/ChatWidget";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Link from "next/link";
 import { categoryMap } from "@/lib/categories";
@@ -58,6 +59,7 @@ export default function RootLayout({
                 <Navbar />
                 <div className="min-h-screen pb-24 lg:pb-0">{children}</div>
                 <MobileNav />
+                <ChatWidget />
                 <footer className="bg-surface text-text-primary pt-24 pb-12 hidden lg:block border-t border-border">
                   <div className="max-w-7xl mx-auto px-5 md:px-16">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
