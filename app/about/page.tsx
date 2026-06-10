@@ -6,14 +6,10 @@ import { motion, type Variants } from "framer-motion";
 import {
   ArrowRight,
   Factory,
-  Boxes,
-  ShieldCheck,
   Sparkles,
-  Globe2,
   Hammer,
   PackageCheck,
   Truck,
-  Ruler,
 } from "lucide-react";
 
 const productionSteps = [
@@ -52,39 +48,6 @@ const productionSteps = [
     icon: Truck,
     body: "Ürünler depodan çıkmadan önce son bir denetimle paketlenir ve yola çıkar.",
   },
-];
-
-const capabilities = [
-  {
-    label: "Üretim Tecrübesi",
-    en: "Years in production",
-    value: "15+",
-    icon: Ruler,
-  },
-  {
-    label: "Aktif Ürün Ailesi",
-    en: "Active product families",
-    value: "40+",
-    icon: Boxes,
-  },
-  {
-    label: "İhracat Ülkesi",
-    en: "Export destinations",
-    value: "20+",
-    icon: Globe2,
-  },
-  {
-    label: "Kalite Standardı",
-    en: "Certified processes",
-    value: "ISO",
-    icon: ShieldCheck,
-  },
-];
-
-const certifications = [
-  { code: "ISO 22000:2018", caption: "Gıda Güvenliği" },
-  { code: "ISO 14001:2015", caption: "Çevre Yönetimi" },
-  { code: "ISO 9001:2015", caption: "Kalite Yönetimi" },
 ];
 
 const timeline = [
@@ -288,55 +251,11 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Capabilities */}
-        <section className="mb-28 md:mb-40">
-          <div className="mb-10 md:mb-14">
-            <p className="font-audiowide text-[10px] uppercase tracking-[0.5em] text-foreground/40 mb-4">
-              03 · Yetkinliklerimiz
-            </p>
-            <h2 className="font-audiowide text-2xl md:text-3xl uppercase tracking-tight text-foreground leading-tight">
-              Rakamlarla atölye.
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-foreground/10 border border-foreground/10">
-            {capabilities.map((c, i) => {
-              const Icon = c.icon;
-              return (
-                <motion.div
-                  key={c.label}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-60px" }}
-                  transition={{ duration: 0.45, delay: i * 0.06 }}
-                  className="bg-background p-7 md:p-10 flex flex-col gap-5"
-                >
-                  <Icon size={22} strokeWidth={1.5} className="text-foreground/70" />
-                  <div className="font-audiowide text-3xl md:text-4xl tracking-tight text-foreground">
-                    {c.value}
-                  </div>
-                  <div>
-                    <div className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/60">
-                      {c.label}
-                    </div>
-                    <div
-                      lang="en"
-                      className="font-audiowide text-[9px] uppercase tracking-[0.4em] text-foreground/30 mt-1"
-                    >
-                      {c.en}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </section>
-
         {/* Timeline */}
         <section className="mb-28 md:mb-40">
           <div className="mb-10 md:mb-14">
             <p className="font-audiowide text-[10px] uppercase tracking-[0.5em] text-foreground/40 mb-4">
-              04 · Zaman Çizelgesi
+              03 · Zaman Çizelgesi
             </p>
             <h2 className="font-audiowide text-2xl md:text-3xl uppercase tracking-tight text-foreground leading-tight">
               Üç durak, tek çizgi.
@@ -378,34 +297,6 @@ export default function AboutPage() {
               </motion.li>
             ))}
           </ol>
-        </section>
-
-        {/* Certifications */}
-        <section className="mb-28 md:mb-40">
-          <div className="mb-10">
-            <p className="font-audiowide text-[10px] uppercase tracking-[0.5em] text-foreground/40 mb-4">
-              05 · Sertifikalar
-            </p>
-            <h2 className="font-audiowide text-2xl md:text-3xl uppercase tracking-tight text-foreground leading-tight">
-              Belgelenmiş süreç.
-            </h2>
-          </div>
-          <div className="flex flex-wrap gap-3 md:gap-4">
-            {certifications.map((c) => (
-              <div
-                key={c.code}
-                className="border border-foreground/15 px-5 py-4 flex items-center gap-4"
-              >
-                <ShieldCheck size={18} strokeWidth={1.5} className="text-foreground/60" />
-                <div>
-                  <div className="font-audiowide text-xs uppercase tracking-[0.3em] text-foreground">
-                    {c.code}
-                  </div>
-                  <div className="text-foreground/50 text-[11px] mt-0.5">{c.caption}</div>
-                </div>
-              </div>
-            ))}
-          </div>
         </section>
 
         {/* Closing band */}

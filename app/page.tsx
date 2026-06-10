@@ -11,7 +11,7 @@ import { categoryMap } from "@/lib/categories";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductRow } from "@/components/ProductRow";
 import { RecentlyViewedRow } from "@/components/RecentlyViewedRow";
-import { ChevronRight, ArrowRight, Truck, ShieldCheck, RefreshCw, Headphones } from "lucide-react";
+import { ChevronRight, ArrowRight, Truck, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
@@ -109,12 +109,10 @@ export default function Home() {
 
       {/* Trust strip */}
       <section className="py-10 md:py-14 px-5 md:px-16 bg-white border-b border-black/5">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="max-w-2xl mx-auto grid grid-cols-2 gap-8">
           {[
             { icon: <Truck size={20} />, title: "Ücretsiz Kargo", note: "750 TL üzeri siparişlerde" },
-            { icon: <ShieldCheck size={20} />, title: "2 Yıl Garanti", note: "Tüm ürünler için" },
             { icon: <RefreshCw size={20} />, title: "Kolay İade", note: "14 gün koşulsuz iade" },
-            { icon: <Headphones size={20} />, title: "Müşteri Desteği", note: "Hafta içi 09:00 – 18:00" },
           ].map((item) => (
             <div key={item.title} className="flex items-center gap-4">
               <div className="text-black/60">{item.icon}</div>

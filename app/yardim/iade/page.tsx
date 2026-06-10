@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RefreshCw, ShieldCheck, Clock, AlertCircle } from "lucide-react";
+import { RefreshCw, Clock, AlertCircle } from "lucide-react";
 
 export const metadata = {
   title: "İade & Değişim | Zest Home",
@@ -11,11 +11,6 @@ const sections = [
     icon: <RefreshCw size={20} />,
     title: "14 Gün Koşulsuz İade",
     body: "Teslim aldığınız tarihten itibaren 14 gün içinde herhangi bir gerekçe göstermeksizin iade hakkınız bulunmaktadır. Ürünleri orijinal ambalajıyla göndermeniz yeterlidir.",
-  },
-  {
-    icon: <ShieldCheck size={20} />,
-    title: "2 Yıl Üretici Garantisi",
-    body: "Tüm ürünlerimiz üretim hatalarına karşı 2 yıl garantilidir. Garanti kapsamındaki ürünler ücretsiz olarak değiştirilir veya tamir edilir. Yanlış kullanım garanti kapsamı dışındadır.",
   },
   {
     icon: <Clock size={20} />,

@@ -10,7 +10,6 @@ import { useWishlist } from "@/components/WishlistProvider";
 import { useRecentlyViewed } from "@/components/RecentlyViewedProvider";
 import {
   Star,
-  Shield,
   Truck,
   RefreshCw,
   Minus,
@@ -439,17 +438,11 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             </div>
 
             {/* Trust */}
-            <div className="grid grid-cols-3 gap-4 pt-8 border-t border-foreground/5">
+            <div className="grid grid-cols-2 gap-4 pt-8 border-t border-foreground/5">
               <div className="flex flex-col items-center gap-2 text-center">
                 <Truck size={18} className="text-foreground/60" />
                 <span className="text-[9px] font-audiowide uppercase tracking-[0.2em] text-foreground/60 leading-tight">
                   750 TL üzeri ücretsiz kargo
-                </span>
-              </div>
-              <div className="flex flex-col items-center gap-2 text-center">
-                <Shield size={18} className="text-foreground/60" />
-                <span className="text-[9px] font-audiowide uppercase tracking-[0.2em] text-foreground/60 leading-tight">
-                  2 Yıl Garanti
                 </span>
               </div>
               <div className="flex flex-col items-center gap-2 text-center">
