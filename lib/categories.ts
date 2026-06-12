@@ -15,14 +15,9 @@ export const categories: Category[] = [
         image: "/products/skl-esk1001/0.jpg",
       },
       {
-        slug: "dograyicilar",
-        label: "Doğrayıcılar & Rondolar",
+        slug: "dograyicilar-rendeler",
+        label: "Doğrayıcılar & Rendeler",
         image: "/products/dor-m1/0.jpg",
-      },
-      {
-        slug: "rendeler-dilimleyiciler",
-        label: "Rendeler & Dilimleyiciler",
-        image: "/products/rnd-rev/0.jpg",
       },
       {
         slug: "servis-sofra",
@@ -30,14 +25,9 @@ export const categories: Category[] = [
         image: "/products/srv-kal1001/0.jpg",
       },
       {
-        slug: "mutfak-aletleri",
-        label: "Mutfak Aletleri",
-        image: "/products/alt-kmn/0.jpg",
-      },
-      {
-        slug: "mutfak-aksesuarlari",
-        label: "Mutfak Aksesuarları",
-        image: "/products/aks-kag/0.jpg",
+        slug: "mutfak-yardimcilari",
+        label: "Mutfak Yardımcıları",
+        image: "/products/alt-m3/0.jpg",
       },
     ],
   },
