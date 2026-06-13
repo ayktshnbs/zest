@@ -255,12 +255,25 @@ export const signInWithGoogle = async (req, res, { idToken }) => {
   if (!user) {
     const byEmail = await UserModel.findByEmail(google.email);
     if (byEmail) {
+      // SEC-4: an existing account whose email was never verified may be an
+      // attacker's pre-registered (pre-hijack) account. Google has now proven
+      // the email belongs to this person, so take full control — drop any
+      // password set before verification and revoke its existing sessions.
+      const clearedPreHijackPassword =
+        !byEmail.email_verified && Boolean(byEmail.password_hash);
       user = await UserModel.linkGoogleAccount(byEmail.id, google.sub);
+      if (clearedPreHijackPassword) {
+        await UserModel.clearPassword(byEmail.id);
+        await SessionModel.revokeAllForUser(byEmail.id);
+      }
       await recordAuditEvent({
         userId: user.id,
         action: "auth.google.linked",
         ip: req.ip,
         userAgent: req.headers["user-agent"],
+        metadata: clearedPreHijackPassword
+          ? { clearedPreHijackPassword: true }
+          : undefined,
       });
     }
   }

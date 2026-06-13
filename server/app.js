@@ -13,7 +13,7 @@ import { logger } from "./utils/logger.js";
 import { requestId } from "./middleware/requestId.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 import { globalRateLimiter } from "./middleware/rateLimit.js";
-import { doubleCsrfProtection } from "./middleware/csrf.js";
+import { doubleCsrfProtection, ensureCsrfSession } from "./middleware/csrf.js";
 
 import webhookRoutes from "./routes/webhookRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
@@ -74,6 +74,8 @@ export const createApp = () => {
 
   // CSRF protection: applies to state-changing requests on routes mounted below.
   // Webhooks (mounted above) and health checks (mounted above) are exempt.
+  // ensureCsrfSession issues the stable csrf_sid the token is bound to.
+  app.use(ensureCsrfSession);
   app.use(doubleCsrfProtection);
 
   app.use("/api/auth", authRoutes);

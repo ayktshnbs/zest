@@ -63,6 +63,11 @@ export const updatePasswordHash = async (id, passwordHash) => {
   return rows[0] ?? null;
 };
 
+/** Remove a local password (e.g. after Google proves ownership of an unverified email). */
+export const clearPassword = async (id) => {
+  await query(`UPDATE users SET password_hash = NULL WHERE id = $1`, [id]);
+};
+
 export const linkGoogleAccount = async (id, googleSub) => {
   const { rows } = await query(
     `UPDATE users
