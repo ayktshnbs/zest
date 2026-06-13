@@ -6,8 +6,11 @@ import {
   newArrivals,
   discountedProducts,
   products,
+  getProductById,
 } from "@/lib/products";
 import { categoryMap } from "@/lib/categories";
+import { formatPrice } from "@/lib/utils";
+import { Product } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductRow } from "@/components/ProductRow";
 import { RecentlyViewedRow } from "@/components/RecentlyViewedRow";
@@ -15,7 +18,7 @@ import { ChevronRight, ArrowRight, Truck, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export default function Home() {
   const heroRef = useRef(null);
@@ -33,6 +36,24 @@ export default function Home() {
 
   const textOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
 
+  // Ambient hero video, gently slowed for a premium slow-motion feel.
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const slow = () => {
+      v.playbackRate = 0.6; // tune 0.5–1.0; lower = slower
+    };
+    slow();
+    v.addEventListener("loadedmetadata", slow);
+    return () => v.removeEventListener("loadedmetadata", slow);
+  }, []);
+
+  // Real catalog products featured under the hero ("shop the look").
+  const heroProducts = ["dor-m1", "rnd-rev", "alt-kmn"]
+    .map((id) => getProductById(id))
+    .filter((p): p is Product => Boolean(p));
+
   const featured = featuredProducts.slice(0, 4);
   const homeFallback = featured.length > 0 ? featured : products.slice(0, 4);
   const bestSellersRow = bestSellers.length > 0 ? bestSellers : products.slice(4, 8);
@@ -48,14 +69,24 @@ export default function Home() {
         ref={heroRef}
         className="relative min-h-dvh flex items-center justify-center overflow-hidden bg-[#f5f5f7]"
       >
+        {/* Ambient background video — gently slowed for a premium feel.
+            Falls back to the poster image until it loads / if autoplay is
+            blocked, so the hero never breaks. */}
         <div className="absolute inset-0 z-0">
-          <Image
-            src="/hero.jpg"
-            alt="Modern Bright Kitchen Lifestyle Background"
-            fill
-            className="object-cover opacity-60 md:opacity-80 contrast-[1.05] saturate-[1.05] object-center"
-            priority
-          />
+          <video
+            ref={videoRef}
+            className="w-full h-full object-cover object-center opacity-60 md:opacity-80 contrast-[1.05] saturate-[1.05]"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="/hero.jpg"
+            preload="auto"
+          >
+            <source src="/hero.mp4" type="video/mp4" />
+          </video>
+          {/* Soft scrim keeps the dark headline legible over moving footage */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#f5f5f7]/40 via-transparent to-[#f5f5f7]/70" />
         </div>
 
         <motion.div
@@ -105,6 +136,43 @@ export default function Home() {
             </div>
           </motion.div>
         </motion.div>
+
+        {/* Shop the look — real catalog products featured in the scene */}
+        {heroProducts.length > 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute bottom-6 md:bottom-10 inset-x-0 z-20 px-5 md:px-16"
+          >
+            <div className="max-w-7xl mx-auto">
+              <span className="block font-audiowide text-[9px] uppercase tracking-[0.4em] text-[#1d1d1f]/50 mb-3">
+                Sahnedeki Ürünler
+              </span>
+              <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
+                {heroProducts.map((p) => (
+                  <Link
+                    key={p.id}
+                    href={`/products/${p.id}`}
+                    className="group shrink-0 flex items-center gap-3 bg-white/70 backdrop-blur-md border border-black/5 rounded-full pl-2 pr-5 py-2 shadow-lg shadow-black/5 hover:bg-white transition-colors"
+                  >
+                    <span className="relative w-12 h-12 shrink-0 rounded-full overflow-hidden bg-secondary/30">
+                      <Image src={p.imageUrl} alt={p.name} fill className="object-cover" sizes="48px" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block font-body text-[13px] font-medium text-[#1d1d1f] leading-tight truncate max-w-[150px]">
+                        {p.name}
+                      </span>
+                      <span className="block font-audiowide text-[11px] tracking-wide text-[#1d1d1f]/70">
+                        {formatPrice(p.price)}
+                      </span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        ) : null}
       </section>
 
       {/* Trust strip */}
