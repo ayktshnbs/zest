@@ -25,12 +25,14 @@ import {
 import * as UserModel from "../models/UserModel.js";
 import * as SessionModel from "../models/SessionModel.js";
 import * as PasswordResetTokenModel from "../models/PasswordResetTokenModel.js";
-import { sendPasswordResetEmail, sendWelcomeEmail } from "./emailService.js";
+import * as EmailVerificationTokenModel from "../models/EmailVerificationTokenModel.js";
+import { sendPasswordResetEmail, sendWelcomeEmail, sendVerificationEmail } from "./emailService.js";
 import { verifyGoogleIdToken } from "./googleAuthService.js";
 import { recordAuditEvent } from "./auditService.js";
 import { logger } from "../utils/logger.js";
 
 const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000; // 1 hour
+const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 const accessTtlMs = parseDurationMs(config.jwt.accessTtl);
 const refreshTtlMs = parseDurationMs(config.jwt.refreshTtl);
@@ -67,6 +69,18 @@ const issueSession = async (res, user, { ip, userAgent }) => {
   return { accessToken, refreshToken };
 };
 
+/** Issue a fresh email-verification token and email the link. */
+const sendEmailVerification = async (user) => {
+  const rawToken = generateToken(32);
+  await EmailVerificationTokenModel.create({
+    userId: user.id,
+    tokenHash: hashToken(rawToken),
+    expiresAt: new Date(Date.now() + EMAIL_VERIFICATION_TTL_MS),
+  });
+  const verifyUrl = `${config.urls.emailVerification}?token=${encodeURIComponent(rawToken)}`;
+  await sendVerificationEmail({ to: user.email, name: user.name, verifyUrl });
+};
+
 // ── Registration ─────────────────────────────────────────────────────
 export const registerUser = async (req, res, { name, email, password }) => {
   const existing = await UserModel.findByEmail(email);
@@ -88,6 +102,11 @@ export const registerUser = async (req, res, { name, email, password }) => {
   // Best-effort welcome email — never block registration on failure
   sendWelcomeEmail({ to: email, name, loginUrl: config.urls.login }).catch((err) => {
     logger.warn({ err }, "Welcome email failed");
+  });
+
+  // Best-effort email-verification link — also never blocks registration.
+  sendEmailVerification(user).catch((err) => {
+    logger.warn({ err, userId: user.id }, "Verification email failed");
   });
 
   return UserModel.toPublic(user);
@@ -239,6 +258,43 @@ export const changePassword = async (req, { currentPassword, newPassword }) => {
   await recordAuditEvent({
     userId: user.id,
     action: "auth.password_changed",
+    ip: req.ip,
+    userAgent: req.headers["user-agent"],
+  });
+};
+
+// ── Verify email ────────────────────────────────────────────────────
+export const verifyEmail = async (req, { token }) => {
+  const tokenHash = hashToken(token);
+  const record = await EmailVerificationTokenModel.findActiveByHash(tokenHash);
+  if (!record) throw new UnauthorizedError("Invalid or expired verification link");
+
+  const user = await UserModel.markEmailVerified(record.user_id);
+  await EmailVerificationTokenModel.markUsed(record.id);
+  await EmailVerificationTokenModel.invalidateForUser(record.user_id);
+
+  await recordAuditEvent({
+    userId: record.user_id,
+    action: "auth.email_verified",
+    ip: req.ip,
+    userAgent: req.headers["user-agent"],
+  });
+
+  return UserModel.toPublic(user);
+};
+
+// ── Resend verification ─────────────────────────────────────────────
+export const resendEmailVerification = async (req) => {
+  const user = await UserModel.findById(req.user.id);
+  if (!user) throw new NotFoundError("Account not found");
+  if (user.email_verified) return; // already verified — nothing to do
+
+  await EmailVerificationTokenModel.invalidateForUser(user.id);
+  await sendEmailVerification(user);
+
+  await recordAuditEvent({
+    userId: user.id,
+    action: "auth.email_verification_resent",
     ip: req.ip,
     userAgent: req.headers["user-agent"],
   });

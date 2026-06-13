@@ -84,6 +84,37 @@ Hesabınız oluşturuldu. Buradan giriş yapabilirsiniz: ${loginUrl}
   return sendEmail({ to, subject, html, text });
 };
 
+export const sendVerificationEmail = async ({ to, name, verifyUrl }) => {
+  const subject = "Zest Home · E-posta adresinizi doğrulayın";
+  const text = `Merhaba ${name},
+
+Hesabınızı etkinleştirmek için e-posta adresinizi doğrulayın. Aşağıdaki bağlantı 24 saat geçerlidir:
+
+${verifyUrl}
+
+Bu hesabı siz oluşturmadıysanız bu e-postayı yok sayabilirsiniz.
+
+— Zest Home
+`;
+  const html = `
+    <div style="font-family:system-ui,sans-serif;max-width:520px;margin:0 auto;padding:32px;color:#111">
+      <p style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#888;margin:0 0 24px">Zest Home</p>
+      <h1 style="font-size:22px;margin:0 0 16px">E-posta adresinizi doğrulayın</h1>
+      <p>Merhaba ${escapeHtml(name)},</p>
+      <p>Hesabınızı etkinleştirmek için e-posta adresinizi doğrulayın. Aşağıdaki bağlantı <strong>24 saat</strong> geçerlidir:</p>
+      <p style="margin:24px 0">
+        <a href="${verifyUrl}" style="display:inline-block;padding:12px 20px;background:#111;color:#fff;text-decoration:none;font-size:13px;letter-spacing:.2em;text-transform:uppercase">E-postayı Doğrula</a>
+      </p>
+      <p style="font-size:13px;color:#666">Bağlantı çalışmıyorsa şu URL'yi tarayıcınıza yapıştırın:<br>
+        <span style="word-break:break-all">${verifyUrl}</span>
+      </p>
+      <p style="font-size:13px;color:#666">Bu hesabı siz oluşturmadıysanız bu e-postayı yok sayabilirsiniz.</p>
+      <p style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#aaa;margin-top:32px">— Zest Home</p>
+    </div>
+  `;
+  return sendEmail({ to, subject, html, text });
+};
+
 // Minimal HTML escape for values interpolated into the email templates.
 function escapeHtml(s) {
   return String(s)

@@ -50,6 +50,10 @@ export const resetPasswordSchema = z.object({
   password: passwordSchema,
 });
 
+export const verifyEmailSchema = z.object({
+  token: z.string().min(20).max(256),
+});
+
 export const googleSignInSchema = z.object({
   id_token: z.string().min(20),
 });

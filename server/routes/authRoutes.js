@@ -11,6 +11,7 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
   googleSignInSchema,
+  verifyEmailSchema,
 } from "../utils/validation.js";
 
 const router = Router();
@@ -47,6 +48,20 @@ router.post(
   authRateLimiter,
   validate({ body: resetPasswordSchema }),
   authController.resetPassword,
+);
+
+router.post(
+  "/verify-email",
+  authRateLimiter,
+  validate({ body: verifyEmailSchema }),
+  authController.verifyEmail,
+);
+
+router.post(
+  "/resend-verification",
+  requireAuth,
+  authRateLimiter,
+  authController.resendVerification,
 );
 
 router.post(

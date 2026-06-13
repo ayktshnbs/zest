@@ -83,6 +83,15 @@ export const touchLastLogin = async (id) => {
   await query(`UPDATE users SET last_login_at = NOW() WHERE id = $1`, [id]);
 };
 
+export const markEmailVerified = async (id) => {
+  const { rows } = await query(
+    `UPDATE users SET email_verified = TRUE WHERE id = $1
+     RETURNING ${PUBLIC_COLUMNS}`,
+    [id],
+  );
+  return rows[0] ?? null;
+};
+
 /** Strip non-public fields before returning to clients. */
 export const toPublic = (user) => {
   if (!user) return null;

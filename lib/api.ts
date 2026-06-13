@@ -125,6 +125,10 @@ export const authApi = {
   logout: () => api<{ ok: true }>("/api/auth/logout", { method: "POST" }),
   forgotPassword: (body: { email: string }) =>
     api<{ ok: true }>("/api/auth/forgot-password", { method: "POST", body }),
+  verifyEmail: (token: string) =>
+    api<{ user: PublicUser }>("/api/auth/verify-email", { method: "POST", body: { token } }),
+  resendVerification: () =>
+    api<{ ok: true }>("/api/auth/resend-verification", { method: "POST" }),
 };
 
 export const favoritesApi = {

@@ -40,6 +40,16 @@ export const resetPassword = asyncHandler(async (req, res) => {
   res.json({ ok: true });
 });
 
+export const verifyEmail = asyncHandler(async (req, res) => {
+  const user = await authService.verifyEmail(req, req.validated.body);
+  res.json({ user });
+});
+
+export const resendVerification = asyncHandler(async (req, res) => {
+  await authService.resendEmailVerification(req);
+  res.json({ ok: true });
+});
+
 export const googleSignIn = asyncHandler(async (req, res) => {
   const { user, isNew } = await authService.signInWithGoogle(req, res, {
     idToken: req.validated.body.id_token,

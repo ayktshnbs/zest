@@ -39,6 +39,7 @@ const envSchema = z.object({
   FRONTEND_URL: z.string().url().default("http://localhost:3000"),
   PASSWORD_RESET_URL: z.string().url(),
   LOGIN_URL: z.string().url(),
+  EMAIL_VERIFICATION_URL: z.string().url().optional(),
 
   RESEND_API_KEY: z.string().min(1),
   EMAIL_FROM: z.string().min(3),
@@ -105,6 +106,9 @@ export const config = {
     frontend: env.FRONTEND_URL,
     passwordReset: env.PASSWORD_RESET_URL,
     login: env.LOGIN_URL,
+    emailVerification:
+      env.EMAIL_VERIFICATION_URL ||
+      `${env.FRONTEND_URL.replace(/\/$/, "")}/e-posta-dogrula`,
   },
 
   resend: {
