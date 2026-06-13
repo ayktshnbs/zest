@@ -112,6 +112,21 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [user, authLoading, isHydrated]);
 
+  // On logout, drop the in-memory list and the local cache so the next user on
+  // a shared device starts clean — and we never merge user A's wishlist into
+  // user B's account on the subsequent login.
+  useEffect(() => {
+    const onLogout = () => {
+      syncedUserId.current = null;
+      setIds([]);
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {}
+    };
+    window.addEventListener("zest:logout", onLogout);
+    return () => window.removeEventListener("zest:logout", onLogout);
+  }, []);
+
   // ── Mutations ───────────────────────────────────────────────────────
   // Always update local state optimistically. If logged in, fire-and-forget
   // the API call — failures roll back the optimistic change.

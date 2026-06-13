@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:catalog": "node scripts/build-server-catalog.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",

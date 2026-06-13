@@ -67,6 +67,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       /* ignore — we clear local state regardless */
     }
     setUser(null);
+    // Wipe per-user client state so nothing bleeds into the next user on a
+    // shared device. Each provider clears its own localStorage key + memory
+    // in response to this event (cart, wishlist, recently-viewed).
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("zest:logout"));
+    }
   }, []);
 
   const value = useMemo<AuthContextValue>(

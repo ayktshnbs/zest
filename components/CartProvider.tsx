@@ -52,6 +52,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } catch {}
   }, [cart, isHydrated]);
 
+  // Clear the cart on logout (AuthProvider dispatches this) so a shared device
+  // doesn't carry one user's cart over to the next.
+  useEffect(() => {
+    const onLogout = () => {
+      setCart([]);
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {}
+    };
+    window.addEventListener("zest:logout", onLogout);
+    return () => window.removeEventListener("zest:logout", onLogout);
+  }, []);
+
   const addToCart = (product: Product, quantity = 1) => {
     if (product.stock <= 0) return;
     setCart((prevCart) => {

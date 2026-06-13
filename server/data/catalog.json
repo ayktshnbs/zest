@@ -1,0 +1,178 @@
+{
+  "dor-m1": {
+    "name": "Dora Manuel El Rondosu",
+    "priceCents": 54900
+  },
+  "dor-m2": {
+    "name": "3 Bıçaklı Manuel Doğrayıcı",
+    "priceCents": 45900
+  },
+  "dor-m11": {
+    "name": "Vera İpli Manuel Doğrayıcı",
+    "priceCents": 37900
+  },
+  "rnd-m9": {
+    "name": "Profesyonel Mandolin Dilimleyici",
+    "priceCents": 89900
+  },
+  "rnd-m12": {
+    "name": "Flat Ayarlanabilir Mandolin",
+    "priceCents": 46900
+  },
+  "rnd-m10": {
+    "name": "Çok Yönlü Rende Seti",
+    "priceCents": 55900
+  },
+  "rnd-rev": {
+    "name": "Profesyonel Multi Rende & Dilimleyici",
+    "priceCents": 114900
+  },
+  "skl-esk0001": {
+    "name": "Uzun Boy Vakumlu Saklama Kavanozu",
+    "priceCents": 34500
+  },
+  "skl-esk0002": {
+    "name": "Bonny Vakumlu Saklama Kavanozu 0.6L",
+    "priceCents": 15900
+  },
+  "skl-esk0003": {
+    "name": "Bonny Vakumlu Saklama Kavanozu 0.9L",
+    "priceCents": 19900
+  },
+  "skl-esk0101": {
+    "name": "Luxe Premium Vakumlu Kavanoz – Gold",
+    "priceCents": 27900
+  },
+  "skl-esk0102": {
+    "name": "Luxe Premium Vakumlu Kavanoz – Gümüş",
+    "priceCents": 27900
+  },
+  "skl-esk0103": {
+    "name": "Luxe Premium Vakumlu Kavanoz – Roze",
+    "priceCents": 27900
+  },
+  "skl-esk0211": {
+    "name": "Woody Ahşap Kapaklı Kavanoz 0.9L",
+    "priceCents": 19900
+  },
+  "skl-esk0212": {
+    "name": "Woody Ahşap Kapaklı Kavanoz 1.4L",
+    "priceCents": 24900
+  },
+  "skl-esk0213": {
+    "name": "Woody Ahşap Kapaklı Kavanoz Mini",
+    "priceCents": 15900
+  },
+  "skl-esk1001": {
+    "name": "Kare Vakumlu Saklama Seti 3'lü",
+    "priceCents": 74900
+  },
+  "skl-esk1101": {
+    "name": "Crystal Şeffaf Hava Sızdırmaz Kap",
+    "priceCents": 18900
+  },
+  "skl-esk1211": {
+    "name": "Tall Cam Görünümlü Vakumlu Kavanoz",
+    "priceCents": 26900
+  },
+  "skl-m5": {
+    "name": "Modüler Kapaklı Saklama Kabı 0.9L",
+    "priceCents": 11900
+  },
+  "skl-m6": {
+    "name": "Dikdörtgen Saklama Kabı Orta",
+    "priceCents": 14900
+  },
+  "skl-m7": {
+    "name": "Dikdörtgen Saklama Kabı Büyük",
+    "priceCents": 18900
+  },
+  "skl-m8": {
+    "name": "3'lü Saklama Kabı Seti",
+    "priceCents": 45900
+  },
+  "srv-kal0001": {
+    "name": "Klasik Salata Kasesi Büyük",
+    "priceCents": 33900
+  },
+  "srv-kal0002": {
+    "name": "Klasik Salata Kasesi Orta",
+    "priceCents": 25900
+  },
+  "srv-kal0003": {
+    "name": "Klasik Çerez Kasesi",
+    "priceCents": 13900
+  },
+  "srv-kal1001": {
+    "name": "Kapaklı Servis Kasesi Büyük",
+    "priceCents": 37900
+  },
+  "srv-kal1002": {
+    "name": "Kapaklı Servis Kasesi Orta",
+    "priceCents": 30900
+  },
+  "srv-kal1003": {
+    "name": "Kapaklı Servis Kasesi Küçük",
+    "priceCents": 20900
+  },
+  "srv-kas0001": {
+    "name": "Klasik XXL Salata Kasesi",
+    "priceCents": 42900
+  },
+  "srv-kas1001": {
+    "name": "Dokulu XXL Servis Kasesi",
+    "priceCents": 48900
+  },
+  "srv-kau0001": {
+    "name": "Klasik Dikdörtgen Servis Tabağı",
+    "priceCents": 21900
+  },
+  "srv-kau1001": {
+    "name": "Kapaklı Servis Kasesi",
+    "priceCents": 30900
+  },
+  "srv-kav0001": {
+    "name": "Klasik Oval Servis Kasesi",
+    "priceCents": 32900
+  },
+  "srv-kav1001": {
+    "name": "Dokulu Oval Servis Kasesi",
+    "priceCents": 36900
+  },
+  "aks-kag": {
+    "name": "Desenli Kapaklı Kase Seti (3'lü İç İçe)",
+    "priceCents": 19900
+  },
+  "srv-sua": {
+    "name": "Süzgeç",
+    "priceCents": 26900
+  },
+  "srv-suh": {
+    "name": "Ergonomik İçecek Sürahisi",
+    "priceCents": 22900
+  },
+  "alt-kmn": {
+    "name": "Esnek Kesme Tahtası",
+    "priceCents": 11900
+  },
+  "alt-kpg": {
+    "name": "Kaymaz Tabanlı Kesme Tahtası",
+    "priceCents": 14900
+  },
+  "alt-m3": {
+    "name": "Geniş Manuel Salata Kurutucu",
+    "priceCents": 48900
+  },
+  "soy-sol1": {
+    "name": "Klasik Sebze Soyacağı",
+    "priceCents": 8900
+  },
+  "soy-sol2": {
+    "name": "Premium Çok Yönlü Soyacak",
+    "priceCents": 12900
+  },
+  "aks-m4": {
+    "name": "Silikon Buz Kalıbı Kapaklı",
+    "priceCents": 16900
+  }
+}

@@ -46,6 +46,19 @@ export const RecentlyViewedProvider = ({ children }: { children: ReactNode }) =>
     } catch {}
   }, [ids, isHydrated]);
 
+  // Clear on logout so browsing history doesn't persist to the next user on a
+  // shared device.
+  useEffect(() => {
+    const onLogout = () => {
+      setIds([]);
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {}
+    };
+    window.addEventListener("zest:logout", onLogout);
+    return () => window.removeEventListener("zest:logout", onLogout);
+  }, []);
+
   const value = useMemo<RecentlyViewedContextType>(
     () => ({
       ids,

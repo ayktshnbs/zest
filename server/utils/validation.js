@@ -81,20 +81,18 @@ const addressSchema = z.object({
   country: z.string().trim().min(2).max(2), // ISO 3166-1 alpha-2
 });
 
+// Only productId + quantity are trusted from the client. Price, shipping, tax
+// and currency are all computed server-side (see orderController.createOrder)
+// from the authoritative catalog — never from the request body.
 const orderItemSchema = z.object({
   productId: z.string().min(1).max(120),
-  name: z.string().min(1).max(200),
   quantity: z.number().int().positive().max(999),
-  unitPriceCents: z.number().int().nonnegative(),
 });
 
 export const createOrderSchema = z.object({
   items: z.array(orderItemSchema).min(1, "At least one item required").max(100),
   shippingAddress: addressSchema,
   billingAddress: addressSchema.optional(),
-  currency: z.string().length(3).default("TRY"),
-  shippingCents: z.number().int().nonnegative().default(0),
-  taxCents: z.number().int().nonnegative().default(0),
   notes: z.string().max(2000).optional(),
 });
 

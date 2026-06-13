@@ -6,34 +6,48 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import * as OrderModel from "../models/OrderModel.js";
 import { NotFoundError, BadRequestError } from "../utils/errors.js";
 import { audit } from "../middleware/audit.js";
+import {
+  getCatalogProduct,
+  computeShippingCents,
+  CURRENCY,
+} from "../data/catalog.js";
 
 export const createOrder = asyncHandler(async (req, res) => {
-  const {
-    items,
-    shippingAddress,
-    billingAddress,
-    currency,
-    shippingCents,
-    taxCents,
-    notes,
-  } = req.validated.body;
+  const { items, shippingAddress, billingAddress, notes } = req.validated.body;
 
-  const subtotalCents = items.reduce(
+  // Price every line from the server-side catalog. Client-supplied prices are
+  // ignored entirely — the client cannot dictate what it pays.
+  const pricedItems = items.map((item) => {
+    const product = getCatalogProduct(item.productId);
+    if (!product) throw new BadRequestError(`Unknown product: ${item.productId}`);
+    return {
+      productId: item.productId,
+      name: product.name,
+      quantity: item.quantity,
+      unitPriceCents: product.priceCents,
+    };
+  });
+
+  const subtotalCents = pricedItems.reduce(
     (sum, item) => sum + item.unitPriceCents * item.quantity,
     0,
   );
   if (subtotalCents <= 0) throw new BadRequestError("Order subtotal must be positive");
 
+  // Shipping is derived server-side; storefront prices are VAT-inclusive
+  // ("KDV dahil"), so tax is zero here.
+  const shippingCents = computeShippingCents(subtotalCents);
+  const taxCents = 0;
   const totalCents = subtotalCents + shippingCents + taxCents;
 
   const order = await OrderModel.create({
     userId: req.user.id,
-    currency,
+    currency: CURRENCY,
     subtotalCents,
     shippingCents,
     taxCents,
     totalCents,
-    items,
+    items: pricedItems,
     shippingAddress,
     billingAddress,
     notes,
@@ -42,7 +56,7 @@ export const createOrder = asyncHandler(async (req, res) => {
   await audit(req, "order.created", {
     orderId: order.id,
     totalCents,
-    currency,
+    currency: CURRENCY,
   });
 
   res.status(201).json({ order: OrderModel.toPublic(order) });
