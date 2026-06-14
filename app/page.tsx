@@ -96,8 +96,8 @@ export default function Home() {
           >
             <source src="/hero.mp4" type="video/mp4" />
           </video>
-          {/* Dark scrim so the white headline stays crisp over any frame */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/35 to-black/70" />
+          {/* Light scrim — just enough to keep white text crisp while letting the video show */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/20 to-black/50" />
         </div>
 
         <motion.div
@@ -124,7 +124,7 @@ export default function Home() {
                 ease: "easeInOut",
               }}
             >
-              <h1 className="font-audiowide text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-8 md:mb-10 tracking-[-0.01em] text-white [text-wrap:balance] [text-shadow:0_1px_24px_rgba(0,0,0,0.35)]">
+              <h1 className="font-audiowide text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-8 md:mb-10 tracking-[-0.01em] text-white [text-wrap:balance] [text-shadow:0_2px_18px_rgba(0,0,0,0.5)]">
                 Seçkin Ev Gereçleri
                 <br />
                 <span className="text-white/70">Zahmetsiz Yaşam</span>
