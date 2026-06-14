@@ -78,15 +78,15 @@ export default function Home() {
       {/* Hero */}
       <section
         ref={heroRef}
-        className="relative min-h-dvh flex items-center justify-center overflow-hidden bg-[#f5f5f7]"
+        className="relative min-h-dvh flex items-center justify-center overflow-hidden bg-neutral-900"
       >
-        {/* Ambient background video — gently slowed for a premium feel.
+        {/* Ambient background video — full opacity for a vivid, cinematic look.
             Falls back to the poster image until it loads / if autoplay is
             blocked, so the hero never breaks. */}
         <div className="absolute inset-0 z-0">
           <video
             ref={videoRef}
-            className="w-full h-full object-cover object-center opacity-60 md:opacity-80 contrast-[1.05] saturate-[1.05]"
+            className="w-full h-full object-cover object-center contrast-[1.05] saturate-[1.05]"
             autoPlay
             muted
             loop
@@ -96,8 +96,8 @@ export default function Home() {
           >
             <source src="/hero.mp4" type="video/mp4" />
           </video>
-          {/* Soft scrim keeps the dark headline legible over moving footage */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#f5f5f7]/40 via-transparent to-[#f5f5f7]/70" />
+          {/* Dark scrim so the white headline stays crisp over any frame */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/35 to-black/70" />
         </div>
 
         <motion.div
@@ -108,7 +108,7 @@ export default function Home() {
             initial={{ y: 30, opacity: 0 }}
             animate={{
               y: [30, 0],
-              opacity: 0.85,
+              opacity: 1,
             }}
             transition={{
               duration: 1,
@@ -124,23 +124,23 @@ export default function Home() {
                 ease: "easeInOut",
               }}
             >
-              <h1 className="font-audiowide text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-8 md:mb-10 tracking-[-0.01em] text-[#1d1d1f] [text-wrap:balance]">
+              <h1 className="font-audiowide text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-8 md:mb-10 tracking-[-0.01em] text-white [text-wrap:balance] [text-shadow:0_1px_24px_rgba(0,0,0,0.35)]">
                 Seçkin Ev Gereçleri
                 <br />
-                <span className="text-[#1d1d1f]/55">Zahmetsiz Yaşam</span>
+                <span className="text-white/70">Zahmetsiz Yaşam</span>
               </h1>
             </motion.div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
                 href="/shop"
-                className="w-full sm:w-auto px-10 py-4 bg-[#1d1d1f] text-white font-audiowide text-[10px] sm:text-[12px] tracking-[0.2em] uppercase rounded-full hover:bg-black transition-all duration-300 shadow-xl shadow-black/10"
+                className="w-full sm:w-auto px-10 py-4 bg-white text-[#1d1d1f] font-audiowide text-[10px] sm:text-[12px] tracking-[0.2em] uppercase rounded-full hover:bg-white/90 transition-all duration-300 shadow-xl shadow-black/20"
               >
                 Hemen Al
               </Link>
               <Link
                 href="/kategoriler"
-                className="w-full sm:w-auto px-10 py-4 bg-white/50 backdrop-blur-md text-[#1d1d1f] font-audiowide text-[10px] sm:text-[12px] tracking-[0.2em] uppercase rounded-full hover:bg-white/80 transition-all duration-300 flex items-center justify-center gap-2 border border-black/5"
+                className="w-full sm:w-auto px-10 py-4 bg-white/10 backdrop-blur-md text-white font-audiowide text-[10px] sm:text-[12px] tracking-[0.2em] uppercase rounded-full hover:bg-white/20 transition-all duration-300 flex items-center justify-center gap-2 border border-white/30"
               >
                 Kategorileri Keşfet <ChevronRight size={14} />
               </Link>
@@ -157,7 +157,7 @@ export default function Home() {
             className="absolute bottom-6 md:bottom-10 inset-x-0 z-20 px-5 md:px-16"
           >
             <div className="max-w-7xl mx-auto">
-              <span className="block font-audiowide text-[9px] uppercase tracking-[0.4em] text-[#1d1d1f]/50 mb-3">
+              <span className="block font-audiowide text-[9px] uppercase tracking-[0.4em] text-white/60 mb-3">
                 Sahnedeki Ürünler
               </span>
               <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
