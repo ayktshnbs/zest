@@ -41,12 +41,23 @@ export default function Home() {
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    const slow = () => {
+    // iOS/Android only autoplay when `muted` is set as a PROPERTY (React's
+    // `muted` attribute alone isn't reliable) — otherwise they block playback
+    // and show a tap-to-play button. Set it on the element and kick off play().
+    v.muted = true;
+    v.defaultMuted = true;
+    const start = () => {
       v.playbackRate = 0.6; // tune 0.5–1.0; lower = slower
+      const p = v.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
     };
-    slow();
-    v.addEventListener("loadedmetadata", slow);
-    return () => v.removeEventListener("loadedmetadata", slow);
+    start();
+    v.addEventListener("loadedmetadata", start);
+    v.addEventListener("canplay", start);
+    return () => {
+      v.removeEventListener("loadedmetadata", start);
+      v.removeEventListener("canplay", start);
+    };
   }, []);
 
   // Real catalog products featured under the hero ("shop the look").
