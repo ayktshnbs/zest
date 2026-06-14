@@ -71,6 +71,11 @@ export const Navbar = () => {
     router.push(`/shop?q=${encodeURIComponent(searchQuery.trim())}`);
   };
 
+  const isHome = pathname === "/";
+  // At the top of the home page the navbar floats over the dark video hero, so
+  // its text/icons must be light; elsewhere (and once scrolled) keep dark.
+  const onDarkHero = !isScrolled && isHome;
+
   return (
     <>
       <header
@@ -92,7 +97,7 @@ export const Navbar = () => {
             <span
               lang="en"
               className={`font-audiowide text-[11px] md:text-base tracking-[0.25em] md:tracking-[0.3em] uppercase truncate transition-colors duration-500 ${
-                isScrolled ? "text-foreground" : "text-foreground/90"
+                isScrolled ? "text-foreground" : onDarkHero ? "text-white" : "text-foreground/90"
               }`}
             >
               Zest Home
@@ -113,6 +118,10 @@ export const Navbar = () => {
                       ? isActive
                         ? "text-foreground"
                         : "text-foreground/40"
+                      : onDarkHero
+                      ? isActive
+                        ? "text-white"
+                        : "text-white/70"
                       : isActive
                       ? "text-foreground/90"
                       : "text-foreground/50"
@@ -129,7 +138,7 @@ export const Navbar = () => {
               onClick={() => setIsSearchOpen(true)}
               aria-label="Ara"
               className={`p-2 transition-all duration-500 ${
-                isScrolled ? "text-foreground" : "text-foreground/90"
+                isScrolled ? "text-foreground" : onDarkHero ? "text-white" : "text-foreground/90"
               }`}
             >
               <Search size={18} strokeWidth={1.5} />
@@ -140,7 +149,7 @@ export const Navbar = () => {
               aria-label={isAuthenticated ? `Hesabım — ${user?.name}` : "Giriş yap"}
               title={isAuthenticated ? user?.name : "Giriş yap"}
               className={`p-2 transition-all duration-500 hidden sm:block ${
-                isScrolled ? "text-foreground" : "text-foreground/90"
+                isScrolled ? "text-foreground" : onDarkHero ? "text-white" : "text-foreground/90"
               }`}
             >
               <User size={18} strokeWidth={1.5} />
@@ -150,7 +159,7 @@ export const Navbar = () => {
               href="/favoriler"
               aria-label="Favoriler"
               className={`relative p-2 transition-all duration-500 hidden sm:block ${
-                isScrolled ? "text-foreground" : "text-foreground/90"
+                isScrolled ? "text-foreground" : onDarkHero ? "text-white" : "text-foreground/90"
               }`}
             >
               <Heart size={18} strokeWidth={1.5} />
@@ -172,7 +181,7 @@ export const Navbar = () => {
               onClick={() => setIsCartOpen(true)}
               aria-label="Sepet"
               className={`relative p-2 transition-all duration-500 ${
-                isScrolled ? "text-foreground" : "text-foreground/90"
+                isScrolled ? "text-foreground" : onDarkHero ? "text-white" : "text-foreground/90"
               }`}
             >
               <ShoppingBag size={20} strokeWidth={1.5} />
