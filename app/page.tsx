@@ -46,17 +46,44 @@ export default function Home() {
     // and show a tap-to-play button. Set it on the element and kick off play().
     v.muted = true;
     v.defaultMuted = true;
-    const start = () => {
-      v.playbackRate = 0.6; // tune 0.5–1.0; lower = slower
-      const p = v.play();
-      if (p && typeof p.catch === "function") p.catch(() => {});
+
+    // The slow-mo is a nice-to-have layered ON TOP of a playing video. Setting
+    // playbackRate *before* play() can stall or block autoplay on iOS Safari,
+    // so only apply it once playback has actually started.
+    const applySlowMo = () => {
+      try {
+        v.playbackRate = 0.6; // tune 0.5–1.0; lower = slower
+      } catch {
+        /* ignore — rate is cosmetic, never let it break playback */
+      }
     };
-    start();
-    v.addEventListener("loadedmetadata", start);
-    v.addEventListener("canplay", start);
+    const tryPlay = () => {
+      const p = v.play();
+      if (p && typeof p.then === "function") p.then(applySlowMo).catch(() => {});
+      else applySlowMo();
+    };
+
+    tryPlay();
+    v.addEventListener("loadedmetadata", tryPlay);
+    v.addEventListener("canplay", tryPlay);
+
+    // Fallback for when autoplay is blocked outright (iOS Low Power Mode,
+    // Android Data Saver, reduced-motion): start on the first user interaction
+    // so the hero comes alive on tap/scroll instead of being stuck on /hero.jpg.
+    const kick = () => {
+      if (v.paused) tryPlay();
+    };
+    const gestureOpts: AddEventListenerOptions = { once: true, passive: true };
+    window.addEventListener("touchstart", kick, gestureOpts);
+    window.addEventListener("pointerdown", kick, gestureOpts);
+    window.addEventListener("scroll", kick, gestureOpts);
+
     return () => {
-      v.removeEventListener("loadedmetadata", start);
-      v.removeEventListener("canplay", start);
+      v.removeEventListener("loadedmetadata", tryPlay);
+      v.removeEventListener("canplay", tryPlay);
+      window.removeEventListener("touchstart", kick);
+      window.removeEventListener("pointerdown", kick);
+      window.removeEventListener("scroll", kick);
     };
   }, []);
 

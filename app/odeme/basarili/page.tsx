@@ -13,7 +13,16 @@ const generateOrderNumber = () => {
 };
 
 export default function OrderSuccessPage() {
-  const orderNumber = useMemo(generateOrderNumber, []);
+  // Real order number comes from the checkout redirect (?order=…); fall back to
+  // a generated one only if the page is opened directly. Read from the URL
+  // rather than useSearchParams to avoid a Suspense boundary on this leaf page.
+  const orderNumber = useMemo(() => {
+    if (typeof window !== "undefined") {
+      const fromUrl = new URLSearchParams(window.location.search).get("order");
+      if (fromUrl) return fromUrl;
+    }
+    return generateOrderNumber();
+  }, []);
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24 bg-background">
       <div className="max-w-2xl mx-auto px-5 md:px-16 text-center space-y-10">

@@ -4,7 +4,9 @@
 
 import { asyncHandler } from "../utils/asyncHandler.js";
 import * as OrderModel from "../models/OrderModel.js";
-import { NotFoundError, BadRequestError } from "../utils/errors.js";
+import * as InventoryModel from "../models/InventoryModel.js";
+import { withTransaction } from "../database/pool.js";
+import { NotFoundError, BadRequestError, ConflictError } from "../utils/errors.js";
 import { audit } from "../middleware/audit.js";
 import {
   getCatalogProduct,
@@ -40,17 +42,50 @@ export const createOrder = asyncHandler(async (req, res) => {
   const taxCents = 0;
   const totalCents = subtotalCents + shippingCents + taxCents;
 
-  const order = await OrderModel.create({
-    userId: req.user.id,
-    currency: CURRENCY,
-    subtotalCents,
-    shippingCents,
-    taxCents,
-    totalCents,
-    items: pricedItems,
-    shippingAddress,
-    billingAddress,
-    notes,
+  // Reserve stock and create the order atomically. Lock each product's stock
+  // row (FOR UPDATE, in a stable order to avoid deadlocks between concurrent
+  // checkouts), reject the whole order if anything is short, then decrement and
+  // insert on the same transaction client.
+  const qtyByProduct = new Map();
+  for (const it of pricedItems) {
+    qtyByProduct.set(it.productId, (qtyByProduct.get(it.productId) ?? 0) + it.quantity);
+  }
+  const productIds = [...qtyByProduct.keys()].sort();
+
+  const order = await withTransaction(async (client) => {
+    const insufficient = [];
+    for (const productId of productIds) {
+      const needed = qtyByProduct.get(productId);
+      const row = await InventoryModel.lockForUpdate(client, productId);
+      const available = row ? row.stock : 0;
+      if (available < needed) {
+        insufficient.push({ productId, requested: needed, available });
+      }
+    }
+    if (insufficient.length > 0) {
+      const err = new ConflictError("One or more items are out of stock");
+      err.code = "out_of_stock";
+      err.details = { items: insufficient };
+      throw err;
+    }
+    for (const productId of productIds) {
+      await InventoryModel.decrement(client, productId, qtyByProduct.get(productId));
+    }
+    return OrderModel.create(
+      {
+        userId: req.user.id,
+        currency: CURRENCY,
+        subtotalCents,
+        shippingCents,
+        taxCents,
+        totalCents,
+        items: pricedItems,
+        shippingAddress,
+        billingAddress,
+        notes,
+      },
+      client,
+    );
   });
 
   await audit(req, "order.created", {

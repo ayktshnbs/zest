@@ -51,6 +51,7 @@ const PRODUCT_SOURCES = {
   "dor-m11":  "M-11",
 
   // Rendeler & Dilimleyiciler
+  "rnd-m1":   "M-1",
   "rnd-m9":   "M-9",
   "rnd-m12":  "M-12",
   "rnd-m10":  "M-10",
@@ -84,6 +85,9 @@ const PRODUCT_SOURCES = {
   "srv-kal1001": "M-KAL-1001",
   "srv-kal1002": "M-KAL-1002",
   "srv-kal1003": "M-KAL-1003",
+  // srv-kal3001 (Lunar Kapaklı Kase 3'lü Set) has NO folder in `zest foto`; its
+  // gallery is a placeholder reusing the Lunar covered-bowl shots. Point this at
+  // the real M-KAL-3001 folder once those photos are delivered.
   "srv-kas0001": "M-KAS-0001",
   "srv-kas1001": "M-KAS-1001",
   "srv-kau0001": "M-KAU-0001",

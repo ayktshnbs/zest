@@ -1,7 +1,7 @@
 // Order queries. Line items and addresses are JSONB snapshots — see
 // migrations/005_create_orders.sql for the rationale.
 
-import { query } from "../database/pool.js";
+import { query, pool } from "../database/pool.js";
 import crypto from "node:crypto";
 
 /** Generate a human-friendly order number: ZK-20260604-AB12CD. */
@@ -11,20 +11,25 @@ const generateOrderNumber = () => {
   return `ZK-${date}-${suffix}`;
 };
 
-export const create = async ({
-  userId,
-  currency,
-  subtotalCents,
-  shippingCents,
-  taxCents,
-  totalCents,
-  items,
-  shippingAddress,
-  billingAddress,
-  notes,
-}) => {
+// `db` defaults to the shared pool but accepts a transaction client so the
+// insert can run in the same transaction as the stock decrement.
+export const create = async (
+  {
+    userId,
+    currency,
+    subtotalCents,
+    shippingCents,
+    taxCents,
+    totalCents,
+    items,
+    shippingAddress,
+    billingAddress,
+    notes,
+  },
+  db = pool,
+) => {
   const orderNumber = generateOrderNumber();
-  const { rows } = await query(
+  const { rows } = await db.query(
     `INSERT INTO orders (
        order_number, user_id, currency,
        subtotal_cents, shipping_cents, tax_cents, total_cents,
@@ -74,6 +79,31 @@ export const listForUser = async (userId, { limit, offset }) => {
   const { rows: countRows } = await query(
     `SELECT COUNT(*)::int AS total FROM orders WHERE user_id = $1`,
     [userId],
+  );
+  return { rows, total: countRows[0].total };
+};
+
+// Admin: every order, newest first, with the buyer's identity. Optional status filter.
+export const listAll = async ({ limit, offset, status }) => {
+  const params = [limit, offset];
+  let where = "";
+  if (status) {
+    params.push(status);
+    where = `WHERE o.status = $${params.length}`;
+  }
+  const { rows } = await query(
+    `SELECT o.id, o.order_number, o.status, o.currency, o.total_cents, o.created_at,
+            u.email AS user_email, u.name AS user_name
+       FROM orders o
+       JOIN users u ON u.id = o.user_id
+       ${where}
+      ORDER BY o.created_at DESC
+      LIMIT $1 OFFSET $2`,
+    params,
+  );
+  const { rows: countRows } = await query(
+    `SELECT COUNT(*)::int AS total FROM orders ${status ? "WHERE status = $1" : ""}`,
+    status ? [status] : [],
   );
   return { rows, total: countRows[0].total };
 };

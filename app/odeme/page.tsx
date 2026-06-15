@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useCart } from "@/components/CartProvider";
+import { useAuth } from "@/components/AuthProvider";
+import { ordersApi, ApiError } from "@/lib/api";
 import {
   ArrowLeft,
   ArrowRight,
@@ -67,6 +69,7 @@ const deliveryDescriptions: Record<DeliveryMethod, string> = {
 export default function CheckoutPage() {
   const router = useRouter();
   const { cart, totalPrice, clearCart, isHydrated } = useCart();
+  const { isAuthenticated, user } = useAuth();
   const [step, setStep] = useState<StepId>("contact");
   const [contact, setContact] = useState<ContactForm>({ email: "", phone: "" });
   const [shipping, setShipping] = useState<ShippingForm>({
@@ -87,12 +90,18 @@ export default function CheckoutPage() {
   });
   const [agree, setAgree] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isHydrated && cart.length === 0) {
       router.replace("/sepet");
     }
   }, [isHydrated, cart.length, router]);
+
+  // Prefill the contact email for a signed-in shopper.
+  useEffect(() => {
+    if (user?.email) setContact((c) => (c.email ? c : { ...c, email: user.email }));
+  }, [user]);
 
   const baseShipping =
     totalPrice >= FREE_SHIPPING_THRESHOLD && delivery === "standart"
@@ -138,13 +147,62 @@ export default function CheckoutPage() {
     if (idx > 0) setStep(steps[idx - 1].id);
   };
 
-  const handleSubmit = () => {
-    if (!agree) return;
+  const handleSubmit = async () => {
+    if (!agree || submitting) return;
+    // Orders are tied to the signed-in user (no guest checkout in the API).
+    if (!isAuthenticated) {
+      router.push(`/giris?next=${encodeURIComponent("/odeme")}`);
+      return;
+    }
     setSubmitting(true);
-    setTimeout(() => {
+    setError(null);
+
+    const deliveryLabel =
+      delivery === "standart"
+        ? "Standart Kargo"
+        : delivery === "ekspres"
+        ? "Ekspres Kargo"
+        : "Mağazadan Teslim";
+    const paymentLabel =
+      payment === "kart" ? "Kredi/Banka Kartı" : payment === "havale" ? "Havale/EFT" : "Kapıda Ödeme";
+
+    try {
+      // Only productId + quantity are trusted by the API — price, shipping and
+      // totals are recomputed server-side from the authoritative catalog.
+      const { order } = await ordersApi.create({
+        items: cart.map((i) => ({ productId: i.id, quantity: i.quantity })),
+        shippingAddress: {
+          fullName: `${shipping.firstName} ${shipping.lastName}`.trim(),
+          phone: contact.phone || undefined,
+          line1: shipping.address,
+          city: shipping.city,
+          state: shipping.district || undefined,
+          postalCode: shipping.postalCode,
+          country: "TR",
+        },
+        notes: `İletişim: ${contact.email} · ${contact.phone} | Kargo: ${deliveryLabel} | Ödeme: ${paymentLabel}`,
+      });
       clearCart();
-      router.replace("/odeme/basarili");
-    }, 800);
+      router.replace(`/odeme/basarili?order=${encodeURIComponent(order.orderNumber)}`);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        router.push(`/giris?next=${encodeURIComponent("/odeme")}`);
+        return;
+      }
+      if (err instanceof ApiError && err.code === "out_of_stock") {
+        const items =
+          (err.details as { items?: { productId: string }[] } | undefined)?.items ?? [];
+        const names = items
+          .map((i) => cart.find((c) => c.id === i.productId)?.name ?? i.productId)
+          .join(", ");
+        setError(
+          `Üzgünüz, stok yetersiz${names ? `: ${names}` : ""}. Lütfen sepetinizi güncelleyip tekrar deneyin.`,
+        );
+      } else {
+        setError("Sipariş oluşturulamadı. Lütfen tekrar deneyin.");
+      }
+      setSubmitting(false);
+    }
   };
 
   if (!isHydrated || cart.length === 0) {
@@ -545,6 +603,21 @@ export default function CheckoutPage() {
                 ) : null}
               </motion.div>
             </AnimatePresence>
+
+            {error ? (
+              <p className="mt-6 text-[13px] text-red-600 bg-red-50 border border-red-200 px-4 py-3 font-body">
+                {error}
+              </p>
+            ) : null}
+            {step === "review" && !isAuthenticated ? (
+              <p className="mt-6 text-[13px] text-foreground/60 bg-foreground/[0.03] border border-foreground/10 px-4 py-3 font-body">
+                Siparişi tamamlamak için{" "}
+                <Link href="/giris?next=/odeme" className="underline text-foreground">
+                  giriş yapın
+                </Link>
+                .
+              </p>
+            ) : null}
 
             {/* Step actions */}
             <div className="flex items-center justify-between mt-8">

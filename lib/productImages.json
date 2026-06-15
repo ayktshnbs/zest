@@ -109,6 +109,20 @@
     "/products/dor-m2/10.jpg",
     "/products/dor-m2/11.jpg"
   ],
+  "rnd-m1": [
+    "/products/rnd-m1/0.jpg",
+    "/products/rnd-m1/1.jpg",
+    "/products/rnd-m1/2.jpg",
+    "/products/rnd-m1/3.jpg",
+    "/products/rnd-m1/4.jpg",
+    "/products/rnd-m1/5.jpg",
+    "/products/rnd-m1/6.jpg",
+    "/products/rnd-m1/7.jpg",
+    "/products/rnd-m1/8.jpg",
+    "/products/rnd-m1/9.jpg",
+    "/products/rnd-m1/10.jpg",
+    "/products/rnd-m1/11.jpg"
+  ],
   "rnd-m10": [
     "/products/rnd-m10/0.jpg",
     "/products/rnd-m10/1.jpg",
@@ -411,6 +425,14 @@
     "/products/srv-kal1003/9.jpg",
     "/products/srv-kal1003/10.jpg",
     "/products/srv-kal1003/11.jpg"
+  ],
+  "srv-kal3001": [
+    "/products/srv-kal3001/0.jpg",
+    "/products/srv-kal3001/1.jpg",
+    "/products/srv-kal3001/2.jpg",
+    "/products/srv-kal3001/3.jpg",
+    "/products/srv-kal3001/4.jpg",
+    "/products/srv-kal3001/5.jpg"
   ],
   "srv-kas0001": [
     "/products/srv-kas0001/0.jpg",

@@ -21,13 +21,19 @@ const source = readFileSync(SRC, "utf8");
 // Each product seed declares, in order: id → name → … → price. Non-greedy
 // spans keep every match inside a single seed object. `\n\s+price:` matches
 // only the real price line — never `originalPrice:` (different, capitalised
-// token) and never a discounted display value.
-const seedRe = /id:\s*"([^"]+)"[\s\S]*?name:\s*"([^"]+)"[\s\S]*?\n\s+price:\s*(\d+)\s*,/g;
+// token) and never a discounted display value. Prices may be whole TRY or carry
+// kuruş (e.g. 449.99), so allow an optional decimal part.
+// Also capture `stock` (always an integer, declared a couple of lines after
+// price) so the backend can seed its inventory table from this same catalog.
+const seedRe = /id:\s*"([^"]+)"[\s\S]*?name:\s*"([^"]+)"[\s\S]*?\n\s+price:\s*(\d+(?:\.\d+)?)\s*,[\s\S]*?\n\s+stock:\s*(\d+)\s*,/g;
 
 const catalog = {};
 let count = 0;
-for (const [, id, name, price] of source.matchAll(seedRe)) {
-  catalog[id] = { name, priceCents: Number(price) * 100 };
+for (const [, id, name, price, stock] of source.matchAll(seedRe)) {
+  // Backend works in integer kuruş; round to avoid float artefacts (95.63*100).
+  // `stock` is the initial inventory level (npm run seed:inventory seeds it;
+  // the DB is the source of truth thereafter).
+  catalog[id] = { name, priceCents: Math.round(Number(price) * 100), stock: Number(stock) };
   count += 1;
 }
 

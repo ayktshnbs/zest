@@ -145,3 +145,118 @@ export const favoritesApi = {
       body: { productIds },
     }),
 };
+
+// ── Orders ────────────────────────────────────────────────────────────
+export interface Address {
+  fullName: string;
+  phone?: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  state?: string;
+  postalCode: string;
+  country: string; // ISO 3166-1 alpha-2
+}
+
+export interface OrderLineItem {
+  productId: string;
+  name: string;
+  quantity: number;
+  unitPriceCents: number;
+}
+
+export type OrderStatus = "pending" | "paid" | "fulfilled" | "cancelled" | "refunded";
+
+export interface Order {
+  id: string;
+  orderNumber: string;
+  status: OrderStatus;
+  currency: string;
+  subtotalCents: number;
+  shippingCents: number;
+  taxCents: number;
+  totalCents: number;
+  items: OrderLineItem[];
+  shippingAddress: Address;
+  billingAddress?: Address | null;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderSummary {
+  id: string;
+  orderNumber: string;
+  status: OrderStatus;
+  currency: string;
+  totalCents: number;
+  createdAt: string;
+}
+
+export interface Pagination {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface CreateOrderInput {
+  items: { productId: string; quantity: number }[];
+  shippingAddress: Address;
+  billingAddress?: Address;
+  notes?: string;
+}
+
+export const ordersApi = {
+  create: (body: CreateOrderInput) =>
+    api<{ order: Order }>("/api/orders", { method: "POST", body }),
+  list: (page = 1, pageSize = 20) =>
+    api<{ orders: OrderSummary[]; pagination: Pagination }>(
+      `/api/orders?page=${page}&pageSize=${pageSize}`,
+    ),
+  get: (id: string) => api<{ order: Order }>(`/api/orders/${encodeURIComponent(id)}`),
+};
+
+// ── Admin ─────────────────────────────────────────────────────────────
+export interface AdminOrderSummary extends OrderSummary {
+  user: { email: string; name: string };
+}
+
+export interface StockRow {
+  productId: string;
+  name: string | null;
+  stock: number;
+  updatedAt: string;
+}
+
+export const adminApi = {
+  listOrders: (params: { page?: number; pageSize?: number; status?: OrderStatus } = {}) => {
+    const q = new URLSearchParams();
+    if (params.page) q.set("page", String(params.page));
+    if (params.pageSize) q.set("pageSize", String(params.pageSize));
+    if (params.status) q.set("status", params.status);
+    const qs = q.toString();
+    return api<{ orders: AdminOrderSummary[]; pagination: Pagination }>(
+      `/api/admin/orders${qs ? `?${qs}` : ""}`,
+    );
+  },
+  getOrder: (id: string) =>
+    api<{ order: Order }>(`/api/admin/orders/${encodeURIComponent(id)}`),
+  updateOrderStatus: (id: string, status: OrderStatus) =>
+    api<{ order: Order }>(`/api/admin/orders/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: { status },
+    }),
+  listStock: () => api<{ stock: StockRow[] }>("/api/admin/stock"),
+  setStock: (productId: string, stock: number) =>
+    api<{ productId: string; stock: number }>(
+      `/api/admin/stock/${encodeURIComponent(productId)}`,
+      { method: "PATCH", body: { stock } },
+    ),
+};
+
+// ── Public catalog ────────────────────────────────────────────────────
+export const catalogApi = {
+  // Live stock { productId: stock } so the storefront reflects real levels.
+  stock: () => api<{ stock: Record<string, number> }>("/api/catalog/stock"),
+};

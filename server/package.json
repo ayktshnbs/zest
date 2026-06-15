@@ -11,6 +11,7 @@
     "dev": "node --watch --env-file=.env server.js",
     "start": "node --env-file=.env server.js",
     "migrate": "node --env-file=.env database/migrate.js",
+    "seed:inventory": "node --env-file=.env database/seed-inventory.js",
     "lint": "eslint ."
   },
   "dependencies": {

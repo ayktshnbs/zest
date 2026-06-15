@@ -110,3 +110,23 @@ export const paginationSchema = z.object({
   page: z.coerce.number().int().positive().max(10_000).default(1),
   pageSize: z.coerce.number().int().positive().max(100).default(20),
 });
+
+// ── Admin ────────────────────────────────────────────────────────────
+// Mirrors the orders.status CHECK constraint (migrations/005_create_orders.sql).
+export const orderStatusSchema = z.enum([
+  "pending",
+  "paid",
+  "fulfilled",
+  "cancelled",
+  "refunded",
+]);
+
+export const adminOrderListSchema = paginationSchema.extend({
+  status: orderStatusSchema.optional(),
+});
+
+export const updateOrderStatusSchema = z.object({ status: orderStatusSchema });
+
+export const setStockSchema = z.object({
+  stock: z.number().int().min(0).max(1_000_000),
+});

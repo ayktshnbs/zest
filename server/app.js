@@ -22,6 +22,8 @@ import userRoutes from "./routes/userRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import catalogRoutes from "./routes/catalogRoutes.js";
 
 export const createApp = () => {
   const app = express();
@@ -72,6 +74,10 @@ export const createApp = () => {
   // Health is intentionally not CSRF-protected (read-only, no cookies needed)
   app.use("/api/health", healthRoutes);
 
+  // Public, read-only catalog data (live stock). No auth/CSRF — mounted before
+  // the CSRF gate like health.
+  app.use("/api/catalog", catalogRoutes);
+
   // CSRF protection: applies to state-changing requests on routes mounted below.
   // Webhooks (mounted above) and health checks (mounted above) are exempt.
   // ensureCsrfSession issues the stable csrf_sid the token is bound to.
@@ -83,6 +89,7 @@ export const createApp = () => {
   app.use("/api/orders", orderRoutes);
   app.use("/api/payments", paymentRoutes);
   app.use("/api/favorites", favoriteRoutes);
+  app.use("/api/admin", adminRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

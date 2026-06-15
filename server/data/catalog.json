@@ -1,178 +1,232 @@
 {
   "dor-m1": {
     "name": "Dora Manuel El Rondosu",
-    "priceCents": 54900
+    "priceCents": 44999,
+    "stock": 24
   },
   "dor-m2": {
     "name": "3 Bıçaklı Manuel Doğrayıcı",
-    "priceCents": 45900
+    "priceCents": 29999,
+    "stock": 18
   },
   "dor-m11": {
     "name": "Vera İpli Manuel Doğrayıcı",
-    "priceCents": 37900
+    "priceCents": 29999,
+    "stock": 41
   },
   "rnd-m9": {
     "name": "Profesyonel Mandolin Dilimleyici",
-    "priceCents": 89900
+    "priceCents": 34999,
+    "stock": 9
   },
   "rnd-m12": {
     "name": "Flat Ayarlanabilir Mandolin",
-    "priceCents": 46900
+    "priceCents": 21999,
+    "stock": 27
   },
   "rnd-m10": {
     "name": "Çok Yönlü Rende Seti",
-    "priceCents": 55900
+    "priceCents": 24999,
+    "stock": 33
   },
   "rnd-rev": {
     "name": "Profesyonel Multi Rende & Dilimleyici",
-    "priceCents": 114900
+    "priceCents": 13999,
+    "stock": 7
   },
   "skl-esk0001": {
     "name": "Uzun Boy Vakumlu Saklama Kavanozu",
-    "priceCents": 34500
+    "priceCents": 39999,
+    "stock": 47
   },
   "skl-esk0002": {
     "name": "Bonny Vakumlu Saklama Kavanozu 0.6L",
-    "priceCents": 15900
+    "priceCents": 79999,
+    "stock": 124
   },
   "skl-esk0003": {
     "name": "Bonny Vakumlu Saklama Kavanozu 0.9L",
-    "priceCents": 19900
+    "priceCents": 159999,
+    "stock": 86
   },
   "skl-esk0101": {
     "name": "Luxe Premium Vakumlu Kavanoz – Gold",
-    "priceCents": 27900
+    "priceCents": 27900,
+    "stock": 64
   },
   "skl-esk0102": {
     "name": "Luxe Premium Vakumlu Kavanoz – Gümüş",
-    "priceCents": 27900
+    "priceCents": 27900,
+    "stock": 49
   },
   "skl-esk0103": {
     "name": "Luxe Premium Vakumlu Kavanoz – Roze",
-    "priceCents": 27900
+    "priceCents": 27900,
+    "stock": 38
   },
   "skl-esk0211": {
     "name": "Woody Ahşap Kapaklı Kavanoz 0.9L",
-    "priceCents": 19900
+    "priceCents": 19900,
+    "stock": 92
   },
   "skl-esk0212": {
     "name": "Woody Ahşap Kapaklı Kavanoz 1.4L",
-    "priceCents": 24900
+    "priceCents": 24900,
+    "stock": 71
   },
   "skl-esk0213": {
     "name": "Woody Ahşap Kapaklı Kavanoz Mini",
-    "priceCents": 15900
+    "priceCents": 15900,
+    "stock": 108
   },
   "skl-esk1001": {
     "name": "Kare Vakumlu Saklama Seti 3'lü",
-    "priceCents": 74900
+    "priceCents": 74900,
+    "stock": 22
   },
   "skl-esk1101": {
     "name": "Crystal Şeffaf Hava Sızdırmaz Kap",
-    "priceCents": 18900
+    "priceCents": 18900,
+    "stock": 58
   },
   "skl-esk1211": {
     "name": "Tall Cam Görünümlü Vakumlu Kavanoz",
-    "priceCents": 26900
+    "priceCents": 26900,
+    "stock": 47
   },
   "skl-m5": {
     "name": "Modüler Kapaklı Saklama Kabı 0.9L",
-    "priceCents": 11900
+    "priceCents": 5313,
+    "stock": 134
   },
   "skl-m6": {
     "name": "Dikdörtgen Saklama Kabı Orta",
-    "priceCents": 14900
+    "priceCents": 9563,
+    "stock": 102
   },
   "skl-m7": {
     "name": "Dikdörtgen Saklama Kabı Büyük",
-    "priceCents": 18900
+    "priceCents": 15180,
+    "stock": 89
   },
   "skl-m8": {
     "name": "3'lü Saklama Kabı Seti",
-    "priceCents": 45900
+    "priceCents": 34999,
+    "stock": 35
   },
   "srv-kal0001": {
     "name": "Klasik Salata Kasesi Büyük",
-    "priceCents": 33900
+    "priceCents": 3643,
+    "stock": 38
   },
   "srv-kal0002": {
     "name": "Klasik Salata Kasesi Orta",
-    "priceCents": 25900
+    "priceCents": 6831,
+    "stock": 64
   },
   "srv-kal0003": {
     "name": "Klasik Çerez Kasesi",
-    "priceCents": 13900
+    "priceCents": 8804,
+    "stock": 132
   },
   "srv-kal1001": {
     "name": "Kapaklı Servis Kasesi Büyük",
-    "priceCents": 37900
+    "priceCents": 6679,
+    "stock": 26
   },
   "srv-kal1002": {
     "name": "Kapaklı Servis Kasesi Orta",
-    "priceCents": 30900
+    "priceCents": 11689,
+    "stock": 51
   },
   "srv-kal1003": {
     "name": "Kapaklı Servis Kasesi Küçük",
-    "priceCents": 20900
+    "priceCents": 15635,
+    "stock": 89
   },
   "srv-kas0001": {
     "name": "Klasik XXL Salata Kasesi",
-    "priceCents": 42900
+    "priceCents": 9108,
+    "stock": 22
   },
   "srv-kas1001": {
     "name": "Dokulu XXL Servis Kasesi",
-    "priceCents": 48900
+    "priceCents": 15939,
+    "stock": 16
   },
   "srv-kau0001": {
     "name": "Klasik Dikdörtgen Servis Tabağı",
-    "priceCents": 21900
+    "priceCents": 7286,
+    "stock": 73
   },
   "srv-kau1001": {
     "name": "Kapaklı Servis Kasesi",
-    "priceCents": 30900
+    "priceCents": 12144,
+    "stock": 42
   },
   "srv-kav0001": {
     "name": "Klasik Oval Servis Kasesi",
-    "priceCents": 32900
+    "priceCents": 3795,
+    "stock": 31
   },
   "srv-kav1001": {
     "name": "Dokulu Oval Servis Kasesi",
-    "priceCents": 36900
+    "priceCents": 6831,
+    "stock": 19
   },
   "aks-kag": {
     "name": "Desenli Kapaklı Kase Seti (3'lü İç İçe)",
-    "priceCents": 19900
+    "priceCents": 33999,
+    "stock": 64
   },
   "srv-sua": {
     "name": "Süzgeç",
-    "priceCents": 26900
+    "priceCents": 7999,
+    "stock": 88
   },
   "srv-suh": {
     "name": "Ergonomik İçecek Sürahisi",
-    "priceCents": 22900
+    "priceCents": 15999,
+    "stock": 67
   },
   "alt-kmn": {
     "name": "Esnek Kesme Tahtası",
-    "priceCents": 11900
+    "priceCents": 24999,
+    "stock": 21
   },
   "alt-kpg": {
     "name": "Kaymaz Tabanlı Kesme Tahtası",
-    "priceCents": 14900
+    "priceCents": 22999,
+    "stock": 55
   },
   "alt-m3": {
     "name": "Geniş Manuel Salata Kurutucu",
-    "priceCents": 48900
+    "priceCents": 33999,
+    "stock": 28
   },
   "soy-sol1": {
     "name": "Klasik Sebze Soyacağı",
-    "priceCents": 8900
+    "priceCents": 4999,
+    "stock": 142
   },
   "soy-sol2": {
     "name": "Premium Çok Yönlü Soyacak",
-    "priceCents": 12900
+    "priceCents": 4999,
+    "stock": 96
   },
   "aks-m4": {
     "name": "Silikon Buz Kalıbı Kapaklı",
-    "priceCents": 16900
+    "priceCents": 6072,
+    "stock": 198
+  },
+  "rnd-m1": {
+    "name": "Star Kutu Rende",
+    "priceCents": 9999,
+    "stock": 60
+  },
+  "srv-kal3001": {
+    "name": "Lunar Kapaklı Kase 3'lü Set (1L · 2L · 3L)",
+    "priceCents": 33999,
+    "stock": 30
   }
 }
