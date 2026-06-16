@@ -113,7 +113,7 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           <video
             ref={videoRef}
-            className="w-full h-full object-cover object-center contrast-[1.05] saturate-[1.05]"
+            className="w-full h-full object-cover object-center brightness-[1.18] contrast-[1.05] saturate-[1.08]"
             autoPlay
             muted
             loop
@@ -123,8 +123,8 @@ export default function Home() {
           >
             <source src="/hero.mp4" type="video/mp4" />
           </video>
-          {/* Light scrim — just enough to keep white text crisp while letting the video show */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/20 to-black/50" />
+          {/* Lighter scrim — keeps white text crisp while letting more of the video show. */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/5 to-black/35" />
         </div>
 
         <motion.div
@@ -181,7 +181,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-6 md:bottom-10 inset-x-0 z-20 px-5 md:px-16"
+            className="absolute bottom-28 lg:bottom-10 inset-x-0 z-20 px-5 md:px-16"
           >
             <div className="max-w-7xl mx-auto">
               <span className="block font-audiowide text-[9px] uppercase tracking-[0.4em] text-white/60 mb-3">
@@ -192,7 +192,7 @@ export default function Home() {
                   <Link
                     key={p.id}
                     href={`/products/${p.id}`}
-                    className="group shrink-0 flex items-center gap-3 bg-white/70 backdrop-blur-md border border-black/5 rounded-full pl-2 pr-5 py-2 shadow-lg shadow-black/5 hover:bg-white transition-colors"
+                    className="group shrink-0 flex items-center gap-3 bg-white/90 backdrop-blur-md border border-black/10 rounded-full pl-2 pr-5 py-2 shadow-lg shadow-black/10 hover:bg-white transition-colors"
                   >
                     <span className="relative w-12 h-12 shrink-0 rounded-full overflow-hidden bg-secondary/30">
                       <Image src={p.imageUrl} alt={p.name} fill className="object-cover" sizes="48px" />
