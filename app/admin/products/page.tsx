@@ -9,8 +9,9 @@ import {
   uploadImage,
   type AdminProduct,
   type AdminCategory,
+  type CustomProductData,
 } from "@/lib/api";
-import { RotateCcw, Plus, X, ImagePlus, Trash2 } from "lucide-react";
+import { RotateCcw, Plus, X, ImagePlus, Trash2, Pencil } from "lucide-react";
 import { refreshLiveCatalog } from "@/lib/useStock";
 
 const BUILTIN_CATEGORY_OPTIONS = [
@@ -23,17 +24,24 @@ const BUILTIN_CATEGORY_OPTIONS = [
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [customProducts, setCustomProducts] = useState<CustomProductData[]>([]);
   const [adminCats, setAdminCats] = useState<AdminCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [showNew, setShowNew] = useState(false);
+  const [editing, setEditing] = useState<CustomProductData | null>(null);
 
   const reload = async () => {
     try {
-      const [p, c] = await Promise.all([adminApi.listProducts(), adminCategoriesApi.list()]);
+      const [p, c, cp] = await Promise.all([
+        adminApi.listProducts(),
+        adminCategoriesApi.list(),
+        adminCustomProductsApi.list(),
+      ]);
       setProducts(p.products);
       setAdminCats(c.categories);
+      setCustomProducts(cp.products);
     } catch (e) {
       setErr(e instanceof ApiError ? e.message : "Yüklenemedi");
     } finally {
@@ -42,6 +50,17 @@ export default function AdminProductsPage() {
   };
 
   useEffect(() => { reload(); }, []);
+
+  const deleteCustom = async (id: string, name: string) => {
+    if (!confirm(`'${name}' silinsin mi?`)) return;
+    try {
+      await adminCustomProductsApi.remove(id);
+      await refreshLiveCatalog();
+      await reload();
+    } catch (e) {
+      setErr(e instanceof ApiError ? e.message : "Silinemedi");
+    }
+  };
 
   const onSaved = (p: AdminProduct) =>
     setProducts((list) => list.map((r) => (r.productId === p.productId ? p : r)));
@@ -77,11 +96,74 @@ export default function AdminProductsPage() {
       </div>
 
       {showNew ? (
-        <NewProductModal
+        <ProductFormModal
           adminCats={adminCats}
+          existing={null}
           onClose={() => setShowNew(false)}
-          onCreated={async () => { await refreshLiveCatalog(); await reload(); setShowNew(false); }}
+          onDone={async () => { await refreshLiveCatalog(); await reload(); setShowNew(false); }}
         />
+      ) : null}
+      {editing ? (
+        <ProductFormModal
+          adminCats={adminCats}
+          existing={editing}
+          onClose={() => setEditing(null)}
+          onDone={async () => { await refreshLiveCatalog(); await reload(); setEditing(null); }}
+        />
+      ) : null}
+
+      {/* Custom (admin-added) products — separate section because they have
+          full edit/delete, not just name/price/stock overrides. */}
+      {customProducts.length > 0 ? (
+        <section className="mb-12">
+          <h2 className="font-audiowide text-[11px] uppercase tracking-[0.3em] text-foreground/60 mb-4">
+            Eklediğiniz Ürünler ({customProducts.length})
+          </h2>
+          <ul className="space-y-2">
+            {customProducts.map((p) => {
+              const cover = p.imageUrls[0];
+              return (
+                <li
+                  key={p.id}
+                  className="flex items-center justify-between border border-foreground/10 p-3 sm:p-4 gap-3"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    {cover ? (
+                      <img src={cover} alt="" className="w-12 h-12 object-cover bg-foreground/5 shrink-0" />
+                    ) : (
+                      <div className="w-12 h-12 bg-yellow-50 border border-yellow-200 flex items-center justify-center shrink-0" title="Görsel eksik">
+                        <ImagePlus size={14} className="text-yellow-600" />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-foreground truncate">{p.name}</p>
+                      <p className="text-foreground/40 text-[12px] font-body">
+                        {p.categorySlug} · ₺{(p.priceCents / 100).toFixed(2)}
+                        {p.imageUrls.length === 0 ? " · " : ""}
+                        {p.imageUrls.length === 0 ? <span className="text-yellow-700">Görselsiz</span> : null}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => setEditing(p)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-foreground/15 font-audiowide text-[9px] uppercase tracking-[0.2em] hover:border-foreground transition-colors"
+                    >
+                      <Pencil size={12} /> Düzenle
+                    </button>
+                    <button
+                      onClick={() => deleteCustom(p.id, p.name)}
+                      title="Sil"
+                      className="p-2 text-foreground/40 hover:text-red-600 transition-colors"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       ) : null}
 
       <p className="text-foreground/40 font-body text-[12px] mb-6">
@@ -249,27 +331,33 @@ function ProductRowEditor({
   );
 }
 
-function NewProductModal({
+function ProductFormModal({
   adminCats,
+  existing,
   onClose,
-  onCreated,
+  onDone,
 }: {
   adminCats: AdminCategory[];
+  existing: CustomProductData | null;
   onClose: () => void;
-  onCreated: () => Promise<void> | void;
+  onDone: () => Promise<void> | void;
 }) {
-  const [name, setName] = useState("");
-  const [categorySlug, setCategorySlug] = useState("mutfak");
-  const [price, setPrice] = useState("");
+  const isEdit = existing != null;
+  const [name, setName] = useState(existing?.name ?? "");
+  const [categorySlug, setCategorySlug] = useState(existing?.categorySlug ?? "mutfak");
+  const [price, setPrice] = useState(existing ? (existing.priceCents / 100).toString() : "");
   const [stock, setStock] = useState("0");
-  const [shortDesc, setShortDesc] = useState("");
-  const [description, setDescription] = useState("");
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [isNew, setIsNew] = useState(true);
-  const [isFeatured, setIsFeatured] = useState(false);
+  const [shortDesc, setShortDesc] = useState(existing?.shortDescription ?? "");
+  const [description, setDescription] = useState(existing?.description ?? "");
+  const [imageUrls, setImageUrls] = useState<string[]>(existing?.imageUrls ?? []);
+  const [isNew, setIsNew] = useState(existing?.badges?.isNew ?? true);
+  const [isFeatured, setIsFeatured] = useState(existing?.badges?.isFeatured ?? false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  // Forces user to acknowledge a zero-image save (so the silent-no-image case
+  // can't happen again). Click "Save" once → warns; click again → saves.
+  const [confirmedNoImages, setConfirmedNoImages] = useState(false);
 
   const priceNum = Number(price.replace(",", "."));
   const valid = name.trim().length > 0 && Number.isFinite(priceNum) && priceNum > 0;
@@ -278,6 +366,7 @@ function NewProductModal({
     if (!files || files.length === 0) return;
     setErr(null);
     setUploading(true);
+    setConfirmedNoImages(false);
     try {
       const uploaded: string[] = [];
       for (const f of Array.from(files).slice(0, 10)) {
@@ -286,7 +375,11 @@ function NewProductModal({
       }
       setImageUrls((prev) => [...prev, ...uploaded].slice(0, 12));
     } catch {
-      setErr("Görsel yüklenemedi (Cloudinary anahtarları doğru mu?)");
+      // Loud error so the admin can't miss a failed upload — must be cleared
+      // by trying again. Don't allow save while this state is showing.
+      setErr(
+        "Görsel yüklenemedi. Render'da CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET ayarlı olmalı.",
+      );
     } finally {
       setUploading(false);
     }
@@ -296,24 +389,42 @@ function NewProductModal({
     setImageUrls((prev) => prev.filter((_, idx) => idx !== i));
 
   const save = async () => {
-    if (!valid || saving) return;
+    if (!valid || saving || uploading) return;
+    // Require explicit confirmation if there are no images.
+    if (imageUrls.length === 0 && !confirmedNoImages) {
+      setConfirmedNoImages(true);
+      return;
+    }
     setSaving(true);
     setErr(null);
     try {
-      await adminCustomProductsApi.create({
-        name: name.trim(),
-        categorySlug,
-        priceCents: Math.round(priceNum * 100),
-        shortDescription: shortDesc.trim() || null,
-        description: description.trim() || null,
-        imageUrls,
-        badges: { isNew, isFeatured },
-        isActive: true,
-        initialStock: Math.max(0, Math.floor(Number(stock) || 0)),
-      });
-      await onCreated();
+      if (isEdit && existing) {
+        await adminCustomProductsApi.update(existing.id, {
+          name: name.trim(),
+          categorySlug,
+          priceCents: Math.round(priceNum * 100),
+          shortDescription: shortDesc.trim() || null,
+          description: description.trim() || null,
+          imageUrls,
+          badges: { isNew, isFeatured },
+          isActive: true,
+        });
+      } else {
+        await adminCustomProductsApi.create({
+          name: name.trim(),
+          categorySlug,
+          priceCents: Math.round(priceNum * 100),
+          shortDescription: shortDesc.trim() || null,
+          description: description.trim() || null,
+          imageUrls,
+          badges: { isNew, isFeatured },
+          isActive: true,
+          initialStock: Math.max(0, Math.floor(Number(stock) || 0)),
+        });
+      }
+      await onDone();
     } catch (e) {
-      setErr(e instanceof ApiError ? e.message : "Eklenemedi");
+      setErr(e instanceof ApiError ? e.message : (isEdit ? "Güncellenemedi" : "Eklenemedi"));
       setSaving(false);
     }
   };
@@ -322,7 +433,9 @@ function NewProductModal({
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-background/80 backdrop-blur-sm pt-10 pb-20 px-4">
       <div className="w-full max-w-2xl bg-background border border-foreground/15 p-6 md:p-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-audiowide text-lg uppercase tracking-[0.2em]">Yeni Ürün</h2>
+          <h2 className="font-audiowide text-lg uppercase tracking-[0.2em]">
+            {isEdit ? "Ürünü Düzenle" : "Yeni Ürün"}
+          </h2>
           <button onClick={onClose} aria-label="Kapat" className="p-2 text-foreground/40 hover:text-foreground">
             <X size={18} />
           </button>
@@ -371,16 +484,18 @@ function NewProductModal({
               className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
             />
           </label>
-          <label className="block">
-            <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Başlangıç Stok</span>
-            <input
-              type="number"
-              min={0}
-              value={stock}
-              onChange={(e) => setStock(e.target.value)}
-              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
-            />
-          </label>
+          {!isEdit ? (
+            <label className="block">
+              <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Başlangıç Stok</span>
+              <input
+                type="number"
+                min={0}
+                value={stock}
+                onChange={(e) => setStock(e.target.value)}
+                className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
+              />
+            </label>
+          ) : null}
           <label className="block sm:col-span-2">
             <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Kısa Açıklama</span>
             <input
@@ -443,6 +558,13 @@ function NewProductModal({
           </label>
         </div>
 
+        {imageUrls.length === 0 && confirmedNoImages ? (
+          <p className="mt-4 text-[13px] text-yellow-700 bg-yellow-50 border border-yellow-200 px-3 py-2 font-body">
+            Bu ürünün hiç görseli yok — mağazada varsayılan resim gözükür. Yine de kaydetmek için
+            tekrar tıklayın, yoksa önce görsel ekleyin.
+          </p>
+        ) : null}
+
         <div className="mt-8 flex justify-end gap-3 border-t border-foreground/10 pt-6">
           <button
             onClick={onClose}
@@ -452,11 +574,15 @@ function NewProductModal({
             Vazgeç
           </button>
           <button
-            disabled={!valid || saving}
+            disabled={!valid || saving || uploading}
             onClick={save}
             className="px-6 py-2.5 bg-foreground text-background font-audiowide text-[10px] uppercase tracking-[0.3em] disabled:opacity-30 hover:opacity-90"
           >
-            {saving ? "Ekleniyor…" : "Ürünü Ekle"}
+            {saving
+              ? (isEdit ? "Kaydediliyor…" : "Ekleniyor…")
+              : uploading
+              ? "Görsel yükleniyor…"
+              : isEdit ? "Değişiklikleri Kaydet" : "Ürünü Ekle"}
           </button>
         </div>
       </div>
