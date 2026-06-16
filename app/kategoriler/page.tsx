@@ -1,19 +1,57 @@
+"use client";
+
+import { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { categories } from "@/lib/categories";
-import { products } from "@/lib/products";
+import { products as staticProducts } from "@/lib/products";
 import { ArrowRight } from "lucide-react";
+import { useLiveCatalog } from "@/lib/useStock";
 
-export const metadata = {
-  title: "Kategoriler | Zest Home",
-  description: "Mutfak gereçleri kategorilerimizi keşfedin.",
-};
+const FALLBACK_IMAGE = "/hero.jpg";
 
 export default function CategoriesPage() {
-  const productCounts = categories.reduce<Record<string, number>>((acc, cat) => {
-    acc[cat.slug] = products.filter((p) => p.category === cat.slug).length;
-    return acc;
-  }, {});
+  const liveCatalog = useLiveCatalog();
+
+  const tiles = useMemo(() => {
+    // Built-in categories — count both static and custom products in them.
+    const builtIn = categories.map((cat) => {
+      const staticCount = staticProducts.filter((p) => p.category === cat.slug).length;
+      const customCount = liveCatalog.customProducts.filter(
+        (p) => p.isActive && p.categorySlug === cat.slug,
+      ).length;
+      return {
+        kind: "builtin" as const,
+        slug: cat.slug,
+        label: cat.label,
+        description: cat.description,
+        image: cat.image,
+        subcategories: cat.subcategories,
+        count: staticCount + customCount,
+      };
+    });
+
+    // Admin-added categories. Image falls back to the first product image in
+    // the category, then a hero placeholder, so the tile never looks broken.
+    const custom = liveCatalog.categories.map((cat) => {
+      const productsInCat = liveCatalog.customProducts.filter(
+        (p) => p.isActive && p.categorySlug === cat.slug,
+      );
+      const fallbackProductImage = productsInCat.find((p) => p.imageUrls.length > 0)
+        ?.imageUrls[0];
+      return {
+        kind: "custom" as const,
+        slug: cat.slug,
+        label: cat.label,
+        description: `${cat.label} koleksiyonu.`,
+        image: cat.imageUrl || fallbackProductImage || FALLBACK_IMAGE,
+        subcategories: [] as { slug: string; label: string }[],
+        count: productsInCat.length,
+      };
+    });
+
+    return [...builtIn, ...custom];
+  }, [liveCatalog.categories, liveCatalog.customProducts]);
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24 bg-background">
@@ -31,15 +69,11 @@ export default function CategoriesPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-5xl mx-auto">
-          {categories.map((cat) => {
-            const count = productCounts[cat.slug] ?? 0;
-            const comingSoon = count === 0;
+          {tiles.map((cat) => {
+            const comingSoon = cat.count === 0;
+            const isExternal = /^https?:\/\//.test(cat.image);
             return (
-              <Link
-                key={cat.slug}
-                href={`/shop/${cat.slug}`}
-                className="group block"
-              >
+              <Link key={cat.slug} href={`/shop/${cat.slug}`} className="group block">
                 <div className="relative aspect-[4/5] overflow-hidden bg-secondary/30 mb-6">
                   <Image
                     src={cat.image}
@@ -47,11 +81,12 @@ export default function CategoriesPage() {
                     fill
                     className="object-cover transition-transform duration-1000 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 50vw"
+                    unoptimized={isExternal}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                   <div className="absolute bottom-6 left-6 right-6 text-white">
                     <span className="font-audiowide text-[9px] uppercase tracking-[0.4em] opacity-70">
-                      {comingSoon ? "Çok Yakında" : `${count} ürün`}
+                      {comingSoon ? "Çok Yakında" : `${cat.count} ürün`}
                     </span>
                   </div>
                 </div>

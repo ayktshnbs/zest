@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -6,8 +5,12 @@ import { categories, categoryMap } from "@/lib/categories";
 import { getProductsByCategory } from "@/lib/products";
 import { ChevronRight } from "lucide-react";
 import { CategoryShop } from "./CategoryShop";
+import { CustomCategoryView } from "./CustomCategoryView";
 
-export const dynamicParams = false;
+// Built-in categories pre-render at build time; admin-added (custom) slugs are
+// resolved on-demand from the live catalog. `dynamicParams: true` lets Next
+// SSR new slugs instead of 404'ing them.
+export const dynamicParams = true;
 
 export function generateStaticParams() {
   return categories.map((c) => ({ category: c.slug }));
@@ -24,7 +27,11 @@ export function generateMetadata({ params }: { params: { category: string } }) {
 
 export default function CategoryPage({ params }: { params: { category: string } }) {
   const cat = categoryMap[params.category];
-  if (!cat) notFound();
+  // Admin-added category: hand off to a client component that resolves it from
+  // the live catalog and renders its custom products.
+  if (!cat) {
+    return <CustomCategoryView slug={params.category} />;
+  }
   const list = getProductsByCategory(cat.slug);
 
   return (

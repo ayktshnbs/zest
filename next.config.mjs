@@ -2,10 +2,9 @@
 const nextConfig = {
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      // Cloudinary — admin product/category image uploads
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
     ],
   },
   // Proxy API calls to the Express backend so the browser stays same-origin in
