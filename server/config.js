@@ -53,6 +53,11 @@ const envSchema = z.object({
   CREEM_SUCCESS_URL: z.string().url(),
   CREEM_CANCEL_URL: z.string().url(),
 
+  // Cloudinary (image upload). Optional — admin uploads return 503 if unset.
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
+
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(15 * 60 * 1000),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(300),
   AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(20),
@@ -90,6 +95,16 @@ export const config = {
     password: env.PGPASSWORD,
     database: env.PGDATABASE,
     ssl: env.PG_SSL ? { rejectUnauthorized: false } : false,
+  },
+
+  cloudinary: {
+    cloudName: env.CLOUDINARY_CLOUD_NAME,
+    apiKey: env.CLOUDINARY_API_KEY,
+    apiSecret: env.CLOUDINARY_API_SECRET,
+    enabled:
+      Boolean(env.CLOUDINARY_CLOUD_NAME) &&
+      Boolean(env.CLOUDINARY_API_KEY) &&
+      Boolean(env.CLOUDINARY_API_SECRET),
   },
 
   jwt: {

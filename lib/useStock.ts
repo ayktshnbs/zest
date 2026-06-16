@@ -1,22 +1,37 @@
 "use client";
 
-// Client hook for live, admin-managed catalog data (GET /api/catalog/stock →
-// stock + name/price overrides). Module-level cache + single in-flight request
-// so a page full of ProductCards triggers ONE network call. Failure-safe: if
-// the backend is unreachable the fields stay null and callers fall back to the
-// static catalog — it never blanks out names/prices or marks everything out of
-// stock just because the API is down.
+// Client hook for live, admin-managed catalog data (GET /api/catalog/stock):
+//   - stock          : live stock per product id
+//   - overrides      : admin name/price edits per built-in product id
+//   - categories     : admin-added categories (joined with the built-in list)
+//   - customProducts : brand-new admin-added products
+//
+// Module-level cache + single in-flight request so a page full of components
+// triggers ONE network call. Failure-safe: if the backend is unreachable the
+// fields stay null and callers fall back to the static catalog — it never
+// blanks out names/prices or marks everything out of stock just because the API
+// is down.
 
 import { useEffect, useState } from "react";
-import { catalogApi, type CatalogOverride } from "./api";
+import { catalogApi, type CatalogOverride, type CustomProductData, type PublicCategory } from "./api";
 
 type CatalogData = {
   stock: Record<string, number>;
   overrides: Record<string, CatalogOverride>;
+  categories: PublicCategory[];
+  customProducts: CustomProductData[];
 };
+
+const EMPTY: CatalogData = { stock: {}, overrides: {}, categories: [], customProducts: [] };
 
 let cache: CatalogData | null = null;
 let inflight: Promise<CatalogData | null> | null = null;
+const subs = new Set<(d: CatalogData) => void>();
+
+const notify = () => {
+  if (!cache) return;
+  for (const fn of subs) fn(cache);
+};
 
 const load = (): Promise<CatalogData | null> => {
   if (cache) return Promise.resolve(cache);
@@ -24,8 +39,15 @@ const load = (): Promise<CatalogData | null> => {
     inflight = catalogApi
       .catalog()
       .then((d) => {
-        cache = d;
-        return d;
+        // Tolerate older API responses that don't include the new fields.
+        cache = {
+          stock: d.stock ?? {},
+          overrides: d.overrides ?? {},
+          categories: d.categories ?? [],
+          customProducts: d.customProducts ?? [],
+        };
+        notify();
+        return cache;
       })
       .catch(() => null) // backend down — callers keep static values
       .finally(() => {
@@ -61,4 +83,25 @@ export const useLiveProduct = (productId: string): LiveProduct => {
     };
   }, [productId]);
   return data;
+};
+
+/** Full live catalog snapshot — use when you need the admin-added products or
+ *  categories, not just one product's overrides. */
+export const useLiveCatalog = (): CatalogData => {
+  const [data, setData] = useState<CatalogData>(cache ?? EMPTY);
+  useEffect(() => {
+    let active = true;
+    if (cache) setData(cache);
+    load().then((d) => { if (active && d) setData(d); });
+    const sub = (d: CatalogData) => { if (active) setData(d); };
+    subs.add(sub);
+    return () => { active = false; subs.delete(sub); };
+  }, []);
+  return data;
+};
+
+/** Manually invalidate the cache (e.g. after admin saves a change). */
+export const refreshLiveCatalog = async () => {
+  cache = null;
+  return load();
 };

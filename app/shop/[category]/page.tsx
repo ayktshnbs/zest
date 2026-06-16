@@ -80,27 +80,11 @@ export default function CategoryPage({ params }: { params: { category: string } 
           </div>
         </div>
 
-        {list.length === 0 ? (
-          <div className="py-24 text-center border-t border-foreground/5">
-            <p className="font-audiowide text-[11px] uppercase tracking-[0.4em] text-foreground/60 mb-4">
-              Çok Yakında
-            </p>
-            <p className="text-foreground/40 max-w-md mx-auto leading-relaxed mb-8">
-              Bu kategori için yeni ürünler hazırlıyoruz. Mutfak koleksiyonumuzu incelemeye devam
-              edebilirsiniz.
-            </p>
-            <Link
-              href="/shop/mutfak"
-              className="inline-block px-10 py-4 bg-foreground text-background font-audiowide text-[10px] uppercase tracking-[0.3em] hover:opacity-90 transition-opacity"
-            >
-              Mutfak Koleksiyonu
-            </Link>
-          </div>
-        ) : (
-          <Suspense fallback={null}>
-            <CategoryShop category={cat} products={list} />
-          </Suspense>
-        )}
+        {/* CategoryShop also pulls admin-added products from the live catalog,
+            so it must always render even if the static list is empty. */}
+        <Suspense fallback={null}>
+          <CategoryShop category={cat} products={list} />
+        </Suspense>
       </div>
     </main>
   );

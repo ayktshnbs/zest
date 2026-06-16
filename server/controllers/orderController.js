@@ -6,6 +6,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import * as OrderModel from "../models/OrderModel.js";
 import * as InventoryModel from "../models/InventoryModel.js";
 import * as ProductOverrideModel from "../models/ProductOverrideModel.js";
+import * as CustomProductModel from "../models/CustomProductModel.js";
 import { withTransaction } from "../database/pool.js";
 import { NotFoundError, BadRequestError, ConflictError } from "../utils/errors.js";
 import { audit } from "../middleware/audit.js";
@@ -19,20 +20,34 @@ export const createOrder = asyncHandler(async (req, res) => {
   const { items, shippingAddress, billingAddress, notes } = req.validated.body;
 
   // Price every line from the server-side catalog, with any admin name/price
-  // override applied. Client-supplied prices are ignored entirely — the client
-  // cannot dictate what it pays.
+  // override applied. Custom (admin-added) products come from the DB. Client-
+  // supplied prices are ignored entirely — the client cannot dictate what it pays.
   const overrides = await ProductOverrideModel.getMap();
-  const pricedItems = items.map((item) => {
-    const product = getCatalogProduct(item.productId);
-    if (!product) throw new BadRequestError(`Unknown product: ${item.productId}`);
-    const ovr = overrides[item.productId];
-    return {
-      productId: item.productId,
-      name: ovr?.name ?? product.name,
-      quantity: item.quantity,
-      unitPriceCents: ovr?.priceCents ?? product.priceCents,
-    };
-  });
+  const pricedItems = await Promise.all(
+    items.map(async (item) => {
+      const builtIn = getCatalogProduct(item.productId);
+      if (builtIn) {
+        const ovr = overrides[item.productId];
+        return {
+          productId: item.productId,
+          name: ovr?.name ?? builtIn.name,
+          quantity: item.quantity,
+          unitPriceCents: ovr?.priceCents ?? builtIn.priceCents,
+        };
+      }
+      // Fall back to the custom-products table; reject only if neither has it.
+      const custom = await CustomProductModel.get(item.productId);
+      if (!custom || !custom.is_active) {
+        throw new BadRequestError(`Unknown product: ${item.productId}`);
+      }
+      return {
+        productId: item.productId,
+        name: custom.name,
+        quantity: item.quantity,
+        unitPriceCents: Number(custom.price_cents),
+      };
+    }),
+  );
 
   const subtotalCents = pricedItems.reduce(
     (sum, item) => sum + item.unitPriceCents * item.quantity,

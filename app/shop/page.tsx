@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useMemo, useEffect, Suspense } from "react";
-import { products } from "@/lib/products";
+import { products as staticProducts } from "@/lib/products";
 import { categories, categoryMap } from "@/lib/categories";
+import { useLiveCatalog } from "@/lib/useStock";
+import { mergeProducts } from "@/lib/customProducts";
 import { ProductCard } from "@/components/ProductCard";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,6 +30,13 @@ function ShopContent() {
   const router = useRouter();
   const pathname = usePathname();
 
+  // Merge admin-added products into the static catalog so they show up here too.
+  const liveCatalog = useLiveCatalog();
+  const products = useMemo(
+    () => mergeProducts(staticProducts, liveCatalog.customProducts, liveCatalog.categories),
+    [liveCatalog.customProducts, liveCatalog.categories],
+  );
+
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [selectedCategory, setSelectedCategory] = useState<string>(
     searchParams.get("cat") ?? "all",
@@ -39,7 +48,7 @@ function ShopContent() {
     (searchParams.get("sort") as SortKey) || "featured",
   );
   const [maxPrice, setMaxPrice] = useState<number>(() => {
-    const max = Math.max(...products.map((p) => p.price));
+    const max = Math.max(...staticProducts.map((p) => p.price));
     const fromUrl = Number(searchParams.get("max"));
     return Number.isFinite(fromUrl) && fromUrl > 0 ? fromUrl : Math.ceil(max / 100) * 100;
   });
@@ -58,7 +67,7 @@ function ShopContent() {
 
   const priceCeiling = useMemo(
     () => Math.ceil(Math.max(...products.map((p) => p.price)) / 100) * 100,
-    [],
+    [products],
   );
 
   const activeCategory = selectedCategory !== "all" ? categoryMap[selectedCategory] : undefined;

@@ -8,6 +8,29 @@ import { NotFoundError } from "../utils/errors.js";
 import { audit } from "../middleware/audit.js";
 import { getCatalogProduct, getCatalog } from "../data/catalog.js";
 import * as ProductOverrideModel from "../models/ProductOverrideModel.js";
+import * as CategoryModel from "../models/CategoryModel.js";
+import * as CustomProductModel from "../models/CustomProductModel.js";
+import * as cloudinary from "../services/cloudinaryService.js";
+import { BadRequestError, ConflictError } from "../utils/errors.js";
+import crypto from "node:crypto";
+
+// Built-in storefront category slugs (mirrors lib/categories.ts). Admin can
+// assign custom products to either a built-in or a DB-managed category.
+const BUILTIN_CATEGORY_SLUGS = new Set([
+  "mutfak",
+  "saklama-kaplari",
+  "dograyicilar-rendeler",
+  "servis-sofra",
+  "mutfak-yardimcilari",
+  "genel-ev-urunleri",
+]);
+
+const ensureCategoryExists = async (slug) => {
+  if (BUILTIN_CATEGORY_SLUGS.has(slug)) return true;
+  const row = await CategoryModel.get(slug);
+  if (!row) throw new BadRequestError(`Unknown category: ${slug}`);
+  return true;
+};
 
 export const listOrders = asyncHandler(async (req, res) => {
   const { page, pageSize, status } = req.validated.query;
@@ -96,6 +119,103 @@ export const listProducts = asyncHandler(async (_req, res) => {
     })
     .sort((a, b) => a.productId.localeCompare(b.productId));
   res.json({ products });
+});
+
+// ── Cloudinary uploads ────────────────────────────────────────────────
+// Browser uploads images straight to Cloudinary using this signed payload.
+// The API secret never leaves the server.
+export const signUpload = asyncHandler(async (req, res) => {
+  const { type } = req.validated.body;
+  const folder = `zest-home/${type}`;
+  const payload = cloudinary.sign({ folder });
+  res.json(payload);
+});
+
+// ── Admin-managed categories ──────────────────────────────────────────
+export const listCategories = asyncHandler(async (_req, res) => {
+  const rows = await CategoryModel.listAll();
+  res.json({ categories: rows.map(CategoryModel.toPublic) });
+});
+
+export const createCategory = asyncHandler(async (req, res) => {
+  const body = req.validated.body;
+  if (BUILTIN_CATEGORY_SLUGS.has(body.slug)) {
+    throw new ConflictError("This slug is reserved for a built-in category");
+  }
+  const existing = await CategoryModel.get(body.slug);
+  if (existing) throw new ConflictError("A category with this slug already exists");
+  const row = await CategoryModel.create(body);
+  await audit(req, "category.created", { slug: row.slug });
+  res.status(201).json({ category: CategoryModel.toPublic(row) });
+});
+
+export const updateCategory = asyncHandler(async (req, res) => {
+  const row = await CategoryModel.update(req.params.slug, req.validated.body);
+  if (!row) throw new NotFoundError("Category not found");
+  await audit(req, "category.updated", { slug: row.slug });
+  res.json({ category: CategoryModel.toPublic(row) });
+});
+
+export const deleteCategory = asyncHandler(async (req, res) => {
+  try {
+    const ok = await CategoryModel.remove(req.params.slug);
+    if (!ok) throw new NotFoundError("Category not found");
+    await audit(req, "category.deleted", { slug: req.params.slug });
+    res.status(204).end();
+  } catch (err) {
+    if (err.code === "category_not_empty") {
+      throw new ConflictError(
+        `Cannot delete: ${err.count} product(s) still in this category`,
+      );
+    }
+    throw err;
+  }
+});
+
+// ── Custom (admin-added) products ─────────────────────────────────────
+export const listCustomProducts = asyncHandler(async (_req, res) => {
+  const rows = await CustomProductModel.listAll();
+  res.json({ products: rows.map(CustomProductModel.toPublic) });
+});
+
+export const createCustomProduct = asyncHandler(async (req, res) => {
+  const body = req.validated.body;
+  await ensureCategoryExists(body.categorySlug);
+  // Stable, slug-safe id with a short random suffix to avoid collisions.
+  const trMap = { "ı": "i", "İ": "i", "ş": "s", "Ş": "s", "ğ": "g", "Ğ": "g",
+                  "ü": "u", "Ü": "u", "ö": "o", "Ö": "o", "ç": "c", "Ç": "c" };
+  const base = body.name
+    .toLowerCase()
+    .replace(/[ıİşŞğĞüÜöÖçÇ]/g, (ch) => trMap[ch] ?? ch)
+    .normalize("NFKD")
+    .replace(/\p{M}+/gu, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40) || "urun";
+  const id = `c-${base}-${crypto.randomBytes(3).toString("hex")}`;
+  const row = await CustomProductModel.create({ id, ...body });
+  // Seed inventory if requested (otherwise it'll show as 0 stock).
+  if (body.initialStock != null) {
+    await InventoryModel.setStock(id, body.initialStock);
+  }
+  await audit(req, "custom_product.created", { id, name: row.name });
+  res.status(201).json({ product: CustomProductModel.toPublic(row) });
+});
+
+export const updateCustomProduct = asyncHandler(async (req, res) => {
+  const body = req.validated.body;
+  if (body.categorySlug) await ensureCategoryExists(body.categorySlug);
+  const row = await CustomProductModel.update(req.params.id, body);
+  if (!row) throw new NotFoundError("Product not found");
+  await audit(req, "custom_product.updated", { id: row.id });
+  res.json({ product: CustomProductModel.toPublic(row) });
+});
+
+export const deleteCustomProduct = asyncHandler(async (req, res) => {
+  const ok = await CustomProductModel.remove(req.params.id);
+  if (!ok) throw new NotFoundError("Product not found");
+  await audit(req, "custom_product.deleted", { id: req.params.id });
+  res.status(204).end();
 });
 
 // Edit a product's name/price override and/or stock. A present null clears the

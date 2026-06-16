@@ -57,3 +57,10 @@ services:
         sync: false
       - key: CREEM_CANCEL_URL
         sync: false
+      # Cloudinary (image uploads)
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

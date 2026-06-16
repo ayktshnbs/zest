@@ -160,3 +160,71 @@ export const updateProductSchema = z
   .refine((v) => "name" in v || "priceCents" in v || "stock" in v, {
     message: "Provide at least one of name, priceCents, stock",
   });
+
+// Admin-managed categories.
+const slugRe = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+export const slugSchema = z
+  .string()
+  .trim()
+  .min(2)
+  .max(60)
+  .regex(slugRe, "Lowercase letters, digits, and dashes only");
+
+export const createCategorySchema = z.object({
+  slug: slugSchema,
+  label: z.string().trim().min(1).max(80),
+  imageUrl: z.string().url().max(500).optional().nullable(),
+  displayOrder: z.number().int().min(0).max(10_000).optional(),
+});
+
+export const updateCategorySchema = z
+  .object({
+    label: z.string().trim().min(1).max(80).optional(),
+    imageUrl: z.string().url().max(500).nullable().optional(),
+    displayOrder: z.number().int().min(0).max(10_000).optional(),
+  })
+  .refine((v) => Object.keys(v).length > 0, { message: "Provide at least one field" });
+
+// Custom (admin-added) products. categorySlug is validated against existing
+// built-in or DB categories in the controller.
+export const createCustomProductSchema = z.object({
+  name: z.string().trim().min(1).max(200),
+  categorySlug: slugSchema,
+  priceCents: z.number().int().min(0).max(100_000_000),
+  shortDescription: z.string().trim().max(500).optional().nullable(),
+  description: z.string().trim().max(5000).optional().nullable(),
+  imageUrls: z.array(z.string().url().max(500)).max(20).optional(),
+  badges: z
+    .object({
+      isNew: z.boolean().optional(),
+      isBestSeller: z.boolean().optional(),
+      isFeatured: z.boolean().optional(),
+    })
+    .optional(),
+  isActive: z.boolean().optional(),
+  initialStock: z.number().int().min(0).max(1_000_000).optional(),
+});
+
+export const updateCustomProductSchema = z
+  .object({
+    name: z.string().trim().min(1).max(200).optional(),
+    categorySlug: slugSchema.optional(),
+    priceCents: z.number().int().min(0).max(100_000_000).optional(),
+    shortDescription: z.string().trim().max(500).nullable().optional(),
+    description: z.string().trim().max(5000).nullable().optional(),
+    imageUrls: z.array(z.string().url().max(500)).max(20).optional(),
+    badges: z
+      .object({
+        isNew: z.boolean().optional(),
+        isBestSeller: z.boolean().optional(),
+        isFeatured: z.boolean().optional(),
+      })
+      .optional(),
+    isActive: z.boolean().optional(),
+  })
+  .refine((v) => Object.keys(v).length > 0, { message: "Provide at least one field" });
+
+// Sign request — type identifies the upload target ("products" | "categories").
+export const signUploadSchema = z.object({
+  type: z.enum(["products", "categories"]),
+});

@@ -10,6 +10,12 @@ import {
   updateOrderSchema,
   setStockSchema,
   updateProductSchema,
+  createCategorySchema,
+  updateCategorySchema,
+  createCustomProductSchema,
+  updateCustomProductSchema,
+  signUploadSchema,
+  slugSchema,
   uuidSchema,
 } from "../utils/validation.js";
 
@@ -51,6 +57,52 @@ router.patch(
     body: setStockSchema,
   }),
   adminController.setStock,
+);
+
+// Cloudinary signed upload payload
+router.post(
+  "/uploads/sign",
+  validate({ body: signUploadSchema }),
+  adminController.signUpload,
+);
+
+// Admin-managed categories
+router.get("/categories", adminController.listCategories);
+router.post(
+  "/categories",
+  validate({ body: createCategorySchema }),
+  adminController.createCategory,
+);
+router.patch(
+  "/categories/:slug",
+  validate({ params: z.object({ slug: slugSchema }), body: updateCategorySchema }),
+  adminController.updateCategory,
+);
+router.delete(
+  "/categories/:slug",
+  validate({ params: z.object({ slug: slugSchema }) }),
+  adminController.deleteCategory,
+);
+
+// Custom (admin-added) products
+router.get("/custom-products", adminController.listCustomProducts);
+router.post(
+  "/custom-products",
+  validate({ body: createCustomProductSchema }),
+  adminController.createCustomProduct,
+);
+router.patch(
+  "/custom-products/:id",
+  validate({
+    params: z.object({ id: z.string().min(1).max(120) }),
+    body: updateCustomProductSchema,
+  }),
+  adminController.updateCustomProduct,
+);
+router.delete(
+  "/custom-products/:id",
+  validate({ params: z.object({ id: z.string().min(1).max(120) }) }),
+  adminController.deleteCustomProduct,
 );
 
 export default router;

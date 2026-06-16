@@ -31,7 +31,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ProductRow } from "@/components/ProductRow";
 import { RecentlyViewedRow } from "@/components/RecentlyViewedRow";
 import { categoryMap } from "@/lib/categories";
-import { useLiveProduct } from "@/lib/useStock";
+import { useLiveProduct, useLiveCatalog } from "@/lib/useStock";
+import { customToProduct } from "@/lib/customProducts";
 import {
   estimatedDelivery,
   formatPrice,
@@ -39,7 +40,19 @@ import {
 } from "@/lib/utils";
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const product = getProductById(params.id);
+  // Try the static catalog first; fall back to admin-added (custom) products
+  // from the live catalog. A static lookup that returns undefined for an id
+  // that's actually a custom product would otherwise 404 it.
+  const staticProduct = getProductById(params.id);
+  const liveCatalog = useLiveCatalog();
+  const customMatch = !staticProduct
+    ? liveCatalog.customProducts.find((p) => p.id === params.id && p.isActive)
+    : undefined;
+  const product = staticProduct
+    ?? (customMatch ? customToProduct(customMatch, liveCatalog.categories) : undefined);
+  const isCustomLoadPending =
+    !staticProduct && !customMatch && liveCatalog.customProducts.length === 0;
+
   const { addToCart } = useCart();
   const { has: inWishlist, toggle: toggleWishlist } = useWishlist();
   const { track } = useRecentlyViewed();
@@ -57,7 +70,18 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     if (product) track(product.id);
   }, [product, track]);
 
-  if (!product) notFound();
+  if (!product) {
+    if (isCustomLoadPending) {
+      return (
+        <main className="min-h-screen pt-40 text-center">
+          <p className="font-audiowide text-[10px] uppercase tracking-[0.4em] text-foreground/40">
+            Yükleniyor
+          </p>
+        </main>
+      );
+    }
+    notFound();
+  }
 
   const wishlisted = inWishlist(product.id);
   const effectiveStock = live.stock ?? product.stock;

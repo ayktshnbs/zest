@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { Category, Product, SortKey } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLiveCatalog } from "@/lib/useStock";
+import { mergeProducts } from "@/lib/customProducts";
 
 const sortOptions: { value: SortKey; label: string }[] = [
   { value: "featured", label: "Öne Çıkanlar" },
@@ -19,11 +21,22 @@ const PAGE_SIZE = 12;
 
 export const CategoryShop = ({
   category,
-  products,
+  products: staticInCategory,
 }: {
   category: Category;
   products: Product[];
 }) => {
+  // Pull admin-added products into this category from the live catalog.
+  const liveCatalog = useLiveCatalog();
+  const products = useMemo(() => {
+    const merged = mergeProducts(
+      staticInCategory,
+      liveCatalog.customProducts,
+      liveCatalog.categories,
+    );
+    return merged.filter((p) => p.category === category.slug);
+  }, [staticInCategory, liveCatalog.customProducts, liveCatalog.categories, category.slug]);
+
   const searchParams = useSearchParams();
   const initialSub = (() => {
     const fromUrl = searchParams.get("sub");

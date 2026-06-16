@@ -302,11 +302,115 @@ export interface CatalogOverride {
   priceCents: number | null;
 }
 
+export interface PublicCategory {
+  slug: string;
+  label: string;
+  imageUrl: string | null;
+  displayOrder: number;
+}
+
+export interface CustomProductData {
+  id: string;
+  name: string;
+  categorySlug: string;
+  priceCents: number;
+  shortDescription: string | null;
+  description: string | null;
+  imageUrls: string[];
+  badges: { isNew?: boolean; isBestSeller?: boolean; isFeatured?: boolean };
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export const catalogApi = {
-  // Live admin-managed data the storefront overlays: stock + name/price overrides.
+  // Live admin-managed data the storefront overlays: stock + name/price
+  // overrides + admin-added categories and products.
   catalog: () =>
     api<{
       stock: Record<string, number>;
       overrides: Record<string, CatalogOverride>;
+      categories: PublicCategory[];
+      customProducts: CustomProductData[];
     }>("/api/catalog/stock"),
+};
+
+// ── Admin: categories + custom products + uploads ─────────────────────
+export interface AdminCategory extends PublicCategory {}
+
+export const adminCategoriesApi = {
+  list: () => api<{ categories: AdminCategory[] }>("/api/admin/categories"),
+  create: (body: { slug: string; label: string; imageUrl?: string | null; displayOrder?: number }) =>
+    api<{ category: AdminCategory }>("/api/admin/categories", { method: "POST", body }),
+  update: (slug: string, body: { label?: string; imageUrl?: string | null; displayOrder?: number }) =>
+    api<{ category: AdminCategory }>(
+      `/api/admin/categories/${encodeURIComponent(slug)}`,
+      { method: "PATCH", body },
+    ),
+  remove: (slug: string) =>
+    api<void>(`/api/admin/categories/${encodeURIComponent(slug)}`, { method: "DELETE" }),
+};
+
+export interface CreateCustomProductInput {
+  name: string;
+  categorySlug: string;
+  priceCents: number;
+  shortDescription?: string | null;
+  description?: string | null;
+  imageUrls?: string[];
+  badges?: { isNew?: boolean; isBestSeller?: boolean; isFeatured?: boolean };
+  isActive?: boolean;
+  initialStock?: number;
+}
+
+export const adminCustomProductsApi = {
+  list: () => api<{ products: CustomProductData[] }>("/api/admin/custom-products"),
+  create: (body: CreateCustomProductInput) =>
+    api<{ product: CustomProductData }>("/api/admin/custom-products", {
+      method: "POST",
+      body,
+    }),
+  update: (id: string, body: Partial<CreateCustomProductInput>) =>
+    api<{ product: CustomProductData }>(
+      `/api/admin/custom-products/${encodeURIComponent(id)}`,
+      { method: "PATCH", body },
+    ),
+  remove: (id: string) =>
+    api<void>(`/api/admin/custom-products/${encodeURIComponent(id)}`, { method: "DELETE" }),
+};
+
+export interface UploadSignature {
+  cloudName: string;
+  apiKey: string;
+  timestamp: number;
+  folder: string;
+  signature: string;
+  uploadUrl: string;
+}
+
+export const adminUploadsApi = {
+  // Get a signed payload, then POST the file directly to Cloudinary's uploadUrl.
+  sign: (type: "products" | "categories") =>
+    api<UploadSignature>("/api/admin/uploads/sign", { method: "POST", body: { type } }),
+};
+
+/** Upload one file to Cloudinary using a signed payload from the API. */
+export const uploadImage = async (
+  file: File,
+  type: "products" | "categories",
+): Promise<{ secureUrl: string; publicId: string }> => {
+  const sig = await adminUploadsApi.sign(type);
+  const form = new FormData();
+  form.append("file", file);
+  form.append("api_key", sig.apiKey);
+  form.append("timestamp", String(sig.timestamp));
+  form.append("folder", sig.folder);
+  form.append("signature", sig.signature);
+  const res = await fetch(sig.uploadUrl, { method: "POST", body: form });
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`Upload failed: ${res.status} ${txt.slice(0, 200)}`);
+  }
+  const data = await res.json();
+  return { secureUrl: data.secure_url, publicId: data.public_id };
 };

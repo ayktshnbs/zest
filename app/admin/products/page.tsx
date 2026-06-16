@@ -1,27 +1,47 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { adminApi, ApiError, type AdminProduct } from "@/lib/api";
-import { RotateCcw } from "lucide-react";
+import {
+  adminApi,
+  adminCategoriesApi,
+  adminCustomProductsApi,
+  ApiError,
+  uploadImage,
+  type AdminProduct,
+  type AdminCategory,
+} from "@/lib/api";
+import { RotateCcw, Plus, X, ImagePlus, Trash2 } from "lucide-react";
+import { refreshLiveCatalog } from "@/lib/useStock";
+
+const BUILTIN_CATEGORY_OPTIONS = [
+  { slug: "mutfak", label: "Mutfak" },
+  { slug: "saklama-kaplari", label: "Mutfak › Saklama Kapları" },
+  { slug: "dograyicilar-rendeler", label: "Mutfak › Doğrayıcılar & Rendeler" },
+  { slug: "servis-sofra", label: "Mutfak › Servis & Sofra" },
+  { slug: "mutfak-yardimcilari", label: "Mutfak › Mutfak Yardımcıları" },
+];
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [adminCats, setAdminCats] = useState<AdminCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [q, setQ] = useState("");
+  const [showNew, setShowNew] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { products } = await adminApi.listProducts();
-        setProducts(products);
-      } catch (e) {
-        setErr(e instanceof ApiError ? e.message : "Yüklenemedi");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  const reload = async () => {
+    try {
+      const [p, c] = await Promise.all([adminApi.listProducts(), adminCategoriesApi.list()]);
+      setProducts(p.products);
+      setAdminCats(c.categories);
+    } catch (e) {
+      setErr(e instanceof ApiError ? e.message : "Yüklenemedi");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { reload(); }, []);
 
   const onSaved = (p: AdminProduct) =>
     setProducts((list) => list.map((r) => (r.productId === p.productId ? p : r)));
@@ -40,13 +60,29 @@ export default function AdminProductsPage() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <h1 className="font-audiowide text-2xl uppercase tracking-tight">Ürünler &amp; Stok</h1>
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Ürün ara…"
-          className="border border-foreground/15 bg-background px-3 py-2 text-[13px] font-body focus:outline-none focus:border-foreground w-56"
-        />
+        <div className="flex items-center gap-3">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Ürün ara…"
+            className="border border-foreground/15 bg-background px-3 py-2 text-[13px] font-body focus:outline-none focus:border-foreground w-56"
+          />
+          <button
+            onClick={() => setShowNew(true)}
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-foreground text-background font-audiowide text-[10px] uppercase tracking-[0.3em] hover:opacity-90"
+          >
+            <Plus size={12} /> Yeni Ürün
+          </button>
+        </div>
       </div>
+
+      {showNew ? (
+        <NewProductModal
+          adminCats={adminCats}
+          onClose={() => setShowNew(false)}
+          onCreated={async () => { await refreshLiveCatalog(); await reload(); setShowNew(false); }}
+        />
+      ) : null}
 
       <p className="text-foreground/40 font-body text-[12px] mb-6">
         İsim ve fiyat değişiklikleri mağazada ve sipariş fiyatında anında geçerli olur. Boş bırakıp
@@ -210,5 +246,220 @@ function ProductRowEditor({
         </div>
       </td>
     </tr>
+  );
+}
+
+function NewProductModal({
+  adminCats,
+  onClose,
+  onCreated,
+}: {
+  adminCats: AdminCategory[];
+  onClose: () => void;
+  onCreated: () => Promise<void> | void;
+}) {
+  const [name, setName] = useState("");
+  const [categorySlug, setCategorySlug] = useState("mutfak");
+  const [price, setPrice] = useState("");
+  const [stock, setStock] = useState("0");
+  const [shortDesc, setShortDesc] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [isNew, setIsNew] = useState(true);
+  const [isFeatured, setIsFeatured] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const priceNum = Number(price.replace(",", "."));
+  const valid = name.trim().length > 0 && Number.isFinite(priceNum) && priceNum > 0;
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setErr(null);
+    setUploading(true);
+    try {
+      const uploaded: string[] = [];
+      for (const f of Array.from(files).slice(0, 10)) {
+        const { secureUrl } = await uploadImage(f, "products");
+        uploaded.push(secureUrl);
+      }
+      setImageUrls((prev) => [...prev, ...uploaded].slice(0, 12));
+    } catch {
+      setErr("Görsel yüklenemedi (Cloudinary anahtarları doğru mu?)");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = (i: number) =>
+    setImageUrls((prev) => prev.filter((_, idx) => idx !== i));
+
+  const save = async () => {
+    if (!valid || saving) return;
+    setSaving(true);
+    setErr(null);
+    try {
+      await adminCustomProductsApi.create({
+        name: name.trim(),
+        categorySlug,
+        priceCents: Math.round(priceNum * 100),
+        shortDescription: shortDesc.trim() || null,
+        description: description.trim() || null,
+        imageUrls,
+        badges: { isNew, isFeatured },
+        isActive: true,
+        initialStock: Math.max(0, Math.floor(Number(stock) || 0)),
+      });
+      await onCreated();
+    } catch (e) {
+      setErr(e instanceof ApiError ? e.message : "Eklenemedi");
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-background/80 backdrop-blur-sm pt-10 pb-20 px-4">
+      <div className="w-full max-w-2xl bg-background border border-foreground/15 p-6 md:p-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="font-audiowide text-lg uppercase tracking-[0.2em]">Yeni Ürün</h2>
+          <button onClick={onClose} aria-label="Kapat" className="p-2 text-foreground/40 hover:text-foreground">
+            <X size={18} />
+          </button>
+        </div>
+
+        {err ? <p className="mb-4 text-red-600 text-sm font-body">{err}</p> : null}
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <label className="block sm:col-span-2">
+            <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">İsim</span>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Yeni Ürün"
+              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
+            />
+          </label>
+          <label className="block">
+            <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Kategori</span>
+            <select
+              value={categorySlug}
+              onChange={(e) => setCategorySlug(e.target.value)}
+              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
+            >
+              <optgroup label="Yerleşik">
+                {BUILTIN_CATEGORY_OPTIONS.map((c) => (
+                  <option key={c.slug} value={c.slug}>{c.label}</option>
+                ))}
+              </optgroup>
+              {adminCats.length > 0 ? (
+                <optgroup label="Özel">
+                  {adminCats.map((c) => (
+                    <option key={c.slug} value={c.slug}>{c.label}</option>
+                  ))}
+                </optgroup>
+              ) : null}
+            </select>
+          </label>
+          <label className="block">
+            <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Fiyat (₺)</span>
+            <input
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="0.00"
+              inputMode="decimal"
+              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
+            />
+          </label>
+          <label className="block">
+            <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Başlangıç Stok</span>
+            <input
+              type="number"
+              min={0}
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
+            />
+          </label>
+          <label className="block sm:col-span-2">
+            <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Kısa Açıklama</span>
+            <input
+              value={shortDesc}
+              onChange={(e) => setShortDesc(e.target.value)}
+              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
+            />
+          </label>
+          <label className="block sm:col-span-2">
+            <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Açıklama</span>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] resize-none focus:outline-none focus:border-foreground"
+            />
+          </label>
+        </div>
+
+        <div className="mt-6">
+          <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50 block mb-2">
+            Görseller
+          </span>
+          <div className="flex flex-wrap items-center gap-3">
+            {imageUrls.map((u, i) => (
+              <div key={u} className="relative w-20 h-20 border border-foreground/10">
+                <img src={u} alt="" className="w-full h-full object-cover" />
+                <button
+                  onClick={() => removeImage(i)}
+                  className="absolute -top-2 -right-2 bg-background border border-foreground/20 p-0.5 text-foreground/50 hover:text-red-600"
+                  aria-label="Sil"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+            <label className="inline-flex items-center gap-2 px-4 py-2 border border-dashed border-foreground/20 cursor-pointer hover:border-foreground transition-colors text-[12px] font-body">
+              <ImagePlus size={14} />
+              {uploading ? "Yükleniyor…" : "Görsel Ekle"}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => handleFiles(e.target.files)}
+                disabled={uploading}
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-wrap gap-4">
+          <label className="inline-flex items-center gap-2 text-[12px] font-body">
+            <input type="checkbox" checked={isNew} onChange={(e) => setIsNew(e.target.checked)} className="accent-foreground" />
+            Yeni rozeti
+          </label>
+          <label className="inline-flex items-center gap-2 text-[12px] font-body">
+            <input type="checkbox" checked={isFeatured} onChange={(e) => setIsFeatured(e.target.checked)} className="accent-foreground" />
+            Öne çıkar
+          </label>
+        </div>
+
+        <div className="mt-8 flex justify-end gap-3 border-t border-foreground/10 pt-6">
+          <button
+            onClick={onClose}
+            disabled={saving}
+            className="px-5 py-2 font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/50 hover:text-foreground"
+          >
+            Vazgeç
+          </button>
+          <button
+            disabled={!valid || saving}
+            onClick={save}
+            className="px-6 py-2.5 bg-foreground text-background font-audiowide text-[10px] uppercase tracking-[0.3em] disabled:opacity-30 hover:opacity-90"
+          >
+            {saving ? "Ekleniyor…" : "Ürünü Ekle"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
