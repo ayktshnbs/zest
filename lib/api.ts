@@ -134,6 +134,12 @@ export const authApi = {
     api<{ user: PublicUser }>("/api/auth/verify-email", { method: "POST", body: { token } }),
   resendVerification: () =>
     api<{ ok: true }>("/api/auth/resend-verification", { method: "POST" }),
+  // Sign in with a Google ID token (from Google Identity Services).
+  google: (idToken: string) =>
+    api<{ user: PublicUser; isNew: boolean }>("/api/auth/google", {
+      method: "POST",
+      body: { id_token: idToken },
+    }),
 };
 
 export const favoritesApi = {

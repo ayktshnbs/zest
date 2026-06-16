@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { ApiError } from "@/lib/api";
+import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 
 function RegisterForm() {
   const router = useRouter();
@@ -121,6 +122,20 @@ function RegisterForm() {
           </>
         )}
       </button>
+
+      {/* Google sign-in (signing up via Google creates the account in one step). */}
+      <div className="relative pt-4">
+        <div className="flex items-center gap-3">
+          <span className="flex-1 h-px bg-foreground/10" />
+          <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/30">
+            veya
+          </span>
+          <span className="flex-1 h-px bg-foreground/10" />
+        </div>
+        <div className="mt-4">
+          <GoogleSignInButton redirectTo={redirectTo} onError={setError} />
+        </div>
+      </div>
 
       <p className="text-center text-sm text-foreground/60 pt-4 border-t border-foreground/5">
         Zaten bir hesabınız var mı?{" "}
