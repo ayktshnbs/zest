@@ -13,6 +13,22 @@ import {
 } from "@/lib/api";
 import { RotateCcw, Plus, X, ImagePlus, Trash2, Pencil } from "lucide-react";
 import { refreshLiveCatalog } from "@/lib/useStock";
+import { products as staticProducts } from "@/lib/products";
+
+// Map each built-in product id → the category label it belongs to. The seed's
+// `category` field is actually a subcategory of Mutfak (e.g. "saklama-kaplari"),
+// so we read `subcategoryLabel` first, falling back to the top-level label.
+const PRODUCT_GROUP_LABEL: Record<string, string> = Object.fromEntries(
+  staticProducts.map((p) => [p.id, p.subcategoryLabel ?? p.categoryLabel ?? "Diğer"]),
+);
+// Deterministic order of category sections (matches storefront /kategoriler).
+const GROUP_ORDER = [
+  "Saklama Kapları",
+  "Doğrayıcılar & Rendeler",
+  "Servis & Sofra",
+  "Mutfak Yardımcıları",
+  "Diğer",
+];
 
 const BUILTIN_CATEGORY_OPTIONS = [
   { slug: "mutfak", label: "Mutfak" },
@@ -176,25 +192,70 @@ export default function AdminProductsPage() {
       {loading ? (
         <p className="text-foreground/40 font-body text-sm">Yükleniyor…</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm font-body">
-            <thead>
-              <tr className="text-left font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/40 border-b border-foreground/10">
-                <th className="py-3 pr-4">Ürün Adı</th>
-                <th className="py-3 pr-4">Kod</th>
-                <th className="py-3 pr-4 w-36">Fiyat (₺)</th>
-                <th className="py-3 pr-4 w-28">Stok</th>
-                <th className="py-3 pr-4 w-40"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((row) => (
-                <ProductRowEditor key={row.productId} row={row} onSaved={onSaved} />
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ProductGroups rows={filtered} onSaved={onSaved} />
       )}
+    </div>
+  );
+}
+
+function ProductGroups({
+  rows,
+  onSaved,
+}: {
+  rows: AdminProduct[];
+  onSaved: (p: AdminProduct) => void;
+}) {
+  // Bucket built-in products by their category label, then render one table
+  // per group so each category is clearly separated.
+  const groups = useMemo(() => {
+    const byGroup = new Map<string, AdminProduct[]>();
+    for (const r of rows) {
+      const label = PRODUCT_GROUP_LABEL[r.productId] ?? "Diğer";
+      const arr = byGroup.get(label) ?? [];
+      arr.push(r);
+      byGroup.set(label, arr);
+    }
+    return [...byGroup.entries()].sort(
+      (a, b) => GROUP_ORDER.indexOf(a[0]) - GROUP_ORDER.indexOf(b[0]),
+    );
+  }, [rows]);
+
+  if (groups.length === 0) {
+    return <p className="text-foreground/40 font-body text-sm">Eşleşen ürün yok.</p>;
+  }
+
+  return (
+    <div className="space-y-10">
+      {groups.map(([label, items]) => (
+        <section key={label}>
+          <div className="flex items-baseline justify-between mb-3 border-b border-foreground/10 pb-2">
+            <h2 className="font-audiowide text-[11px] uppercase tracking-[0.3em] text-foreground/60">
+              {label}
+            </h2>
+            <span className="font-audiowide text-[10px] text-foreground/40">
+              {items.length} ürün
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-sm font-body">
+              <thead>
+                <tr className="text-left font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/40 border-b border-foreground/10">
+                  <th className="py-3 pr-4">Ürün Adı</th>
+                  <th className="py-3 pr-4">Kod</th>
+                  <th className="py-3 pr-4 w-36">Fiyat (₺)</th>
+                  <th className="py-3 pr-4 w-28">Stok</th>
+                  <th className="py-3 pr-4 w-40"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((row) => (
+                  <ProductRowEditor key={row.productId} row={row} onSaved={onSaved} />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
