@@ -69,7 +69,7 @@ export const findByIdForUser = async (id, userId) => {
 
 export const listForUser = async (userId, { limit, offset }) => {
   const { rows } = await query(
-    `SELECT id, order_number, status, currency, total_cents, created_at
+    `SELECT id, order_number, status, fulfillment_status, currency, total_cents, created_at
        FROM orders
       WHERE user_id = $1
       ORDER BY created_at DESC
@@ -92,7 +92,8 @@ export const listAll = async ({ limit, offset, status }) => {
     where = `WHERE o.status = $${params.length}`;
   }
   const { rows } = await query(
-    `SELECT o.id, o.order_number, o.status, o.currency, o.total_cents, o.created_at,
+    `SELECT o.id, o.order_number, o.status, o.fulfillment_status, o.currency,
+            o.total_cents, o.items, o.created_at,
             u.email AS user_email, u.name AS user_name
        FROM orders o
        JOIN users u ON u.id = o.user_id
@@ -108,10 +109,43 @@ export const listAll = async ({ limit, offset, status }) => {
   return { rows, total: countRows[0].total };
 };
 
+// Admin: a single order joined with the buyer's identity.
+export const findByIdAdmin = async (id) => {
+  const { rows } = await query(
+    `SELECT o.*, u.email AS user_email, u.name AS user_name
+       FROM orders o
+       JOIN users u ON u.id = o.user_id
+      WHERE o.id = $1
+      LIMIT 1`,
+    [id],
+  );
+  return rows[0] ?? null;
+};
+
 export const updateStatus = async (id, status) => {
   const { rows } = await query(
     `UPDATE orders SET status = $2 WHERE id = $1 RETURNING *`,
     [id, status],
+  );
+  return rows[0] ?? null;
+};
+
+// Admin: update payment status and/or fulfillment status in one call.
+export const updateAdmin = async (id, { status, fulfillmentStatus }) => {
+  const sets = [];
+  const params = [id];
+  if (status) {
+    params.push(status);
+    sets.push(`status = $${params.length}`);
+  }
+  if (fulfillmentStatus) {
+    params.push(fulfillmentStatus);
+    sets.push(`fulfillment_status = $${params.length}`);
+  }
+  if (sets.length === 0) return findById(id);
+  const { rows } = await query(
+    `UPDATE orders SET ${sets.join(", ")} WHERE id = $1 RETURNING *`,
+    params,
   );
   return rows[0] ?? null;
 };
@@ -122,6 +156,7 @@ export const toPublic = (order) => {
     id: order.id,
     orderNumber: order.order_number,
     status: order.status,
+    fulfillmentStatus: order.fulfillment_status,
     currency: order.currency,
     subtotalCents: Number(order.subtotal_cents),
     shippingCents: Number(order.shipping_cents),

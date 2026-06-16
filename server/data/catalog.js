@@ -14,8 +14,11 @@ const catalog = JSON.parse(readFileSync(join(here, "catalog.json"), "utf8"));
 
 export const CURRENCY = "TRY";
 
-/** Authoritative product `{ name, priceCents }`, or null if the id is unknown. */
+/** Authoritative product `{ name, priceCents, stock }`, or null if id unknown. */
 export const getCatalogProduct = (productId) => catalog[productId] ?? null;
+
+/** The full catalog map `{ id: { name, priceCents, stock } }` (code defaults). */
+export const getCatalog = () => catalog;
 
 // Shipping policy — mirrors the storefront (lib/utils.ts): free over ₺750,
 // otherwise a flat ₺49.90 standard rate. Amounts are integer kuruş.

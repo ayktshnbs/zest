@@ -10,6 +10,15 @@ export const stockMap = async () => {
   return Object.fromEntries(rows.map((r) => [r.product_id, r.stock]));
 };
 
+/** Current stock for one product, or null if untracked. */
+export const getStock = async (productId) => {
+  const { rows } = await pool.query(
+    `SELECT stock FROM inventory WHERE product_id = $1`,
+    [productId],
+  );
+  return rows[0]?.stock ?? null;
+};
+
 /** Admin: full stock list (product_id + level), product order. */
 export const listAll = async () => {
   const { rows } = await pool.query(

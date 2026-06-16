@@ -2,6 +2,7 @@
 
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -59,18 +60,24 @@ export const RecentlyViewedProvider = ({ children }: { children: ReactNode }) =>
     return () => window.removeEventListener("zest:logout", onLogout);
   }, []);
 
+  // Stable identities so a consumer's effect — e.g. the product page's
+  // useEffect(() => track(id), [product, track]) — doesn't re-fire every render.
+  // Recreating these each render is what caused the infinite update loop
+  // ("Maximum update depth exceeded"). track is also a no-op when the id is
+  // already the most-recent, so it never triggers a needless state update.
+  const track = useCallback((id: string) => {
+    setIds((prev) => {
+      if (prev[0] === id) return prev;
+      const filtered = prev.filter((x) => x !== id);
+      return [id, ...filtered].slice(0, MAX_ITEMS);
+    });
+  }, []);
+
+  const clear = useCallback(() => setIds([]), []);
+
   const value = useMemo<RecentlyViewedContextType>(
-    () => ({
-      ids,
-      track: (id: string) =>
-        setIds((prev) => {
-          const filtered = prev.filter((x) => x !== id);
-          return [id, ...filtered].slice(0, MAX_ITEMS);
-        }),
-      clear: () => setIds([]),
-      isHydrated,
-    }),
-    [ids, isHydrated],
+    () => ({ ids, track, clear, isHydrated }),
+    [ids, track, clear, isHydrated],
   );
 
   return (

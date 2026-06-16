@@ -4,8 +4,13 @@
 // state-changing requests we read the `csrf` cookie (set by GET
 // /api/auth/csrf) and forward it as the x-csrf-token header.
 
+// In production the Next app proxies /api/* to the backend (see next.config.mjs
+// rewrites), so the browser uses relative same-origin paths ("" base). Locally
+// it talks to the Express dev server directly. An explicit NEXT_PUBLIC_API_URL
+// overrides both.
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:4000";
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ??
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:4000");
 
 export class ApiError extends Error {
   status: number;
@@ -165,12 +170,19 @@ export interface OrderLineItem {
   unitPriceCents: number;
 }
 
-export type OrderStatus = "pending" | "paid" | "fulfilled" | "cancelled" | "refunded";
+export type OrderStatus = "pending" | "paid" | "failed" | "cancelled" | "refunded";
+export type FulfillmentStatus =
+  | "processing"
+  | "packed"
+  | "shipped"
+  | "delivered"
+  | "returned";
 
 export interface Order {
   id: string;
   orderNumber: string;
   status: OrderStatus;
+  fulfillmentStatus: FulfillmentStatus;
   currency: string;
   subtotalCents: number;
   shippingCents: number;
@@ -188,6 +200,7 @@ export interface OrderSummary {
   id: string;
   orderNumber: string;
   status: OrderStatus;
+  fulfillmentStatus: FulfillmentStatus;
   currency: string;
   totalCents: number;
   createdAt: string;
@@ -219,6 +232,8 @@ export const ordersApi = {
 
 // ── Admin ─────────────────────────────────────────────────────────────
 export interface AdminOrderSummary extends OrderSummary {
+  fulfillmentStatus: FulfillmentStatus;
+  items: OrderLineItem[];
   user: { email: string; name: string };
 }
 
@@ -227,6 +242,17 @@ export interface StockRow {
   name: string | null;
   stock: number;
   updatedAt: string;
+}
+
+export interface AdminProduct {
+  productId: string;
+  name: string; // effective (override or default)
+  defaultName: string;
+  nameOverridden: boolean;
+  priceCents: number; // effective
+  defaultPriceCents: number;
+  priceOverridden: boolean;
+  stock: number;
 }
 
 export const adminApi = {
@@ -241,11 +267,16 @@ export const adminApi = {
     );
   },
   getOrder: (id: string) =>
-    api<{ order: Order }>(`/api/admin/orders/${encodeURIComponent(id)}`),
-  updateOrderStatus: (id: string, status: OrderStatus) =>
+    api<{ order: Order; customer: { email: string; name: string } }>(
+      `/api/admin/orders/${encodeURIComponent(id)}`,
+    ),
+  updateOrder: (
+    id: string,
+    patch: { status?: OrderStatus; fulfillmentStatus?: FulfillmentStatus },
+  ) =>
     api<{ order: Order }>(`/api/admin/orders/${encodeURIComponent(id)}`, {
       method: "PATCH",
-      body: { status },
+      body: patch,
     }),
   listStock: () => api<{ stock: StockRow[] }>("/api/admin/stock"),
   setStock: (productId: string, stock: number) =>
@@ -253,10 +284,29 @@ export const adminApi = {
       `/api/admin/stock/${encodeURIComponent(productId)}`,
       { method: "PATCH", body: { stock } },
     ),
+  listProducts: () => api<{ products: AdminProduct[] }>("/api/admin/products"),
+  // Pass a field to set it; pass null to clear an override (revert to default).
+  updateProduct: (
+    productId: string,
+    patch: { name?: string | null; priceCents?: number | null; stock?: number },
+  ) =>
+    api<{ product: AdminProduct }>(
+      `/api/admin/products/${encodeURIComponent(productId)}`,
+      { method: "PATCH", body: patch },
+    ),
 };
 
 // ── Public catalog ────────────────────────────────────────────────────
+export interface CatalogOverride {
+  name: string | null;
+  priceCents: number | null;
+}
+
 export const catalogApi = {
-  // Live stock { productId: stock } so the storefront reflects real levels.
-  stock: () => api<{ stock: Record<string, number> }>("/api/catalog/stock"),
+  // Live admin-managed data the storefront overlays: stock + name/price overrides.
+  catalog: () =>
+    api<{
+      stock: Record<string, number>;
+      overrides: Record<string, CatalogOverride>;
+    }>("/api/catalog/stock"),
 };

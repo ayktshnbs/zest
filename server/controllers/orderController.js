@@ -5,6 +5,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import * as OrderModel from "../models/OrderModel.js";
 import * as InventoryModel from "../models/InventoryModel.js";
+import * as ProductOverrideModel from "../models/ProductOverrideModel.js";
 import { withTransaction } from "../database/pool.js";
 import { NotFoundError, BadRequestError, ConflictError } from "../utils/errors.js";
 import { audit } from "../middleware/audit.js";
@@ -17,16 +18,19 @@ import {
 export const createOrder = asyncHandler(async (req, res) => {
   const { items, shippingAddress, billingAddress, notes } = req.validated.body;
 
-  // Price every line from the server-side catalog. Client-supplied prices are
-  // ignored entirely — the client cannot dictate what it pays.
+  // Price every line from the server-side catalog, with any admin name/price
+  // override applied. Client-supplied prices are ignored entirely — the client
+  // cannot dictate what it pays.
+  const overrides = await ProductOverrideModel.getMap();
   const pricedItems = items.map((item) => {
     const product = getCatalogProduct(item.productId);
     if (!product) throw new BadRequestError(`Unknown product: ${item.productId}`);
+    const ovr = overrides[item.productId];
     return {
       productId: item.productId,
-      name: product.name,
+      name: ovr?.name ?? product.name,
       quantity: item.quantity,
-      unitPriceCents: product.priceCents,
+      unitPriceCents: ovr?.priceCents ?? product.priceCents,
     };
   });
 
@@ -110,6 +114,7 @@ export const listOrders = asyncHandler(async (req, res) => {
       id: r.id,
       orderNumber: r.order_number,
       status: r.status,
+      fulfillmentStatus: r.fulfillment_status,
       currency: r.currency,
       totalCents: Number(r.total_cents),
       createdAt: r.created_at,

@@ -7,8 +7,9 @@ import { validate } from "../middleware/validate.js";
 import { requireAuth, requireRole } from "../middleware/auth.js";
 import {
   adminOrderListSchema,
-  updateOrderStatusSchema,
+  updateOrderSchema,
   setStockSchema,
+  updateProductSchema,
   uuidSchema,
 } from "../utils/validation.js";
 
@@ -28,8 +29,18 @@ router.get(
 );
 router.patch(
   "/orders/:id",
-  validate({ params: z.object({ id: uuidSchema }), body: updateOrderStatusSchema }),
-  adminController.updateOrderStatus,
+  validate({ params: z.object({ id: uuidSchema }), body: updateOrderSchema }),
+  adminController.updateOrder,
+);
+
+router.get("/products", adminController.listProducts);
+router.patch(
+  "/products/:productId",
+  validate({
+    params: z.object({ productId: z.string().min(1).max(120) }),
+    body: updateProductSchema,
+  }),
+  adminController.updateProduct,
 );
 
 router.get("/stock", adminController.listStock);

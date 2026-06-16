@@ -31,6 +31,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ProductRow } from "@/components/ProductRow";
 import { RecentlyViewedRow } from "@/components/RecentlyViewedRow";
 import { categoryMap } from "@/lib/categories";
+import { useLiveProduct } from "@/lib/useStock";
 import {
   estimatedDelivery,
   formatPrice,
@@ -49,6 +50,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const [mainImage, setMainImage] = useState(product?.imageUrl ?? "");
   const [justAdded, setJustAdded] = useState(false);
   const [showShareToast, setShowShareToast] = useState(false);
+  // Live stock from the backend; falls back to the static seed value.
+  const live = useLiveProduct(params.id);
 
   useEffect(() => {
     if (product) track(product.id);
@@ -57,21 +60,26 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   if (!product) notFound();
 
   const wishlisted = inWishlist(product.id);
-  const outOfStock = product.stock <= 0;
-  const lowStock = !outOfStock && product.stock <= 5;
+  const effectiveStock = live.stock ?? product.stock;
+  const effectiveName = live.name ?? product.name;
+  const effectivePrice = live.priceCents != null ? live.priceCents / 100 : product.price;
+  // Cart carries the admin-overridden name/price (the server re-prices anyway).
+  const effectiveProduct = { ...product, name: effectiveName, price: effectivePrice };
+  const outOfStock = effectiveStock <= 0;
+  const lowStock = !outOfStock && effectiveStock <= 5;
   const related = getRelatedProducts(product, 4);
   const cat = categoryMap[product.category];
 
   const productImages = product.images.length > 0 ? product.images : [product.imageUrl];
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    addToCart(effectiveProduct, quantity);
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1600);
   };
 
   const handleBuyNow = () => {
-    addToCart(product, quantity);
+    addToCart(effectiveProduct, quantity);
     router.push("/sepet");
   };
 
@@ -79,7 +87,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     const url = typeof window !== "undefined" ? window.location.href : "";
     try {
       if (navigator.share) {
-        await navigator.share({ title: product.name, url });
+        await navigator.share({ title: effectiveName, url });
       } else {
         await navigator.clipboard.writeText(url);
         setShowShareToast(true);
@@ -116,7 +124,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               <ChevronRight size={12} />
             </>
           ) : null}
-          <span className="text-foreground/70 truncate max-w-[180px] md:max-w-none">{product.name}</span>
+          <span className="text-foreground/70 truncate max-w-[180px] md:max-w-none">{effectiveName}</span>
         </motion.div>
 
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
@@ -227,7 +235,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             </div>
 
             <h1 className="font-audiowide text-3xl md:text-5xl text-foreground mb-4 uppercase tracking-tight leading-tight">
-              {product.name}
+              {effectiveName}
             </h1>
 
             <div className="flex items-center gap-3 mb-6 text-xs">
@@ -256,7 +264,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             {/* Price */}
             <div className="flex items-baseline gap-4 mb-3">
               <p className="font-audiowide text-3xl md:text-4xl text-foreground tracking-tight">
-                {formatPrice(product.price)}
+                {formatPrice(effectivePrice)}
               </p>
               {product.originalPrice ? (
                 <>
@@ -290,8 +298,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 {outOfStock
                   ? "Stokta Yok"
                   : lowStock
-                  ? `Son ${product.stock} adet · Hızla tükenebilir`
-                  : `Stokta · ${product.stock} adet hazır`}
+                  ? `Son ${effectiveStock} adet · Hızla tükenebilir`
+                  : `Stokta · ${effectiveStock} adet hazır`}
               </span>
             </div>
 
@@ -300,13 +308,13 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               <div className="flex items-center gap-3 text-sm text-foreground/60">
                 <Truck size={16} className="text-foreground/40" />
                 <span>
-                  {product.price >= FREE_SHIPPING_THRESHOLD ? (
+                  {effectivePrice >= FREE_SHIPPING_THRESHOLD ? (
                     <>
                       <strong className="text-foreground">Ücretsiz kargo</strong> · Bu üründe geçerli
                     </>
                   ) : (
                     <>
-                      {formatPrice(FREE_SHIPPING_THRESHOLD - product.price)} daha eklerseniz kargo
+                      {formatPrice(FREE_SHIPPING_THRESHOLD - effectivePrice)} daha eklerseniz kargo
                       ücretsiz olur
                     </>
                   )}
@@ -336,17 +344,17 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                   <span className="w-12 text-center font-audiowide text-sm">{quantity}</span>
                   <button
                     onClick={() =>
-                      setQuantity(Math.min(product.stock || 1, quantity + 1))
+                      setQuantity(Math.min(effectiveStock || 1, quantity + 1))
                     }
                     className="p-3 hover:bg-foreground/5 transition-colors"
-                    disabled={outOfStock || quantity >= product.stock}
+                    disabled={outOfStock || quantity >= effectiveStock}
                     aria-label="Arttır"
                   >
                     <Plus size={14} />
                   </button>
                 </div>
                 <span className="text-[10px] font-audiowide uppercase tracking-[0.3em] text-foreground/40">
-                  Ara toplam: {formatPrice(product.price * quantity)}
+                  Ara toplam: {formatPrice(effectivePrice * quantity)}
                 </span>
               </div>
 

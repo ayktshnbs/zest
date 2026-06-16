@@ -116,7 +116,7 @@ export const paginationSchema = z.object({
 export const orderStatusSchema = z.enum([
   "pending",
   "paid",
-  "fulfilled",
+  "failed",
   "cancelled",
   "refunded",
 ]);
@@ -127,6 +127,36 @@ export const adminOrderListSchema = paginationSchema.extend({
 
 export const updateOrderStatusSchema = z.object({ status: orderStatusSchema });
 
+export const fulfillmentStatusSchema = z.enum([
+  "processing",
+  "packed",
+  "shipped",
+  "delivered",
+  "returned",
+]);
+
+// Admin order edit: payment status and/or fulfillment status (at least one).
+export const updateOrderSchema = z
+  .object({
+    status: orderStatusSchema.optional(),
+    fulfillmentStatus: fulfillmentStatusSchema.optional(),
+  })
+  .refine((v) => v.status || v.fulfillmentStatus, {
+    message: "Provide status or fulfillmentStatus",
+  });
+
 export const setStockSchema = z.object({
   stock: z.number().int().min(0).max(1_000_000),
 });
+
+// Admin product edit. Each field is optional; a present null clears that
+// override (reverts to the catalog default). Price is in integer kuruş.
+export const updateProductSchema = z
+  .object({
+    name: z.string().trim().min(1).max(200).nullable().optional(),
+    priceCents: z.number().int().min(0).max(100_000_000).nullable().optional(),
+    stock: z.number().int().min(0).max(1_000_000).optional(),
+  })
+  .refine((v) => "name" in v || "priceCents" in v || "stock" in v, {
+    message: "Provide at least one of name, priceCents, stock",
+  });

@@ -9,6 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatPrice } from "@/lib/utils";
+import { useLiveProduct } from "@/lib/useStock";
 
 interface ProductCardProps {
   product: Product;
@@ -21,8 +22,13 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
   const [isHovered, setIsHovered] = useState(false);
 
   const wishlisted = inWishlist(product.id);
-  const outOfStock = product.stock <= 0;
-  const lowStock = !outOfStock && product.stock <= 5;
+  const live = useLiveProduct(product.id);
+  const effectiveStock = live.stock ?? product.stock;
+  const effectiveName = live.name ?? product.name;
+  const effectivePrice = live.priceCents != null ? live.priceCents / 100 : product.price;
+  const effectiveProduct = { ...product, name: effectiveName, price: effectivePrice };
+  const outOfStock = effectiveStock <= 0;
+  const lowStock = !outOfStock && effectiveStock <= 5;
   const compact = variant === "compact";
 
   return (
@@ -40,7 +46,7 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
       >
         <Image
           src={product.imageUrl}
-          alt={product.name}
+          alt={effectiveName}
           fill
           className={`object-cover transition-transform duration-1000 group-hover:scale-105 ${
             outOfStock ? "opacity-60 grayscale" : ""
@@ -86,7 +92,7 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
               exit={{ opacity: 0, y: 10 }}
               onClick={(e) => {
                 e.preventDefault();
-                addToCart(product);
+                addToCart(effectiveProduct);
               }}
               className="hidden lg:block absolute bottom-4 left-4 right-4 bg-foreground text-background py-4 font-audiowide text-[9px] uppercase tracking-[0.3em] z-20 hover:opacity-90 transition-opacity"
             >
@@ -117,15 +123,15 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
 
         <Link href={`/products/${product.id}`} className="block mb-2 w-full">
           <h4 className="font-body text-sm text-foreground font-medium tracking-tight leading-relaxed line-clamp-1">
-            {product.name}
+            {effectiveName}
           </h4>
         </Link>
 
         <div className="flex items-baseline gap-2 mb-3">
           <p className="font-audiowide text-xs text-foreground tracking-wide">
-            {formatPrice(product.price)}
+            {formatPrice(effectivePrice)}
           </p>
-          {product.originalPrice ? (
+          {product.originalPrice && live.priceCents == null ? (
             <p className="font-body text-[11px] text-foreground/30 line-through">
               {formatPrice(product.originalPrice)}
             </p>
@@ -145,7 +151,7 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
           {outOfStock
             ? "Stokta Yok"
             : lowStock
-            ? `Son ${product.stock} adet`
+            ? `Son ${effectiveStock} adet`
             : "Stokta Var"}
         </span>
 
