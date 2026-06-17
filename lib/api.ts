@@ -261,6 +261,10 @@ export interface AdminProduct {
   defaultPriceCents: number;
   priceOverridden: boolean;
   stock: number;
+  // Description overrides — null means "use the code default". Defaults aren't
+  // returned by the API (they live in lib/products.ts); resolve client-side.
+  shortDescriptionOverride: string | null;
+  descriptionOverride: string | null;
 }
 
 export const adminApi = {
@@ -296,7 +300,13 @@ export const adminApi = {
   // Pass a field to set it; pass null to clear an override (revert to default).
   updateProduct: (
     productId: string,
-    patch: { name?: string | null; priceCents?: number | null; stock?: number },
+    patch: {
+      name?: string | null;
+      priceCents?: number | null;
+      stock?: number;
+      shortDescription?: string | null;
+      description?: string | null;
+    },
   ) =>
     api<{ product: AdminProduct }>(
       `/api/admin/products/${encodeURIComponent(productId)}`,
@@ -308,6 +318,8 @@ export const adminApi = {
 export interface CatalogOverride {
   name: string | null;
   priceCents: number | null;
+  shortDescription: string | null;
+  description: string | null;
 }
 
 export interface PublicCategory {

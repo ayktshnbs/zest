@@ -61,12 +61,16 @@ export interface LiveProduct {
   stock: number | null; // null = unknown (use static)
   name: string | null; // null = no override
   priceCents: number | null; // null = no override
+  shortDescription: string | null;
+  description: string | null;
 }
 
 const pick = (d: CatalogData | null, id: string): LiveProduct => ({
   stock: d && id in d.stock ? d.stock[id] : null,
   name: d?.overrides[id]?.name ?? null,
   priceCents: d?.overrides[id]?.priceCents ?? null,
+  shortDescription: d?.overrides[id]?.shortDescription ?? null,
+  description: d?.overrides[id]?.description ?? null,
 });
 
 /** Live stock + name/price overrides for one product. Overlay onto the static

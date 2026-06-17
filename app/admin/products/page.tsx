@@ -11,7 +11,7 @@ import {
   type AdminCategory,
   type CustomProductData,
 } from "@/lib/api";
-import { RotateCcw, Plus, X, ImagePlus, Trash2, Pencil } from "lucide-react";
+import { RotateCcw, Plus, X, ImagePlus, Trash2, Pencil, FileText } from "lucide-react";
 import { refreshLiveCatalog } from "@/lib/useStock";
 import { products as staticProducts } from "@/lib/products";
 
@@ -347,6 +347,9 @@ function ProductRowEditor({
   const [stock, setStock] = useState(String(row.stock));
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [editingDesc, setEditingDesc] = useState(false);
+  const descriptionOverridden =
+    row.shortDescriptionOverride != null || row.descriptionOverride != null;
 
   // Re-sync when the saved row changes (e.g. after revert).
   useEffect(() => {
@@ -442,7 +445,7 @@ function ProductRowEditor({
         />
       </td>
       <td className="py-2 pr-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             disabled={!dirty || !valid || saving}
             onClick={save}
@@ -450,17 +453,35 @@ function ProductRowEditor({
           >
             Kaydet
           </button>
+          <button
+            onClick={() => setEditingDesc(true)}
+            title="Açıklamayı düzenle"
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 font-audiowide text-[9px] uppercase tracking-[0.2em] border transition-colors ${
+              descriptionOverridden
+                ? "border-foreground text-foreground"
+                : "border-foreground/15 text-foreground/60 hover:border-foreground hover:text-foreground"
+            }`}
+          >
+            <FileText size={12} /> Açıklama
+          </button>
           {overridden ? (
             <button
               onClick={revert}
               disabled={saving}
-              title="Varsayılana döndür"
+              title="İsim/fiyatı varsayılana döndür"
               className="p-1.5 text-foreground/40 hover:text-foreground disabled:opacity-30"
             >
               <RotateCcw size={14} />
             </button>
           ) : null}
           {err ? <span className="text-[11px] text-red-600">{err}</span> : null}
+          {editingDesc ? (
+            <DescriptionEditorModal
+              row={row}
+              onClose={() => setEditingDesc(false)}
+              onSaved={(p) => { onSaved(p); setEditingDesc(false); }}
+            />
+          ) : null}
         </div>
       </td>
     </tr>
@@ -720,6 +741,145 @@ function ProductFormModal({
               ? "Görsel yükleniyor…"
               : isEdit ? "Değişiklikleri Kaydet" : "Ürünü Ekle"}
           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DescriptionEditorModal({
+  row,
+  onClose,
+  onSaved,
+}: {
+  row: AdminProduct;
+  onClose: () => void;
+  onSaved: (p: AdminProduct) => void;
+}) {
+  // Defaults live in the static catalog (lib/products.ts) — the API only
+  // tracks the override, not the default.
+  const staticP = staticProducts.find((p) => p.id === row.productId);
+  const defaultShort = staticP?.shortDescription ?? "";
+  const defaultLong = staticP?.description ?? "";
+
+  const [shortDesc, setShortDesc] = useState<string>(
+    row.shortDescriptionOverride ?? defaultShort,
+  );
+  const [longDesc, setLongDesc] = useState<string>(
+    row.descriptionOverride ?? defaultLong,
+  );
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const dirty =
+    shortDesc !== (row.shortDescriptionOverride ?? defaultShort) ||
+    longDesc !== (row.descriptionOverride ?? defaultLong);
+
+  const save = async () => {
+    if (saving) return;
+    setSaving(true);
+    setErr(null);
+    // Send null when the field matches the default → clears the override.
+    const patch: { shortDescription?: string | null; description?: string | null } = {};
+    const shortTrim = shortDesc.trim();
+    const longTrim = longDesc.trim();
+    patch.shortDescription = shortTrim === defaultShort.trim() || shortTrim === "" ? null : shortTrim;
+    patch.description = longTrim === defaultLong.trim() || longTrim === "" ? null : longTrim;
+    try {
+      const { product } = await adminApi.updateProduct(row.productId, patch);
+      onSaved(product);
+    } catch {
+      setErr("Kaydedilemedi");
+      setSaving(false);
+    }
+  };
+
+  const revertAll = () => {
+    setShortDesc(defaultShort);
+    setLongDesc(defaultLong);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-background/80 backdrop-blur-sm pt-10 pb-20 px-4">
+      <div className="w-full max-w-2xl bg-background border border-foreground/15 p-6 md:p-8">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="font-audiowide text-lg uppercase tracking-[0.2em]">
+            Açıklamayı Düzenle
+          </h2>
+          <button
+            onClick={onClose}
+            aria-label="Kapat"
+            className="p-2 text-foreground/40 hover:text-foreground"
+          >
+            <X size={18} />
+          </button>
+        </div>
+        <p className="text-foreground/40 font-body text-[12px] mb-5">
+          {row.name} <span className="text-foreground/30">· {row.productId}</span>
+        </p>
+
+        {err ? <p className="mb-4 text-red-600 text-sm font-body">{err}</p> : null}
+
+        <label className="block mb-5">
+          <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">
+            Kısa Açıklama
+          </span>
+          <textarea
+            value={shortDesc}
+            onChange={(e) => setShortDesc(e.target.value)}
+            rows={2}
+            maxLength={500}
+            className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] resize-y focus:outline-none focus:border-foreground"
+          />
+          <span className="block text-[10px] text-foreground/30 mt-1">
+            {row.shortDescriptionOverride != null
+              ? `Varsayılan: ${defaultShort.slice(0, 110)}${defaultShort.length > 110 ? "…" : ""}`
+              : "Mağazada görünür · Ürün kartı altında özetlenir"}
+          </span>
+        </label>
+
+        <label className="block mb-5">
+          <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">
+            Detaylı Açıklama
+          </span>
+          <textarea
+            value={longDesc}
+            onChange={(e) => setLongDesc(e.target.value)}
+            rows={8}
+            maxLength={5000}
+            className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] leading-relaxed resize-y focus:outline-none focus:border-foreground whitespace-pre-line"
+          />
+          <span className="block text-[10px] text-foreground/30 mt-1">
+            {row.descriptionOverride != null
+              ? "Şu anda özel açıklama gösteriliyor."
+              : "Ürün detay sayfasının altında gösterilir · Yeni satırlar korunur"}
+          </span>
+        </label>
+
+        <div className="mt-8 flex justify-between items-center gap-3 border-t border-foreground/10 pt-6">
+          <button
+            onClick={revertAll}
+            disabled={saving}
+            className="inline-flex items-center gap-1.5 text-[10px] font-audiowide uppercase tracking-[0.3em] text-foreground/40 hover:text-foreground"
+          >
+            <RotateCcw size={12} /> Varsayılana Döndür
+          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              disabled={saving}
+              className="px-5 py-2 font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/50 hover:text-foreground"
+            >
+              Vazgeç
+            </button>
+            <button
+              disabled={!dirty || saving}
+              onClick={save}
+              className="px-6 py-2.5 bg-foreground text-background font-audiowide text-[10px] uppercase tracking-[0.3em] disabled:opacity-30 hover:opacity-90"
+            >
+              {saving ? "Kaydediliyor…" : "Kaydet"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

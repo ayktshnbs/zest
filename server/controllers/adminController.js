@@ -95,7 +95,7 @@ export const setStock = asyncHandler(async (req, res) => {
   res.json({ productId: updated.product_id, stock: updated.stock });
 });
 
-// Every catalog product merged with its admin override (name/price) + stock.
+// Every catalog product merged with its admin override (name/price/desc) + stock.
 export const listProducts = asyncHandler(async (_req, res) => {
   const catalog = getCatalog();
   const [overrides, stockRows] = await Promise.all([
@@ -115,6 +115,10 @@ export const listProducts = asyncHandler(async (_req, res) => {
         defaultPriceCents: base.priceCents,
         priceOverridden: ovr?.priceCents != null,
         stock: stockMap[productId] ?? 0,
+        // Descriptions: only the override is stored server-side. The frontend
+        // resolves defaults from the static catalog (lib/products.ts).
+        shortDescriptionOverride: ovr?.shortDescription ?? null,
+        descriptionOverride: ovr?.description ?? null,
       };
     })
     .sort((a, b) => a.productId.localeCompare(b.productId));
@@ -229,6 +233,8 @@ export const updateProduct = asyncHandler(async (req, res) => {
   const ovrFields = {};
   if ("name" in body) ovrFields.name = body.name;
   if ("priceCents" in body) ovrFields.priceCents = body.priceCents;
+  if ("shortDescription" in body) ovrFields.shortDescription = body.shortDescription;
+  if ("description" in body) ovrFields.description = body.description;
   if (Object.keys(ovrFields).length > 0) {
     await ProductOverrideModel.set(productId, ovrFields);
   }
@@ -256,6 +262,8 @@ export const updateProduct = asyncHandler(async (req, res) => {
       defaultPriceCents: base.priceCents,
       priceOverridden: oPrice != null,
       stock: stock ?? 0,
+      shortDescriptionOverride: row?.short_description ?? null,
+      descriptionOverride: row?.description ?? null,
     },
   });
 });

@@ -156,10 +156,18 @@ export const updateProductSchema = z
     name: z.string().trim().min(1).max(200).nullable().optional(),
     priceCents: z.number().int().min(0).max(100_000_000).nullable().optional(),
     stock: z.number().int().min(0).max(1_000_000).optional(),
+    shortDescription: z.string().trim().max(500).nullable().optional(),
+    description: z.string().trim().max(5000).nullable().optional(),
   })
-  .refine((v) => "name" in v || "priceCents" in v || "stock" in v, {
-    message: "Provide at least one of name, priceCents, stock",
-  });
+  .refine(
+    (v) =>
+      "name" in v ||
+      "priceCents" in v ||
+      "stock" in v ||
+      "shortDescription" in v ||
+      "description" in v,
+    { message: "Provide at least one of name, priceCents, stock, shortDescription, description" },
+  );
 
 // Admin-managed categories.
 const slugRe = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

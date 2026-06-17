@@ -87,6 +87,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const effectiveStock = live.stock ?? product.stock;
   const effectiveName = live.name ?? product.name;
   const effectivePrice = live.priceCents != null ? live.priceCents / 100 : product.price;
+  const effectiveShortDescription = live.shortDescription ?? product.shortDescription;
+  const effectiveDescription = live.description ?? product.description;
   // Cart carries the admin-overridden name/price (the server re-prices anyway).
   const effectiveProduct = { ...product, name: effectiveName, price: effectivePrice };
   const outOfStock = effectiveStock <= 0;
@@ -282,7 +284,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             </div>
 
             <p className="text-foreground/60 text-base leading-relaxed mb-8">
-              {product.shortDescription}
+              {effectiveShortDescription}
             </p>
 
             {/* Price */}
@@ -495,8 +497,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           <h2 className="font-audiowide text-2xl md:text-3xl uppercase tracking-tight mt-4 mb-6 text-foreground">
             Detaylı Bilgi
           </h2>
-          <p className="text-foreground/60 text-base md:text-lg leading-relaxed">
-            {product.description}
+          <p className="text-foreground/60 text-base md:text-lg leading-relaxed whitespace-pre-line">
+            {effectiveDescription}
           </p>
         </section>
       </div>
