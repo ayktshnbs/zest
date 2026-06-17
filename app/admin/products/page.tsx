@@ -91,6 +91,16 @@ export default function AdminProductsPage() {
     );
   }, [products, q]);
 
+  const filteredCustom = useMemo(() => {
+    const term = q.trim().toLocaleLowerCase("tr");
+    if (!term) return customProducts;
+    return customProducts.filter(
+      (p) =>
+        p.name.toLocaleLowerCase("tr").includes(term) ||
+        p.id.toLocaleLowerCase("tr").includes(term),
+    );
+  }, [customProducts, q]);
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
@@ -128,60 +138,6 @@ export default function AdminProductsPage() {
         />
       ) : null}
 
-      {/* Custom (admin-added) products — separate section because they have
-          full edit/delete, not just name/price/stock overrides. */}
-      {customProducts.length > 0 ? (
-        <section className="mb-12">
-          <h2 className="font-audiowide text-[11px] uppercase tracking-[0.3em] text-foreground/60 mb-4">
-            Eklediğiniz Ürünler ({customProducts.length})
-          </h2>
-          <ul className="space-y-2">
-            {customProducts.map((p) => {
-              const cover = p.imageUrls[0];
-              return (
-                <li
-                  key={p.id}
-                  className="flex items-center justify-between border border-foreground/10 p-3 sm:p-4 gap-3"
-                >
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    {cover ? (
-                      <img src={cover} alt="" className="w-12 h-12 object-cover bg-foreground/5 shrink-0" />
-                    ) : (
-                      <div className="w-12 h-12 bg-yellow-50 border border-yellow-200 flex items-center justify-center shrink-0" title="Görsel eksik">
-                        <ImagePlus size={14} className="text-yellow-600" />
-                      </div>
-                    )}
-                    <div className="min-w-0">
-                      <p className="text-foreground truncate">{p.name}</p>
-                      <p className="text-foreground/40 text-[12px] font-body">
-                        {p.categorySlug} · ₺{(p.priceCents / 100).toFixed(2)}
-                        {p.imageUrls.length === 0 ? " · " : ""}
-                        {p.imageUrls.length === 0 ? <span className="text-yellow-700">Görselsiz</span> : null}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={() => setEditing(p)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-foreground/15 font-audiowide text-[9px] uppercase tracking-[0.2em] hover:border-foreground transition-colors"
-                    >
-                      <Pencil size={12} /> Düzenle
-                    </button>
-                    <button
-                      onClick={() => deleteCustom(p.id, p.name)}
-                      title="Sil"
-                      className="p-2 text-foreground/40 hover:text-red-600 transition-colors"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      ) : null}
-
       <p className="text-foreground/40 font-body text-[12px] mb-6">
         İsim ve fiyat değişiklikleri mağazada ve sipariş fiyatında anında geçerli olur. Boş bırakıp
         ↺ ile varsayılana döndürebilirsiniz.
@@ -192,33 +148,79 @@ export default function AdminProductsPage() {
       {loading ? (
         <p className="text-foreground/40 font-body text-sm">Yükleniyor…</p>
       ) : (
-        <ProductGroups rows={filtered} onSaved={onSaved} />
+        <ProductGroups
+          builtinRows={filtered}
+          customRows={filteredCustom}
+          adminCats={adminCats}
+          onSaved={onSaved}
+          onEdit={setEditing}
+          onDelete={deleteCustom}
+        />
       )}
     </div>
   );
 }
 
+// Built-in top-level + subcategory slug → human label. Custom categories are
+// looked up via the adminCats list (label set by the admin themselves).
+const BUILTIN_CATEGORY_LABEL: Record<string, string> = {
+  mutfak: "Mutfak",
+  "genel-ev-urunleri": "Genel Ev Ürünleri",
+  "saklama-kaplari": "Saklama Kapları",
+  "dograyicilar-rendeler": "Doğrayıcılar & Rendeler",
+  "servis-sofra": "Servis & Sofra",
+  "mutfak-yardimcilari": "Mutfak Yardımcıları",
+};
+
 function ProductGroups({
-  rows,
+  builtinRows,
+  customRows,
+  adminCats,
   onSaved,
+  onEdit,
+  onDelete,
 }: {
-  rows: AdminProduct[];
+  builtinRows: AdminProduct[];
+  customRows: CustomProductData[];
+  adminCats: AdminCategory[];
   onSaved: (p: AdminProduct) => void;
+  onEdit: (p: CustomProductData) => void;
+  onDelete: (id: string, name: string) => void;
 }) {
-  // Bucket built-in products by their category label, then render one table
-  // per group so each category is clearly separated.
+  const resolveLabel = (slug: string) =>
+    BUILTIN_CATEGORY_LABEL[slug] ??
+    adminCats.find((c) => c.slug === slug)?.label ??
+    slug;
+
+  // Build a single map: category label → { builtin: AdminProduct[], custom: CustomProductData[] }.
+  // Both kinds live in the same section so an admin-added product appears
+  // inside its category, not in a separate "Eklediğiniz" bucket.
   const groups = useMemo(() => {
-    const byGroup = new Map<string, AdminProduct[]>();
-    for (const r of rows) {
-      const label = PRODUCT_GROUP_LABEL[r.productId] ?? "Diğer";
-      const arr = byGroup.get(label) ?? [];
-      arr.push(r);
-      byGroup.set(label, arr);
+    const byGroup = new Map<string, { builtin: AdminProduct[]; custom: CustomProductData[] }>();
+    const ensure = (label: string) => {
+      const existing = byGroup.get(label);
+      if (existing) return existing;
+      const created = { builtin: [] as AdminProduct[], custom: [] as CustomProductData[] };
+      byGroup.set(label, created);
+      return created;
+    };
+    for (const r of builtinRows) {
+      ensure(PRODUCT_GROUP_LABEL[r.productId] ?? "Diğer").builtin.push(r);
     }
-    return [...byGroup.entries()].sort(
-      (a, b) => GROUP_ORDER.indexOf(a[0]) - GROUP_ORDER.indexOf(b[0]),
-    );
-  }, [rows]);
+    for (const r of customRows) {
+      ensure(resolveLabel(r.categorySlug)).custom.push(r);
+    }
+    // Known categories first (in GROUP_ORDER), then admin-added alphabetically.
+    return [...byGroup.entries()].sort(([a], [b]) => {
+      const ia = GROUP_ORDER.indexOf(a);
+      const ib = GROUP_ORDER.indexOf(b);
+      if (ia >= 0 && ib >= 0) return ia - ib;
+      if (ia >= 0) return -1;
+      if (ib >= 0) return 1;
+      return a.localeCompare(b, "tr");
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [builtinRows, customRows, adminCats]);
 
   if (groups.length === 0) {
     return <p className="text-foreground/40 font-body text-sm">Eşleşen ürün yok.</p>;
@@ -226,37 +228,110 @@ function ProductGroups({
 
   return (
     <div className="space-y-10">
-      {groups.map(([label, items]) => (
-        <section key={label}>
-          <div className="flex items-baseline justify-between mb-3 border-b border-foreground/10 pb-2">
-            <h2 className="font-audiowide text-[11px] uppercase tracking-[0.3em] text-foreground/60">
-              {label}
-            </h2>
-            <span className="font-audiowide text-[10px] text-foreground/40">
-              {items.length} ürün
-            </span>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-sm font-body">
-              <thead>
-                <tr className="text-left font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/40 border-b border-foreground/10">
-                  <th className="py-3 pr-4">Ürün Adı</th>
-                  <th className="py-3 pr-4">Kod</th>
-                  <th className="py-3 pr-4 w-36">Fiyat (₺)</th>
-                  <th className="py-3 pr-4 w-28">Stok</th>
-                  <th className="py-3 pr-4 w-40"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((row) => (
-                  <ProductRowEditor key={row.productId} row={row} onSaved={onSaved} />
+      {groups.map(([label, items]) => {
+        const total = items.builtin.length + items.custom.length;
+        return (
+          <section key={label}>
+            <div className="flex items-baseline justify-between mb-3 border-b border-foreground/10 pb-2">
+              <h2 className="font-audiowide text-[11px] uppercase tracking-[0.3em] text-foreground/60">
+                {label}
+              </h2>
+              <span className="font-audiowide text-[10px] text-foreground/40">
+                {total} ürün
+              </span>
+            </div>
+
+            {items.custom.length > 0 ? (
+              <ul className="space-y-2 mb-4">
+                {items.custom.map((p) => (
+                  <CustomProductRow
+                    key={p.id}
+                    product={p}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                  />
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      ))}
+              </ul>
+            ) : null}
+
+            {items.builtin.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-sm font-body">
+                  <thead>
+                    <tr className="text-left font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/40 border-b border-foreground/10">
+                      <th className="py-3 pr-4">Ürün Adı</th>
+                      <th className="py-3 pr-4">Kod</th>
+                      <th className="py-3 pr-4 w-36">Fiyat (₺)</th>
+                      <th className="py-3 pr-4 w-28">Stok</th>
+                      <th className="py-3 pr-4 w-40"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {items.builtin.map((row) => (
+                      <ProductRowEditor key={row.productId} row={row} onSaved={onSaved} />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : null}
+          </section>
+        );
+      })}
     </div>
+  );
+}
+
+function CustomProductRow({
+  product,
+  onEdit,
+  onDelete,
+}: {
+  product: CustomProductData;
+  onEdit: (p: CustomProductData) => void;
+  onDelete: (id: string, name: string) => void;
+}) {
+  const cover = product.imageUrls[0];
+  return (
+    <li className="flex items-center justify-between border border-foreground/10 p-3 sm:p-4 gap-3 bg-foreground/[0.015]">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        {cover ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={cover} alt="" className="w-12 h-12 object-cover bg-foreground/5 shrink-0" />
+        ) : (
+          <div
+            className="w-12 h-12 bg-yellow-50 border border-yellow-200 flex items-center justify-center shrink-0"
+            title="Görsel eksik"
+          >
+            <ImagePlus size={14} className="text-yellow-600" />
+          </div>
+        )}
+        <div className="min-w-0">
+          <p className="text-foreground truncate">{product.name}</p>
+          <p className="text-foreground/40 text-[12px] font-body">
+            ₺{(product.priceCents / 100).toFixed(2)}
+            {product.imageUrls.length === 0 ? (
+              <> · <span className="text-yellow-700">Görselsiz</span></>
+            ) : null}
+            {" · "}<span className="text-foreground/30">Sizin eklediğiniz</span>
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <button
+          onClick={() => onEdit(product)}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-foreground/15 font-audiowide text-[9px] uppercase tracking-[0.2em] hover:border-foreground transition-colors"
+        >
+          <Pencil size={12} /> Düzenle
+        </button>
+        <button
+          onClick={() => onDelete(product.id, product.name)}
+          title="Sil"
+          className="p-2 text-foreground/40 hover:text-red-600 transition-colors"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
+    </li>
   );
 }
 
