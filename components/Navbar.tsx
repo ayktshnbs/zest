@@ -120,8 +120,8 @@ export const Navbar = () => {
                         : "text-foreground/40"
                       : onDarkHero
                       ? isActive
-                        ? "text-white"
-                        : "text-white/70"
+                        ? "text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.6)]"
+                        : "text-white/85 [text-shadow:0_1px_8px_rgba(0,0,0,0.6)]"
                       : isActive
                       ? "text-foreground/90"
                       : "text-foreground/50"

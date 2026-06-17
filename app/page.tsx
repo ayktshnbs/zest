@@ -125,6 +125,10 @@ export default function Home() {
           </video>
           {/* Lighter scrim — keeps white text crisp while letting more of the video show. */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/5 to-black/35" />
+          {/* Dedicated top scrim behind the floating navbar so menu text stays
+              legible on bright video frames, without changing the navbar's
+              transparent look. Only affects the top ~140px of the hero. */}
+          <div className="absolute inset-x-0 top-0 h-32 md:h-36 bg-gradient-to-b from-black/45 via-black/20 to-transparent pointer-events-none" />
         </div>
 
         <motion.div
