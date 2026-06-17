@@ -129,7 +129,7 @@ export default function Home() {
 
         <motion.div
           style={{ y: textY, opacity: textOpacity }}
-          className="max-w-7xl mx-auto px-5 md:px-16 relative z-10 w-full text-center mt-[15vh] md:mt-[10vh]"
+          className="max-w-7xl mx-auto px-5 md:px-16 relative z-10 w-full text-center mt-[6vh] md:mt-[10vh]"
         >
           <motion.div
             initial={{ y: 30, opacity: 0 }}
@@ -151,7 +151,7 @@ export default function Home() {
                 ease: "easeInOut",
               }}
             >
-              <h1 className="font-audiowide text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-8 md:mb-10 tracking-[-0.01em] text-white [text-wrap:balance] [text-shadow:0_2px_18px_rgba(0,0,0,0.5)]">
+              <h1 className="font-audiowide text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-6 md:mb-10 tracking-[-0.01em] text-white [text-wrap:balance] [text-shadow:0_2px_18px_rgba(0,0,0,0.5)]">
                 Seçkin Ev Gereçleri
                 <br />
                 <span className="text-white/70">Zahmetsiz Yaşam</span>
