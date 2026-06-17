@@ -13,16 +13,31 @@
 // is down.
 
 import { useEffect, useState } from "react";
-import { catalogApi, type CatalogOverride, type CustomProductData, type PublicCategory } from "./api";
+import {
+  catalogApi,
+  type CatalogOverride,
+  type CustomProductData,
+  type ProductVariant,
+  type PublicCategory,
+} from "./api";
 
 type CatalogData = {
   stock: Record<string, number>;
   overrides: Record<string, CatalogOverride>;
+  retiredIds: string[];
   categories: PublicCategory[];
   customProducts: CustomProductData[];
+  variants: Record<string, ProductVariant[]>;
 };
 
-const EMPTY: CatalogData = { stock: {}, overrides: {}, categories: [], customProducts: [] };
+const EMPTY: CatalogData = {
+  stock: {},
+  overrides: {},
+  retiredIds: [],
+  categories: [],
+  customProducts: [],
+  variants: {},
+};
 
 let cache: CatalogData | null = null;
 let inflight: Promise<CatalogData | null> | null = null;
@@ -43,8 +58,10 @@ const load = (): Promise<CatalogData | null> => {
         cache = {
           stock: d.stock ?? {},
           overrides: d.overrides ?? {},
+          retiredIds: d.retiredIds ?? [],
           categories: d.categories ?? [],
           customProducts: d.customProducts ?? [],
+          variants: d.variants ?? {},
         };
         notify();
         return cache;

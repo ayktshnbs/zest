@@ -45,6 +45,9 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   // that's actually a custom product would otherwise 404 it.
   const staticProduct = getProductById(params.id);
   const liveCatalog = useLiveCatalog();
+  // Retired built-ins are permanently redirected to the storage category — they
+  // were replaced by the new set-style products.
+  const isRetired = liveCatalog.retiredIds.includes(params.id);
   const customMatch = !staticProduct
     ? liveCatalog.customProducts.find((p) => p.id === params.id && p.isActive)
     : undefined;
@@ -52,6 +55,14 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     ?? (customMatch ? customToProduct(customMatch, liveCatalog.categories) : undefined);
   const isCustomLoadPending =
     !staticProduct && !customMatch && liveCatalog.customProducts.length === 0;
+  // Color variants for set products. When present, the customer MUST pick one
+  // before adding to cart; image gallery + stock follow the selection.
+  const variants = liveCatalog.variants[params.id] ?? [];
+  const hasVariants = variants.length > 0;
+  const [selectedColorKey, setSelectedColorKey] = useState<string | null>(null);
+  const selectedVariant = hasVariants
+    ? variants.find((v) => v.colorKey === selectedColorKey) ?? variants[0]
+    : null;
 
   const { addToCart } = useCart();
   const { has: inWishlist, toggle: toggleWishlist } = useWishlist();
@@ -70,6 +81,29 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     if (product) track(product.id);
   }, [product, track]);
 
+  // When the selected color changes, swap the main image to that variant's
+  // first photo so the gallery follows the swatch.
+  useEffect(() => {
+    if (selectedVariant?.imageUrls?.[0]) {
+      setMainImage(selectedVariant.imageUrls[0]);
+    }
+  }, [selectedVariant?.colorKey, selectedVariant?.imageUrls]);
+
+  // 301 redirect for retired built-in products → users land on the storage
+  // category instead of a dead page (better for old bookmarks + SEO).
+  useEffect(() => {
+    if (isRetired) router.replace("/shop/saklama-kaplari");
+  }, [isRetired, router]);
+  if (isRetired) {
+    return (
+      <main className="min-h-screen pt-40 text-center">
+        <p className="font-audiowide text-[10px] uppercase tracking-[0.4em] text-foreground/40">
+          Yönlendiriliyor…
+        </p>
+      </main>
+    );
+  }
+
   if (!product) {
     if (isCustomLoadPending) {
       return (
@@ -84,7 +118,11 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   }
 
   const wishlisted = inWishlist(product.id);
-  const effectiveStock = live.stock ?? product.stock;
+  // For variant products, the chosen color drives stock + gallery; otherwise
+  // fall back to the global stock + base images.
+  const effectiveStock = hasVariants
+    ? selectedVariant?.stock ?? 0
+    : live.stock ?? product.stock;
   const effectiveName = live.name ?? product.name;
   const effectivePrice = live.priceCents != null ? live.priceCents / 100 : product.price;
   const effectiveShortDescription = live.shortDescription ?? product.shortDescription;
@@ -96,16 +134,35 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const related = getRelatedProducts(product, 4);
   const cat = categoryMap[product.category];
 
-  const productImages = product.images.length > 0 ? product.images : [product.imageUrl];
+  const variantImages = selectedVariant?.imageUrls ?? [];
+  const productImages =
+    variantImages.length > 0
+      ? variantImages
+      : product.images.length > 0
+      ? product.images
+      : [product.imageUrl];
 
   const handleAddToCart = () => {
-    addToCart(effectiveProduct, quantity);
+    const color = selectedVariant
+      ? {
+          key: selectedVariant.colorKey,
+          label: selectedVariant.colorLabel,
+          hex: selectedVariant.colorHex,
+        }
+      : undefined;
+    // Provide the chosen image as the cart thumbnail.
+    const productForCart = {
+      ...effectiveProduct,
+      imageUrl: productImages[0] ?? effectiveProduct.imageUrl,
+      stock: effectiveStock,
+    };
+    addToCart(productForCart, quantity, color);
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1600);
   };
 
   const handleBuyNow = () => {
-    addToCart(effectiveProduct, quantity);
+    handleAddToCart();
     router.push("/sepet");
   };
 
@@ -308,6 +365,46 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             <p className="text-foreground/40 text-xs font-body mb-8">
               KDV dahil · {product.sku}
             </p>
+
+            {/* Color picker — only for variant products */}
+            {hasVariants ? (
+              <div className="mb-8 pb-8 border-b border-foreground/5">
+                <p className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/50 mb-3">
+                  Renk: <span className="text-foreground/80">{selectedVariant?.colorLabel}</span>
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {variants.map((v) => {
+                    const isSelected = selectedVariant?.colorKey === v.colorKey;
+                    const isOut = v.stock <= 0;
+                    return (
+                      <button
+                        key={v.colorKey}
+                        type="button"
+                        onClick={() => setSelectedColorKey(v.colorKey)}
+                        title={`${v.colorLabel}${isOut ? " · Tükendi" : ""}`}
+                        aria-label={v.colorLabel}
+                        aria-pressed={isSelected}
+                        className={`relative w-10 h-10 rounded-full transition-all ${
+                          isSelected
+                            ? "ring-2 ring-foreground ring-offset-2 ring-offset-background"
+                            : "ring-1 ring-foreground/15 hover:ring-foreground/40"
+                        } ${isOut ? "opacity-40" : ""}`}
+                      >
+                        <span
+                          className="block w-full h-full rounded-full border border-black/10"
+                          style={{ backgroundColor: v.colorHex }}
+                        />
+                        {isOut ? (
+                          <span className="absolute inset-0 flex items-center justify-center">
+                            <span className="block w-8 h-px bg-foreground/60 rotate-45" />
+                          </span>
+                        ) : null}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
 
             {/* Stock */}
             <div className="flex items-center gap-3 mb-8 pb-8 border-b border-foreground/5">

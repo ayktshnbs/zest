@@ -32,6 +32,14 @@ export interface Product {
 
 export interface CartItem extends Product {
   quantity: number;
+  // Variant choice for set-style products. Required for any product that has
+  // variants — the cart key (line identity) becomes `id + colorKey` so two
+  // colors of the same set sit on separate lines.
+  color?: {
+    key: string;
+    label: string;
+    hex: string;
+  };
 }
 
 export interface Subcategory {

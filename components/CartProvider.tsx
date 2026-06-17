@@ -9,16 +9,23 @@ import React, {
 } from "react";
 import { Product, CartItem } from "@/types";
 
+/** Identity of a single cart line. Two colors of the same product are different
+ *  lines, so the key includes colorKey. */
+type LineKey = { productId: string; colorKey?: string };
+
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addToCart: (product: Product, quantity?: number, color?: CartItem["color"]) => void;
+  removeFromCart: (key: LineKey) => void;
+  updateQuantity: (key: LineKey, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
   isHydrated: boolean;
 }
+
+const sameLine = (a: { id: string; color?: { key: string } }, b: LineKey) =>
+  a.id === b.productId && (a.color?.key ?? undefined) === (b.colorKey ?? undefined);
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -65,34 +72,35 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     return () => window.removeEventListener("zest:logout", onLogout);
   }, []);
 
-  const addToCart = (product: Product, quantity = 1) => {
+  const addToCart = (product: Product, quantity = 1, color?: CartItem["color"]) => {
     if (product.stock <= 0) return;
+    const key: LineKey = { productId: product.id, colorKey: color?.key };
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === product.id);
+      const existingItem = prevCart.find((item) => sameLine(item, key));
       if (existingItem) {
         const next = sanitizeQuantity(product, existingItem.quantity + quantity);
         return prevCart.map((item) =>
-          item.id === product.id ? { ...item, quantity: next } : item,
+          sameLine(item, key) ? { ...item, quantity: next } : item,
         );
       }
       const next = sanitizeQuantity(product, quantity);
       if (next === 0) return prevCart;
-      return [...prevCart, { ...product, quantity: next }];
+      return [...prevCart, { ...product, quantity: next, color }];
     });
   };
 
-  const removeFromCart = (productId: string) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+  const removeFromCart = (key: LineKey) => {
+    setCart((prevCart) => prevCart.filter((item) => !sameLine(item, key)));
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (key: LineKey, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(key);
       return;
     }
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.id === productId
+        sameLine(item, key)
           ? { ...item, quantity: sanitizeQuantity(item, quantity) }
           : item,
       ),

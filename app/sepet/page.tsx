@@ -156,6 +156,16 @@ export default function CartPage() {
                             {item.name}
                           </h3>
                         </Link>
+                        {item.color ? (
+                          <p className="text-[12px] text-foreground/60 font-body flex items-center gap-2">
+                            <span
+                              className="inline-block w-3.5 h-3.5 rounded-full border border-foreground/20"
+                              style={{ backgroundColor: item.color.hex }}
+                              aria-hidden="true"
+                            />
+                            {item.color.label}
+                          </p>
+                        ) : null}
                         <p className="text-[11px] text-foreground/40 font-body">
                           {item.sku} ·{" "}
                           {item.stock > 0
@@ -164,7 +174,7 @@ export default function CartPage() {
                         </p>
                       </div>
                       <button
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart({ productId: item.id, colorKey: item.color?.key })}
                         className="text-foreground/40 hover:text-foreground transition-colors p-1"
                         aria-label="Ürünü kaldır"
                       >
@@ -175,7 +185,7 @@ export default function CartPage() {
                     <div className="flex items-end justify-between gap-4">
                       <div className="flex items-center border border-foreground/15">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity({ productId: item.id, colorKey: item.color?.key }, item.quantity - 1)}
                           className="p-2.5 hover:bg-foreground/5 transition-colors"
                           aria-label="Azalt"
                         >
@@ -185,7 +195,7 @@ export default function CartPage() {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity({ productId: item.id, colorKey: item.color?.key }, item.quantity + 1)}
                           className="p-2.5 hover:bg-foreground/5 transition-colors"
                           disabled={item.quantity >= item.stock}
                           aria-label="Arttır"

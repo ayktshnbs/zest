@@ -32,9 +32,13 @@ function ShopContent() {
 
   // Merge admin-added products into the static catalog so they show up here too.
   const liveCatalog = useLiveCatalog();
+  const retired = useMemo(() => new Set(liveCatalog.retiredIds), [liveCatalog.retiredIds]);
   const products = useMemo(
-    () => mergeProducts(staticProducts, liveCatalog.customProducts, liveCatalog.categories),
-    [liveCatalog.customProducts, liveCatalog.categories],
+    () =>
+      mergeProducts(staticProducts, liveCatalog.customProducts, liveCatalog.categories).filter(
+        (p) => !retired.has(p.id),
+      ),
+    [liveCatalog.customProducts, liveCatalog.categories, retired],
   );
 
   const [query, setQuery] = useState(searchParams.get("q") ?? "");

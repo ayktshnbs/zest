@@ -222,7 +222,8 @@ export interface Pagination {
 }
 
 export interface CreateOrderInput {
-  items: { productId: string; quantity: number }[];
+  // `colorKey` is required for variant products and ignored for everything else.
+  items: { productId: string; quantity: number; colorKey?: string }[];
   shippingAddress: Address;
   billingAddress?: Address;
   notes?: string;
@@ -339,19 +340,36 @@ export interface CustomProductData {
   imageUrls: string[];
   badges: { isNew?: boolean; isBestSeller?: boolean; isFeatured?: boolean };
   isActive: boolean;
+  // Set-style products: structural metadata + per-color variants.
+  volumeLabel?: string | null;
+  setSize?: number | null;
   createdAt: string;
   updatedAt: string;
 }
 
+export interface ProductVariant {
+  id: string;
+  productId: string;
+  colorKey: string;
+  colorLabel: string;
+  colorHex: string;
+  stock: number;
+  imageUrls: string[];
+  position: number;
+}
+
 export const catalogApi = {
-  // Live admin-managed data the storefront overlays: stock + name/price
-  // overrides + admin-added categories and products.
+  // Live admin-managed data the storefront overlays: stock + name/price/desc
+  // overrides + admin-added categories and products + per-product color
+  // variants + ids of retired built-in products (storefront hides them).
   catalog: () =>
     api<{
       stock: Record<string, number>;
       overrides: Record<string, CatalogOverride>;
+      retiredIds?: string[];
       categories: PublicCategory[];
       customProducts: CustomProductData[];
+      variants?: Record<string, ProductVariant[]>;
     }>("/api/catalog/stock"),
 };
 

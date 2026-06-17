@@ -151,9 +151,19 @@ export const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                                   {item.name}
                                 </h3>
                               </Link>
+                              {item.color ? (
+                                <p className="mt-0.5 text-[11px] text-foreground/60 font-body flex items-center gap-1.5">
+                                  <span
+                                    className="inline-block w-3 h-3 rounded-full border border-foreground/20"
+                                    style={{ backgroundColor: item.color.hex }}
+                                    aria-hidden="true"
+                                  />
+                                  {item.color.label}
+                                </p>
+                              ) : null}
                             </div>
                             <button
-                              onClick={() => removeFromCart(item.id)}
+                              onClick={() => removeFromCart({ productId: item.id, colorKey: item.color?.key })}
                               className="p-1 text-foreground/40 hover:text-foreground transition-colors"
                               aria-label="Ürünü kaldır"
                             >
@@ -164,7 +174,7 @@ export const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center border border-foreground/15">
                               <button
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                onClick={() => updateQuantity({ productId: item.id, colorKey: item.color?.key }, item.quantity - 1)}
                                 className="p-1.5 hover:bg-foreground/5 transition-colors"
                                 aria-label="Azalt"
                               >
@@ -174,7 +184,7 @@ export const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                                 {item.quantity}
                               </span>
                               <button
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                onClick={() => updateQuantity({ productId: item.id, colorKey: item.color?.key }, item.quantity + 1)}
                                 disabled={item.quantity >= item.stock}
                                 className="p-1.5 hover:bg-foreground/5 transition-colors disabled:opacity-40"
                                 aria-label="Arttır"

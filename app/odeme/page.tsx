@@ -170,7 +170,11 @@ export default function CheckoutPage() {
       // Only productId + quantity are trusted by the API — price, shipping and
       // totals are recomputed server-side from the authoritative catalog.
       const { order } = await ordersApi.create({
-        items: cart.map((i) => ({ productId: i.id, quantity: i.quantity })),
+        items: cart.map((i) => ({
+          productId: i.id,
+          quantity: i.quantity,
+          ...(i.color ? { colorKey: i.color.key } : {}),
+        })),
         shippingAddress: {
           fullName: `${shipping.firstName} ${shipping.lastName}`.trim(),
           phone: contact.phone || undefined,

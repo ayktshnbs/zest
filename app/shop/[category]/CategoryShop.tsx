@@ -28,14 +28,15 @@ export const CategoryShop = ({
 }) => {
   // Pull admin-added products into this category from the live catalog.
   const liveCatalog = useLiveCatalog();
+  const retired = useMemo(() => new Set(liveCatalog.retiredIds), [liveCatalog.retiredIds]);
   const products = useMemo(() => {
     const merged = mergeProducts(
       staticInCategory,
       liveCatalog.customProducts,
       liveCatalog.categories,
     );
-    return merged.filter((p) => p.category === category.slug);
-  }, [staticInCategory, liveCatalog.customProducts, liveCatalog.categories, category.slug]);
+    return merged.filter((p) => p.category === category.slug && !retired.has(p.id));
+  }, [staticInCategory, liveCatalog.customProducts, liveCatalog.categories, category.slug, retired]);
 
   const searchParams = useSearchParams();
   const initialSub = (() => {
