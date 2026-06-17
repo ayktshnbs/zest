@@ -113,10 +113,10 @@ export function ChatWidget() {
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
             onClick={() => setOpen(true)}
             aria-label="Sohbet asistanını aç"
-            className="fixed right-4 bottom-48 lg:right-6 lg:bottom-6 z-40 flex items-center gap-2 rounded-full bg-foreground text-background pl-4 pr-5 py-3 shadow-xl shadow-black/20 hover:opacity-90 transition-opacity"
+            className="fixed right-4 bottom-20 lg:right-6 lg:bottom-6 z-40 inline-flex items-center justify-center lg:gap-2 rounded-full bg-foreground text-background w-12 h-12 lg:w-auto lg:h-auto lg:pl-4 lg:pr-5 lg:py-3 shadow-xl shadow-black/20 hover:opacity-90 transition-opacity"
           >
             <MessageCircle size={20} strokeWidth={1.75} />
-            <span className="font-audiowide text-[10px] uppercase tracking-[0.2em]">
+            <span className="hidden lg:inline font-audiowide text-[10px] uppercase tracking-[0.2em]">
               Yardım
             </span>
           </motion.button>
@@ -131,7 +131,7 @@ export function ChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.97 }}
             transition={{ type: "spring", stiffness: 240, damping: 24 }}
-            className="fixed right-4 bottom-48 lg:right-6 lg:bottom-6 z-[80] flex flex-col w-[calc(100vw-2rem)] sm:w-[380px] h-[calc(100dvh-14rem)] max-h-[560px] bg-background border border-foreground/10 rounded-2xl shadow-2xl shadow-black/30 overflow-hidden"
+            className="fixed right-4 bottom-20 lg:right-6 lg:bottom-6 z-[80] flex flex-col w-[calc(100vw-2rem)] sm:w-[380px] h-[calc(100dvh-10rem)] max-h-[560px] bg-background border border-foreground/10 rounded-2xl shadow-2xl shadow-black/30 overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-foreground/10 bg-foreground text-background">

@@ -72,8 +72,8 @@ export const MobileNav = () => {
 
   return (
     <>
-      <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-[440px]">
-        <nav className="bg-black/85 backdrop-blur-2xl rounded-full border border-white/10 shadow-2xl flex items-center justify-between px-4 py-3">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-50">
+        <nav className="bg-black/95 backdrop-blur-lg border-t border-white/10 shadow-[0_-2px_12px_rgba(0,0,0,0.25)] flex items-center justify-between px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           {navItems.map((item) => {
             const isActive = isItemActive(item.href);
             const Icon = item.icon;

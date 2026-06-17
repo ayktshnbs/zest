@@ -123,8 +123,10 @@ export default function Home() {
           >
             <source src="/hero.mp4" type="video/mp4" />
           </video>
-          {/* Lighter scrim — keeps white text crisp while letting more of the video show. */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/5 to-black/35" />
+          {/* Scrim: light at top so the video reads through, noticeably darker
+              toward the bottom so SAHNEDEKİ ÜRÜNLER + pills + buttons stay
+              legible on bright frames. */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/60" />
           {/* Dedicated top scrim behind the floating navbar so menu text stays
               legible on bright video frames, without changing the navbar's
               transparent look. Only affects the top ~140px of the hero. */}
@@ -169,11 +171,17 @@ export default function Home() {
               >
                 Hemen Al
               </Link>
+              {/* Secondary CTA: minimal text + arrow so the primary HEMEN AL
+                  button stands alone, instead of two heavy floating pills. */}
               <Link
                 href="/kategoriler"
-                className="w-full sm:w-auto px-10 py-4 bg-white/10 backdrop-blur-md text-white font-audiowide text-[10px] sm:text-[12px] tracking-[0.2em] uppercase rounded-full hover:bg-white/20 transition-all duration-300 flex items-center justify-center gap-2 border border-white/30"
+                className="group inline-flex items-center justify-center gap-2 px-2 py-3 font-audiowide text-[10px] sm:text-[12px] tracking-[0.25em] uppercase text-white/85 hover:text-white transition-colors [text-shadow:0_1px_8px_rgba(0,0,0,0.5)]"
               >
-                Kategorileri Keşfet <ChevronRight size={14} />
+                Kategorileri Keşfet
+                <ArrowRight
+                  size={14}
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
               </Link>
             </div>
           </motion.div>
@@ -185,7 +193,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-28 lg:bottom-10 inset-x-0 z-20 px-5 md:px-16"
+            className="absolute bottom-24 lg:bottom-10 inset-x-0 z-20 px-5 md:px-16"
           >
             <div className="max-w-7xl mx-auto">
               <span className="block font-audiowide text-[9px] uppercase tracking-[0.4em] text-white/60 mb-3">
@@ -196,16 +204,16 @@ export default function Home() {
                   <Link
                     key={p.id}
                     href={`/products/${p.id}`}
-                    className="group shrink-0 flex items-center gap-3 bg-white/90 backdrop-blur-md border border-black/10 rounded-full pl-2 pr-5 py-2 shadow-lg shadow-black/10 hover:bg-white transition-colors"
+                    className="group shrink-0 flex items-center gap-3 bg-white/90 backdrop-blur-md border border-black/10 rounded-3xl pl-2 pr-5 py-2 shadow-lg shadow-black/10 hover:bg-white transition-colors"
                   >
                     <span className="relative w-12 h-12 shrink-0 rounded-full overflow-hidden bg-secondary/30">
                       <Image src={p.imageUrl} alt={p.name} fill className="object-cover" sizes="48px" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block font-body text-[13px] font-medium text-[#1d1d1f] leading-tight truncate max-w-[150px]">
+                      <span className="block font-body text-[13px] font-medium text-[#1d1d1f] leading-tight line-clamp-2 max-w-[170px] md:max-w-[200px]">
                         {p.name}
                       </span>
-                      <span className="block font-audiowide text-[11px] tracking-wide text-[#1d1d1f]/70">
+                      <span className="block font-audiowide text-[11px] tracking-wide text-[#1d1d1f]/70 mt-0.5">
                         {formatPrice(p.price)}
                       </span>
                     </span>
