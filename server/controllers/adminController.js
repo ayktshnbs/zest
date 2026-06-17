@@ -10,6 +10,7 @@ import { getCatalogProduct, getCatalog } from "../data/catalog.js";
 import * as ProductOverrideModel from "../models/ProductOverrideModel.js";
 import * as CategoryModel from "../models/CategoryModel.js";
 import * as CustomProductModel from "../models/CustomProductModel.js";
+import * as ProductVariantModel from "../models/ProductVariantModel.js";
 import * as cloudinary from "../services/cloudinaryService.js";
 import { BadRequestError, ConflictError } from "../utils/errors.js";
 import crypto from "node:crypto";
@@ -185,6 +186,9 @@ export const listCustomProducts = asyncHandler(async (_req, res) => {
 export const createCustomProduct = asyncHandler(async (req, res) => {
   const body = req.validated.body;
   await ensureCategoryExists(body.categorySlug);
+  // Variants imply set-style products: each color carries its own stock, so
+  // we skip seeding the global inventory row.
+  const hasVariants = Array.isArray(body.variants) && body.variants.length > 0;
   // Stable, slug-safe id with a short random suffix to avoid collisions.
   const trMap = { "ı": "i", "İ": "i", "ş": "s", "Ş": "s", "ğ": "g", "Ğ": "g",
                   "ü": "u", "Ü": "u", "ö": "o", "Ö": "o", "ç": "c", "Ç": "c" };
@@ -198,20 +202,39 @@ export const createCustomProduct = asyncHandler(async (req, res) => {
     .slice(0, 40) || "urun";
   const id = `c-${base}-${crypto.randomBytes(3).toString("hex")}`;
   const row = await CustomProductModel.create({ id, ...body });
-  // Seed inventory if requested (otherwise it'll show as 0 stock).
-  if (body.initialStock != null) {
+  if (hasVariants) {
+    await ProductVariantModel.replaceAll(id, body.variants);
+  } else if (body.initialStock != null) {
+    // Single-stock product → seed the global inventory row.
     await InventoryModel.setStock(id, body.initialStock);
   }
-  await audit(req, "custom_product.created", { id, name: row.name });
+  await audit(req, "custom_product.created", {
+    id,
+    name: row.name,
+    variantCount: hasVariants ? body.variants.length : 0,
+  });
   res.status(201).json({ product: CustomProductModel.toPublic(row) });
 });
 
 export const updateCustomProduct = asyncHandler(async (req, res) => {
   const body = req.validated.body;
   if (body.categorySlug) await ensureCategoryExists(body.categorySlug);
-  const row = await CustomProductModel.update(req.params.id, body);
+  // Strip variants before the field-by-field model update (it doesn't know that
+  // key); apply variants separately if provided.
+  const { variants, ...productFields } = body;
+  const hasProductFields = Object.keys(productFields).length > 0;
+  let row = await CustomProductModel.get(req.params.id);
   if (!row) throw new NotFoundError("Product not found");
-  await audit(req, "custom_product.updated", { id: row.id });
+  if (hasProductFields) {
+    row = await CustomProductModel.update(req.params.id, productFields);
+  }
+  if (Array.isArray(variants)) {
+    await ProductVariantModel.replaceAll(req.params.id, variants);
+  }
+  await audit(req, "custom_product.updated", {
+    id: row.id,
+    variantsTouched: Array.isArray(variants),
+  });
   res.json({ product: CustomProductModel.toPublic(row) });
 });
 

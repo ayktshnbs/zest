@@ -7,6 +7,7 @@ import * as OrderModel from "../models/OrderModel.js";
 import * as InventoryModel from "../models/InventoryModel.js";
 import * as ProductOverrideModel from "../models/ProductOverrideModel.js";
 import * as CustomProductModel from "../models/CustomProductModel.js";
+import * as ProductVariantModel from "../models/ProductVariantModel.js";
 import { withTransaction } from "../database/pool.js";
 import { NotFoundError, BadRequestError, ConflictError } from "../utils/errors.js";
 import { audit } from "../middleware/audit.js";
@@ -28,6 +29,9 @@ export const createOrder = asyncHandler(async (req, res) => {
       const builtIn = getCatalogProduct(item.productId);
       if (builtIn) {
         const ovr = overrides[item.productId];
+        if (ovr?.isActive === false) {
+          throw new BadRequestError(`Product no longer available: ${item.productId}`);
+        }
         return {
           productId: item.productId,
           name: ovr?.name ?? builtIn.name,
@@ -40,6 +44,32 @@ export const createOrder = asyncHandler(async (req, res) => {
       if (!custom || !custom.is_active) {
         throw new BadRequestError(`Unknown product: ${item.productId}`);
       }
+
+      // Variant products require a colorKey from the client. The variant
+      // carries its own stock; price stays on the parent product.
+      const variants = await ProductVariantModel.listForProduct(item.productId);
+      if (variants.length > 0) {
+        if (!item.colorKey) {
+          throw new BadRequestError(
+            `Product ${item.productId} requires a color choice`,
+          );
+        }
+        const variant = variants.find((v) => v.color_key === item.colorKey);
+        if (!variant) {
+          throw new BadRequestError(
+            `Unknown color "${item.colorKey}" for ${item.productId}`,
+          );
+        }
+        return {
+          productId: item.productId,
+          name: `${custom.name} · ${variant.color_label}`,
+          colorKey: item.colorKey,
+          variantId: variant.id,
+          quantity: item.quantity,
+          unitPriceCents: Number(custom.price_cents),
+        };
+      }
+
       return {
         productId: item.productId,
         name: custom.name,
@@ -65,20 +95,38 @@ export const createOrder = asyncHandler(async (req, res) => {
   // row (FOR UPDATE, in a stable order to avoid deadlocks between concurrent
   // checkouts), reject the whole order if anything is short, then decrement and
   // insert on the same transaction client.
-  const qtyByProduct = new Map();
+  //
+  // Two stock sources:
+  //   - Variant products  → product_variants.stock (key = variantId)
+  //   - Everything else   → inventory.stock        (key = productId)
+  const variantQty = new Map();   // variantId → qty
+  const productQty = new Map();   // productId → qty (only non-variant lines)
   for (const it of pricedItems) {
-    qtyByProduct.set(it.productId, (qtyByProduct.get(it.productId) ?? 0) + it.quantity);
+    if (it.variantId) {
+      variantQty.set(it.variantId, (variantQty.get(it.variantId) ?? 0) + it.quantity);
+    } else {
+      productQty.set(it.productId, (productQty.get(it.productId) ?? 0) + it.quantity);
+    }
   }
-  const productIds = [...qtyByProduct.keys()].sort();
+  const productIds = [...productQty.keys()].sort();
+  const variantIds = [...variantQty.keys()].sort();
 
   const order = await withTransaction(async (client) => {
     const insufficient = [];
     for (const productId of productIds) {
-      const needed = qtyByProduct.get(productId);
+      const needed = productQty.get(productId);
       const row = await InventoryModel.lockForUpdate(client, productId);
       const available = row ? row.stock : 0;
       if (available < needed) {
         insufficient.push({ productId, requested: needed, available });
+      }
+    }
+    for (const variantId of variantIds) {
+      const needed = variantQty.get(variantId);
+      const row = await ProductVariantModel.lockForUpdate(client, variantId);
+      const available = row ? row.stock : 0;
+      if (available < needed) {
+        insufficient.push({ variantId, requested: needed, available });
       }
     }
     if (insufficient.length > 0) {
@@ -88,7 +136,10 @@ export const createOrder = asyncHandler(async (req, res) => {
       throw err;
     }
     for (const productId of productIds) {
-      await InventoryModel.decrement(client, productId, qtyByProduct.get(productId));
+      await InventoryModel.decrement(client, productId, productQty.get(productId));
+    }
+    for (const variantId of variantIds) {
+      await ProductVariantModel.decrement(client, variantId, variantQty.get(variantId));
     }
     return OrderModel.create(
       {

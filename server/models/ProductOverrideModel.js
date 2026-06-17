@@ -4,10 +4,11 @@
 
 import { pool } from "../database/pool.js";
 
-const SELECT_COLS = `product_id, name, price_cents, short_description, description`;
+const SELECT_COLS = `product_id, name, price_cents, short_description, description, is_active`;
 
-/** { productId: { name, priceCents, shortDescription, description } } for every
- *  product with an override row. NULL fields stay null (caller falls back). */
+/** { productId: { name, priceCents, shortDescription, description, isActive } }
+ *  for every product with an override row. NULL fields stay null (caller falls
+ *  back to the static catalog). isActive defaults to true. */
 export const getMap = async () => {
   const { rows } = await pool.query(
     `SELECT ${SELECT_COLS} FROM product_overrides`,
@@ -19,6 +20,7 @@ export const getMap = async () => {
       priceCents: r.price_cents == null ? null : Number(r.price_cents),
       shortDescription: r.short_description,
       description: r.description,
+      isActive: r.is_active,
     };
   }
   return out;
@@ -32,12 +34,19 @@ export const get = async (productId) => {
   return rows[0] ?? null;
 };
 
+/** Retired built-in product ids (is_active = false). */
+export const getInactiveIds = async () => {
+  const { rows } = await pool.query(
+    `SELECT product_id FROM product_overrides WHERE is_active = FALSE`,
+  );
+  return rows.map((r) => r.product_id);
+};
+
 /**
  * Upsert override fields. Only keys PRESENT in `fields` are changed; a present
- * value of null clears that field back to the catalog default.
- *   set(id, { priceCents: 9999 })           → set price, leave others as-is
- *   set(id, { name: null })                 → clear the name override
- *   set(id, { description: "yeni metin" })  → set description override
+ * value of null clears that field back to the catalog default. `isActive`
+ * controls whether the storefront shows the product at all (used to retire
+ * built-in products that have been replaced by new variant products).
  */
 export const set = async (productId, fields) => {
   const cur =
@@ -46,23 +55,26 @@ export const set = async (productId, fields) => {
       price_cents: null,
       short_description: null,
       description: null,
+      is_active: true,
     };
   const name = "name" in fields ? fields.name : cur.name;
   const priceCents = "priceCents" in fields ? fields.priceCents : cur.price_cents;
   const shortDescription =
     "shortDescription" in fields ? fields.shortDescription : cur.short_description;
   const description = "description" in fields ? fields.description : cur.description;
+  const isActive = "isActive" in fields ? fields.isActive : cur.is_active;
   const { rows } = await pool.query(
     `INSERT INTO product_overrides
-       (product_id, name, price_cents, short_description, description)
-     VALUES ($1, $2, $3, $4, $5)
+       (product_id, name, price_cents, short_description, description, is_active)
+     VALUES ($1, $2, $3, $4, $5, $6)
      ON CONFLICT (product_id) DO UPDATE
        SET name = EXCLUDED.name,
            price_cents = EXCLUDED.price_cents,
            short_description = EXCLUDED.short_description,
-           description = EXCLUDED.description
+           description = EXCLUDED.description,
+           is_active = EXCLUDED.is_active
      RETURNING ${SELECT_COLS}`,
-    [productId, name, priceCents, shortDescription, description],
+    [productId, name, priceCents, shortDescription, description, isActive],
   );
   return rows[0];
 };

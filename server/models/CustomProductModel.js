@@ -5,7 +5,8 @@ import { pool } from "../database/pool.js";
 
 const SELECT = `
   SELECT id, name, category_slug, price_cents, short_description, description,
-         image_urls, badges, is_active, created_at, updated_at
+         image_urls, badges, is_active, volume_label, set_size,
+         created_at, updated_at
     FROM custom_products
 `;
 
@@ -32,12 +33,14 @@ export const create = async ({
   imageUrls,
   badges,
   isActive,
+  volumeLabel,
+  setSize,
 }) => {
   const { rows } = await pool.query(
     `INSERT INTO custom_products
        (id, name, category_slug, price_cents, short_description, description,
-        image_urls, badges, is_active)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        image_urls, badges, is_active, volume_label, set_size)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
      RETURNING *`,
     [
       id,
@@ -49,6 +52,8 @@ export const create = async ({
       imageUrls ?? [],
       JSON.stringify(badges ?? {}),
       isActive ?? true,
+      volumeLabel ?? null,
+      setSize ?? null,
     ],
   );
   return rows[0];
@@ -64,6 +69,8 @@ export const update = async (id, fields) => {
     imageUrls: "image_urls",
     badges: "badges",
     isActive: "is_active",
+    volumeLabel: "volume_label",
+    setSize: "set_size",
   };
   const sets = [];
   const params = [id];
@@ -97,6 +104,8 @@ export const toPublic = (p) => ({
   imageUrls: p.image_urls ?? [],
   badges: p.badges ?? {},
   isActive: p.is_active,
+  volumeLabel: p.volume_label,
+  setSize: p.set_size,
   createdAt: p.created_at,
   updatedAt: p.updated_at,
 });

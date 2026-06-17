@@ -85,11 +85,13 @@ const addressSchema = z.object({
   country: z.string().trim().min(2).max(2), // ISO 3166-1 alpha-2
 });
 
-// Only productId + quantity are trusted from the client. Price, shipping, tax
-// and currency are all computed server-side (see orderController.createOrder)
-// from the authoritative catalog — never from the request body.
+// Only productId (+ optional colorKey for variant products) + quantity are
+// trusted from the client. Price, shipping, tax and currency are computed
+// server-side (see orderController.createOrder) from the authoritative catalog
+// — never from the request body.
 const orderItemSchema = z.object({
   productId: z.string().min(1).max(120),
+  colorKey: z.string().min(1).max(40).optional(),
   quantity: z.number().int().positive().max(999),
 });
 
@@ -195,6 +197,21 @@ export const updateCategorySchema = z
 
 // Custom (admin-added) products. categorySlug is validated against existing
 // built-in or DB categories in the controller.
+// One color variant inside a product. `colorKey` is a url-safe slug used as
+// the variant's stable identifier in the cart / order; `colorHex` paints the
+// swatch on the product page.
+const colorKeyRe = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+export const productVariantSchema = z.object({
+  colorKey: z.string().trim().min(1).max(40).regex(colorKeyRe),
+  colorLabel: z.string().trim().min(1).max(60),
+  colorHex: z
+    .string()
+    .trim()
+    .regex(/^#[0-9a-fA-F]{6}$/, "Hex format: #RRGGBB"),
+  stock: z.number().int().min(0).max(1_000_000).optional(),
+  imageUrls: z.array(z.string().url().max(500)).max(20).optional(),
+});
+
 export const createCustomProductSchema = z.object({
   name: z.string().trim().min(1).max(200),
   categorySlug: slugSchema,
@@ -211,6 +228,10 @@ export const createCustomProductSchema = z.object({
     .optional(),
   isActive: z.boolean().optional(),
   initialStock: z.number().int().min(0).max(1_000_000).optional(),
+  // Set-style products (storage container sets): structural fields + variants.
+  volumeLabel: z.string().trim().max(40).optional().nullable(),
+  setSize: z.number().int().positive().max(999).optional().nullable(),
+  variants: z.array(productVariantSchema).max(20).optional(),
 });
 
 export const updateCustomProductSchema = z
@@ -229,6 +250,9 @@ export const updateCustomProductSchema = z
       })
       .optional(),
     isActive: z.boolean().optional(),
+    volumeLabel: z.string().trim().max(40).nullable().optional(),
+    setSize: z.number().int().positive().max(999).nullable().optional(),
+    variants: z.array(productVariantSchema).max(20).optional(),
   })
   .refine((v) => Object.keys(v).length > 0, { message: "Provide at least one field" });
 
