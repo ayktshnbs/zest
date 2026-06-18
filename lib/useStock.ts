@@ -82,13 +82,27 @@ export interface LiveProduct {
   description: string | null;
 }
 
-const pick = (d: CatalogData | null, id: string): LiveProduct => ({
-  stock: d && id in d.stock ? d.stock[id] : null,
-  name: d?.overrides[id]?.name ?? null,
-  priceCents: d?.overrides[id]?.priceCents ?? null,
-  shortDescription: d?.overrides[id]?.shortDescription ?? null,
-  description: d?.overrides[id]?.description ?? null,
-});
+const pick = (d: CatalogData | null, id: string): LiveProduct => {
+  // For variant products there is no inventory row — sum each variant's stock
+  // so ProductCard's "Tükendi" badge fires only when every color is sold out.
+  const variantRows = d?.variants?.[id];
+  const stockFromVariants =
+    variantRows && variantRows.length > 0
+      ? variantRows.reduce((sum, v) => sum + (v.stock ?? 0), 0)
+      : null;
+  return {
+    stock:
+      stockFromVariants != null
+        ? stockFromVariants
+        : d && id in d.stock
+        ? d.stock[id]
+        : null,
+    name: d?.overrides[id]?.name ?? null,
+    priceCents: d?.overrides[id]?.priceCents ?? null,
+    shortDescription: d?.overrides[id]?.shortDescription ?? null,
+    description: d?.overrides[id]?.description ?? null,
+  };
+};
 
 /** Live stock + name/price overrides for one product. Overlay onto the static
  *  product as `live.name ?? product.name`, `live.priceCents != null ? … : product.price`. */
