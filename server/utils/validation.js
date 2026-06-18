@@ -153,6 +153,9 @@ export const setStockSchema = z.object({
 
 // Admin product edit. Each field is optional; a present null clears that
 // override (reverts to the catalog default). Price is in integer kuruş.
+// `imageUrls` and `variants` are forward refs — the schemas defined below get
+// hoisted at runtime. We avoid importing them here circularly by lazily
+// resolving via z.lazy().
 export const updateProductSchema = z
   .object({
     name: z.string().trim().min(1).max(200).nullable().optional(),
@@ -160,6 +163,11 @@ export const updateProductSchema = z
     stock: z.number().int().min(0).max(1_000_000).optional(),
     shortDescription: z.string().trim().max(500).nullable().optional(),
     description: z.string().trim().max(5000).nullable().optional(),
+    // null/[] both mean "clear the override" — fall back to the static images.
+    imageUrls: z.lazy(() => z.array(productImageUrlSchema).max(20).nullable().optional()),
+    // Replace-all semantics: pass the full desired variant list, or omit to
+    // leave variants untouched. Pass [] to clear all variants.
+    variants: z.lazy(() => z.array(productVariantSchema).max(20).optional()),
   })
   .refine(
     (v) =>
@@ -167,8 +175,10 @@ export const updateProductSchema = z
       "priceCents" in v ||
       "stock" in v ||
       "shortDescription" in v ||
-      "description" in v,
-    { message: "Provide at least one of name, priceCents, stock, shortDescription, description" },
+      "description" in v ||
+      "imageUrls" in v ||
+      "variants" in v,
+    { message: "Provide at least one field to update" },
   );
 
 // Admin-managed categories.
@@ -195,6 +205,23 @@ export const updateCategorySchema = z
   })
   .refine((v) => Object.keys(v).length > 0, { message: "Provide at least one field" });
 
+// Product image URLs accept either:
+//   - an absolute http(s) URL (Cloudinary uploads from the admin), or
+//   - a root-relative path served by Next.js public/ (curated static photos
+//     placed there by sync scripts like sync-bonny-curated.mjs).
+// Previously this used z.string().url() which rejected the relative form,
+// causing every edit on Bonny (and any variant product whose images were set
+// from disk) to fail silently — the whole PATCH bounced, so the rename
+// appeared not to "stick".
+const productImageUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .refine(
+    (v) => /^https?:\/\//i.test(v) || v.startsWith("/"),
+    "Must be an absolute URL (https://…) or a root-relative path (/products/…)",
+  );
+
 // Custom (admin-added) products. categorySlug is validated against existing
 // built-in or DB categories in the controller.
 // One color variant inside a product. `colorKey` is a url-safe slug used as
@@ -209,7 +236,7 @@ export const productVariantSchema = z.object({
     .trim()
     .regex(/^#[0-9a-fA-F]{6}$/, "Hex format: #RRGGBB"),
   stock: z.number().int().min(0).max(1_000_000).optional(),
-  imageUrls: z.array(z.string().url().max(500)).max(20).optional(),
+  imageUrls: z.array(productImageUrlSchema).max(20).optional(),
 });
 
 export const createCustomProductSchema = z.object({
@@ -218,7 +245,7 @@ export const createCustomProductSchema = z.object({
   priceCents: z.number().int().min(0).max(100_000_000),
   shortDescription: z.string().trim().max(500).optional().nullable(),
   description: z.string().trim().max(5000).optional().nullable(),
-  imageUrls: z.array(z.string().url().max(500)).max(20).optional(),
+  imageUrls: z.array(productImageUrlSchema).max(20).optional(),
   badges: z
     .object({
       isNew: z.boolean().optional(),
@@ -241,7 +268,7 @@ export const updateCustomProductSchema = z
     priceCents: z.number().int().min(0).max(100_000_000).optional(),
     shortDescription: z.string().trim().max(500).nullable().optional(),
     description: z.string().trim().max(5000).nullable().optional(),
-    imageUrls: z.array(z.string().url().max(500)).max(20).optional(),
+    imageUrls: z.array(productImageUrlSchema).max(20).optional(),
     badges: z
       .object({
         isNew: z.boolean().optional(),

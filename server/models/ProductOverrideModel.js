@@ -4,9 +4,9 @@
 
 import { pool } from "../database/pool.js";
 
-const SELECT_COLS = `product_id, name, price_cents, short_description, description, is_active`;
+const SELECT_COLS = `product_id, name, price_cents, short_description, description, is_active, image_urls`;
 
-/** { productId: { name, priceCents, shortDescription, description, isActive } }
+/** { productId: { name, priceCents, shortDescription, description, isActive, imageUrls } }
  *  for every product with an override row. NULL fields stay null (caller falls
  *  back to the static catalog). isActive defaults to true. */
 export const getMap = async () => {
@@ -21,6 +21,7 @@ export const getMap = async () => {
       shortDescription: r.short_description,
       description: r.description,
       isActive: r.is_active,
+      imageUrls: r.image_urls,
     };
   }
   return out;
@@ -56,6 +57,7 @@ export const set = async (productId, fields) => {
       short_description: null,
       description: null,
       is_active: true,
+      image_urls: null,
     };
   const name = "name" in fields ? fields.name : cur.name;
   const priceCents = "priceCents" in fields ? fields.priceCents : cur.price_cents;
@@ -63,18 +65,26 @@ export const set = async (productId, fields) => {
     "shortDescription" in fields ? fields.shortDescription : cur.short_description;
   const description = "description" in fields ? fields.description : cur.description;
   const isActive = "isActive" in fields ? fields.isActive : cur.is_active;
+  // null OR empty array both clear the override → static catalog images win.
+  const imageUrls =
+    "imageUrls" in fields
+      ? fields.imageUrls && fields.imageUrls.length > 0
+        ? fields.imageUrls
+        : null
+      : cur.image_urls;
   const { rows } = await pool.query(
     `INSERT INTO product_overrides
-       (product_id, name, price_cents, short_description, description, is_active)
-     VALUES ($1, $2, $3, $4, $5, $6)
+       (product_id, name, price_cents, short_description, description, is_active, image_urls)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
      ON CONFLICT (product_id) DO UPDATE
        SET name = EXCLUDED.name,
            price_cents = EXCLUDED.price_cents,
            short_description = EXCLUDED.short_description,
            description = EXCLUDED.description,
-           is_active = EXCLUDED.is_active
+           is_active = EXCLUDED.is_active,
+           image_urls = EXCLUDED.image_urls
      RETURNING ${SELECT_COLS}`,
-    [productId, name, priceCents, shortDescription, description, isActive],
+    [productId, name, priceCents, shortDescription, description, isActive, imageUrls],
   );
   return rows[0];
 };

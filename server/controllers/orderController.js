@@ -32,11 +32,41 @@ export const createOrder = asyncHandler(async (req, res) => {
         if (ovr?.isActive === false) {
           throw new BadRequestError(`Product no longer available: ${item.productId}`);
         }
+        const baseName = ovr?.name ?? builtIn.name;
+        const unitPriceCents = ovr?.priceCents ?? builtIn.priceCents;
+
+        // Built-in products may also carry color variants (migration 018
+        // dropped the FK that previously restricted variants to custom
+        // products). Variant stock is per-(product,color); pricing stays on
+        // the parent.
+        const variants = await ProductVariantModel.listForProduct(item.productId);
+        if (variants.length > 0) {
+          if (!item.colorKey) {
+            throw new BadRequestError(
+              `Product ${item.productId} requires a color choice`,
+            );
+          }
+          const variant = variants.find((v) => v.color_key === item.colorKey);
+          if (!variant) {
+            throw new BadRequestError(
+              `Unknown color "${item.colorKey}" for ${item.productId}`,
+            );
+          }
+          return {
+            productId: item.productId,
+            name: `${baseName} · ${variant.color_label}`,
+            colorKey: item.colorKey,
+            variantId: variant.id,
+            quantity: item.quantity,
+            unitPriceCents,
+          };
+        }
+
         return {
           productId: item.productId,
-          name: ovr?.name ?? builtIn.name,
+          name: baseName,
           quantity: item.quantity,
-          unitPriceCents: ovr?.priceCents ?? builtIn.priceCents,
+          unitPriceCents,
         };
       }
       // Fall back to the custom-products table; reject only if neither has it.

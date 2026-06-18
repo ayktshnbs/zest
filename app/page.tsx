@@ -9,6 +9,7 @@ import {
   getProductById,
 } from "@/lib/products";
 import { categoryMap } from "@/lib/categories";
+import { useLiveCatalog } from "@/lib/useStock";
 import { formatPrice } from "@/lib/utils";
 import { Product } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
@@ -92,12 +93,22 @@ export default function Home() {
     .map((id) => getProductById(id))
     .filter((p): p is Product => Boolean(p));
 
-  const featured = featuredProducts.slice(0, 4);
-  const homeFallback = featured.length > 0 ? featured : products.slice(0, 4);
-  const bestSellersRow = bestSellers.length > 0 ? bestSellers : products.slice(4, 8);
-  const newArrivalsRow = newArrivals.length > 0 ? newArrivals : products.slice(0, 4);
+  // Hide retired built-ins (their photos were deleted in the Saklama Kapları
+  // cleanup) from every homepage shelf — they were leaving broken thumbnails.
+  const liveCatalog = useLiveCatalog();
+  const retiredSet = new Set(liveCatalog.retiredIds);
+  const live = (list: Product[]) => list.filter((p) => !retiredSet.has(p.id));
+
+  const featured = live(featuredProducts).slice(0, 4);
+  const homeFallback = featured.length > 0 ? featured : live(products).slice(0, 4);
+  const bestSellersRow =
+    live(bestSellers).length > 0 ? live(bestSellers) : live(products).slice(4, 8);
+  const newArrivalsRow =
+    live(newArrivals).length > 0 ? live(newArrivals) : live(products).slice(0, 4);
   const discountedRow =
-    discountedProducts.length > 0 ? discountedProducts : products.slice(0, 4);
+    live(discountedProducts).length > 0
+      ? live(discountedProducts)
+      : live(products).slice(0, 4);
   const kitchenGroups = categoryMap["mutfak"]?.subcategories ?? [];
 
   return (
