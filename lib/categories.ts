@@ -12,7 +12,7 @@ export const categories: Category[] = [
       {
         slug: "saklama-kaplari",
         label: "Saklama Kapları",
-        image: "/products/skl-esk1001/0.jpg",
+        image: "/products/c-bonny-3lu/siyah/0.jpg",
       },
       {
         slug: "dograyicilar-rendeler",

@@ -131,7 +131,10 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const effectiveProduct = { ...product, name: effectiveName, price: effectivePrice };
   const outOfStock = effectiveStock <= 0;
   const lowStock = !outOfStock && effectiveStock <= 5;
-  const related = getRelatedProducts(product, 4);
+  // Filter out retired built-ins from the related shelf so we don't surface
+  // products the user just hid (those photos are gone too).
+  const retiredSet = new Set(liveCatalog.retiredIds);
+  const related = getRelatedProducts(product, 8).filter((p) => !retiredSet.has(p.id)).slice(0, 4);
   const cat = categoryMap[product.category];
 
   const variantImages = selectedVariant?.imageUrls ?? [];
