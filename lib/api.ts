@@ -399,6 +399,15 @@ export interface CreateCustomProductInput {
   badges?: { isNew?: boolean; isBestSeller?: boolean; isFeatured?: boolean };
   isActive?: boolean;
   initialStock?: number;
+  volumeLabel?: string | null;
+  setSize?: number | null;
+  variants?: {
+    colorKey: string;
+    colorLabel: string;
+    colorHex: string;
+    stock?: number;
+    imageUrls?: string[];
+  }[];
 }
 
 export const adminCustomProductsApi = {
