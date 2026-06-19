@@ -6,7 +6,7 @@ import {
   adminCategoriesApi,
   adminCustomProductsApi,
   ApiError,
-  uploadImage,
+  batchUploadImages,
   type AdminProduct,
   type AdminCategory,
   type CustomProductData,
@@ -595,18 +595,16 @@ function ProductFormModal({
     setUploading(true);
     setConfirmedNoImages(false);
     try {
-      const uploaded: string[] = [];
-      for (const f of Array.from(files).slice(0, 10)) {
-        const { secureUrl } = await uploadImage(f, "products");
-        uploaded.push(secureUrl);
+      const batch = Array.from(files).slice(0, 10);
+      // Parallel upload + per-file error capture: a single bad file (too big,
+      // network blip) no longer throws away the rest.
+      const { urls, errors } = await batchUploadImages(batch, "products");
+      if (urls.length > 0) {
+        setImageUrls((prev) => [...prev, ...urls].slice(0, 12));
       }
-      setImageUrls((prev) => [...prev, ...uploaded].slice(0, 12));
-    } catch {
-      // Loud error so the admin can't miss a failed upload — must be cleared
-      // by trying again. Don't allow save while this state is showing.
-      setErr(
-        "Görsel yüklenemedi. Render'da CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET ayarlı olmalı.",
-      );
+      if (errors.length > 0) {
+        setErr(`${urls.length}/${batch.length} yüklendi · ${errors.join(" · ")}`);
+      }
     } finally {
       setUploading(false);
     }
@@ -651,18 +649,18 @@ function ProductFormModal({
     setErr(null);
     setVariantUploadingKey(key);
     try {
-      const uploaded: string[] = [];
-      for (const f of Array.from(files).slice(0, 10)) {
-        const { secureUrl } = await uploadImage(f, "products");
-        uploaded.push(secureUrl);
+      const batch = Array.from(files).slice(0, 10);
+      const { urls, errors } = await batchUploadImages(batch, "products");
+      if (urls.length > 0) {
+        setVariants((prev) =>
+          prev.map((v) =>
+            v.colorKey === key ? { ...v, imageUrls: [...v.imageUrls, ...urls].slice(0, 12) } : v,
+          ),
+        );
       }
-      setVariants((prev) =>
-        prev.map((v) =>
-          v.colorKey === key ? { ...v, imageUrls: [...v.imageUrls, ...uploaded].slice(0, 12) } : v,
-        ),
-      );
-    } catch {
-      setErr("Görsel yüklenemedi. Cloudinary anahtarları doğru mu?");
+      if (errors.length > 0) {
+        setErr(`${urls.length}/${batch.length} yüklendi · ${errors.join(" · ")}`);
+      }
     } finally {
       setVariantUploadingKey(null);
     }
@@ -1284,16 +1282,14 @@ function BuiltinProductFormModal({
     setErr(null);
     setUploading(true);
     try {
-      const uploaded: string[] = [];
-      for (const f of Array.from(files).slice(0, 10)) {
-        const { secureUrl } = await uploadImage(f, "products");
-        uploaded.push(secureUrl);
+      const batch = Array.from(files).slice(0, 10);
+      const { urls, errors } = await batchUploadImages(batch, "products");
+      if (urls.length > 0) {
+        setImageUrls((prev) => [...prev, ...urls].slice(0, 12));
       }
-      setImageUrls((prev) => [...prev, ...uploaded].slice(0, 12));
-    } catch {
-      setErr(
-        "Görsel yüklenemedi. Render'da CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET ayarlı olmalı.",
-      );
+      if (errors.length > 0) {
+        setErr(`${urls.length}/${batch.length} yüklendi · ${errors.join(" · ")}`);
+      }
     } finally {
       setUploading(false);
     }
@@ -1337,18 +1333,18 @@ function BuiltinProductFormModal({
     setErr(null);
     setVariantUploadingKey(key);
     try {
-      const uploaded: string[] = [];
-      for (const f of Array.from(files).slice(0, 10)) {
-        const { secureUrl } = await uploadImage(f, "products");
-        uploaded.push(secureUrl);
+      const batch = Array.from(files).slice(0, 10);
+      const { urls, errors } = await batchUploadImages(batch, "products");
+      if (urls.length > 0) {
+        setVariants((prev) =>
+          prev.map((v) =>
+            v.colorKey === key ? { ...v, imageUrls: [...v.imageUrls, ...urls].slice(0, 12) } : v,
+          ),
+        );
       }
-      setVariants((prev) =>
-        prev.map((v) =>
-          v.colorKey === key ? { ...v, imageUrls: [...v.imageUrls, ...uploaded].slice(0, 12) } : v,
-        ),
-      );
-    } catch {
-      setErr("Görsel yüklenemedi. Cloudinary anahtarları doğru mu?");
+      if (errors.length > 0) {
+        setErr(`${urls.length}/${batch.length} yüklendi · ${errors.join(" · ")}`);
+      }
     } finally {
       setVariantUploadingKey(null);
     }

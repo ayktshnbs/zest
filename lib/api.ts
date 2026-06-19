@@ -454,6 +454,45 @@ export const adminUploadsApi = {
     api<UploadSignature>("/api/admin/uploads/sign", { method: "POST", body: { type } }),
 };
 
+// Cloudinary free-tier max upload size — files over this get rejected with
+// "File size too large", and on slow networks they often *appear* to "crash"
+// because the request just times out silently. Check up front so the admin
+// sees a specific message per file.
+export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+
+/**
+ * Upload several files in parallel. Returns the URLs that succeeded plus a
+ * per-file error list — a single bad file no longer throws away the rest of
+ * the batch, and the real error message reaches the admin.
+ */
+export const batchUploadImages = async (
+  files: File[],
+  type: "products" | "categories",
+): Promise<{ urls: string[]; errors: string[] }> => {
+  const errors: string[] = [];
+  const eligible: File[] = [];
+  for (const f of files) {
+    if (f.size > MAX_UPLOAD_BYTES) {
+      const mb = (f.size / (1024 * 1024)).toFixed(1);
+      errors.push(`${f.name}: ${mb}MB — en fazla 10MB`);
+    } else {
+      eligible.push(f);
+    }
+  }
+  const results = await Promise.allSettled(eligible.map((f) => uploadImage(f, type)));
+  const urls: string[] = [];
+  results.forEach((r, i) => {
+    if (r.status === "fulfilled") {
+      urls.push(r.value.secureUrl);
+    } else {
+      const msg =
+        r.reason instanceof Error ? r.reason.message : String(r.reason ?? "yüklenemedi");
+      errors.push(`${eligible[i].name}: ${msg.slice(0, 140)}`);
+    }
+  });
+  return { urls, errors };
+};
+
 /** Upload one file to Cloudinary using a signed payload from the API. */
 export const uploadImage = async (
   file: File,
