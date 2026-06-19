@@ -320,6 +320,8 @@ export interface AdminProduct {
     isBestSeller?: boolean;
     isFeatured?: boolean;
   } | null;
+  // FALSE means the admin retired this built-in (hidden from storefront).
+  isActive: boolean;
 }
 
 export const adminApi = {
@@ -379,6 +381,9 @@ export const adminApi = {
         isBestSeller?: boolean;
         isFeatured?: boolean;
       } | null;
+      // Retire / restore a built-in. The seed stays in lib/products.ts; this
+      // just hides it from the storefront. There's no hard delete for built-ins.
+      isActive?: boolean;
     },
   ) =>
     api<{ product: AdminProduct }>(

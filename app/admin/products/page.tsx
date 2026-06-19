@@ -12,7 +12,7 @@ import {
   type CustomProductData,
   type ProductVariant,
 } from "@/lib/api";
-import { RotateCcw, Plus, X, ImagePlus, Trash2, Pencil, FileText } from "lucide-react";
+import { RotateCcw, Plus, X, ImagePlus, Trash2, Pencil } from "lucide-react";
 import { refreshLiveCatalog, useLiveCatalog } from "@/lib/useStock";
 import { products as staticProducts } from "@/lib/products";
 
@@ -280,29 +280,16 @@ function ProductGroups({
             ) : null}
 
             {items.builtin.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-sm font-body">
-                  <thead>
-                    <tr className="text-left font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/40 border-b border-foreground/10">
-                      <th className="py-3 pr-4">Ürün Adı</th>
-                      <th className="py-3 pr-4">Kod</th>
-                      <th className="py-3 pr-4 w-36">Fiyat (₺)</th>
-                      <th className="py-3 pr-4 w-28">Stok</th>
-                      <th className="py-3 pr-4 w-40"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {items.builtin.map((row) => (
-                      <ProductRowEditor
-                        key={row.productId}
-                        row={row}
-                        onSaved={onSaved}
-                        onEditFull={onEditBuiltin}
-                      />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <ul className="space-y-2">
+                {items.builtin.map((row) => (
+                  <BuiltinProductCardRow
+                    key={row.productId}
+                    row={row}
+                    onSaved={onSaved}
+                    onEdit={onEditBuiltin}
+                  />
+                ))}
+              </ul>
             ) : null}
           </section>
         );
@@ -365,165 +352,108 @@ function CustomProductRow({
   );
 }
 
-function ProductRowEditor({
+// Built-in product card row — same visual shape as CustomProductRow so the
+// admin sees one consistent list (thumb · name + price · Düzenle · Trash).
+// All editing happens in the full BuiltinProductFormModal opened by Düzenle.
+// The trash icon RETIRES the product (sets the is_active override to false)
+// because the seed lives in lib/products.ts — there is no hard delete for
+// built-ins. Retired rows render faded with a Restore action in place of
+// the trash icon.
+function BuiltinProductCardRow({
   row,
   onSaved,
-  onEditFull,
+  onEdit,
 }: {
   row: AdminProduct;
   onSaved: (p: AdminProduct) => void;
-  onEditFull: (row: AdminProduct) => void;
+  onEdit: (row: AdminProduct) => void;
 }) {
-  const [name, setName] = useState(row.name);
-  const [price, setPrice] = useState((row.priceCents / 100).toString());
-  const [stock, setStock] = useState(String(row.stock));
-  const [saving, setSaving] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [editingDesc, setEditingDesc] = useState(false);
-  const descriptionOverridden =
-    row.shortDescriptionOverride != null || row.descriptionOverride != null;
 
-  // Re-sync when the saved row changes (e.g. after revert).
-  useEffect(() => {
-    setName(row.name);
-    setPrice((row.priceCents / 100).toString());
-    setStock(String(row.stock));
-  }, [row.name, row.priceCents, row.stock]);
+  // Cover precedence: admin image override → static catalog images → singleton.
+  const staticP = staticProducts.find((p) => p.id === row.productId);
+  const cover =
+    (row.imageUrlsOverride && row.imageUrlsOverride[0]) ||
+    staticP?.images?.[0] ||
+    staticP?.imageUrl ||
+    null;
 
-  const priceNum = Number(price.replace(",", "."));
-  const priceCents = Math.round(priceNum * 100);
-  const stockNum = Math.floor(Number(stock));
-  const valid =
-    name.trim().length > 0 &&
-    Number.isFinite(priceNum) &&
-    priceNum >= 0 &&
-    stock !== "" &&
-    Number.isFinite(stockNum) &&
-    stockNum >= 0;
-  const dirty =
-    name.trim() !== row.name || priceCents !== row.priceCents || stockNum !== row.stock;
-  const overridden = row.nameOverridden || row.priceOverridden;
+  const isRetired = row.isActive === false;
 
-  const save = async () => {
-    if (!valid || !dirty) return;
-    setSaving(true);
-    setErr(null);
-    const patch: { name?: string; priceCents?: number; stock?: number } = {};
-    if (name.trim() !== row.name) patch.name = name.trim();
-    if (priceCents !== row.priceCents) patch.priceCents = priceCents;
-    if (stockNum !== row.stock) patch.stock = stockNum;
-    try {
-      const { product } = await adminApi.updateProduct(row.productId, patch);
-      onSaved(product);
-    } catch {
-      setErr("Kaydedilemedi");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const revert = async () => {
-    setSaving(true);
+  const setActive = async (next: boolean) => {
+    const verb = next ? "geri alınsın" : "mağazadan gizlensin";
+    if (!confirm(`'${row.name}' ${verb} mı?`)) return;
+    setBusy(true);
     setErr(null);
     try {
-      const { product } = await adminApi.updateProduct(row.productId, {
-        name: null,
-        priceCents: null,
-      });
+      const { product } = await adminApi.updateProduct(row.productId, { isActive: next });
       onSaved(product);
-    } catch {
-      setErr("Geri alınamadı");
+    } catch (e) {
+      setErr(e instanceof ApiError ? e.message : "İşlem başarısız");
     } finally {
-      setSaving(false);
+      setBusy(false);
     }
   };
-
-  const inputCls =
-    "w-full border border-foreground/15 bg-background px-2 py-1.5 text-[13px] focus:outline-none focus:border-foreground";
 
   return (
-    <tr className="border-b border-foreground/5 align-top">
-      <td className="py-2 pr-4">
-        <input value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
-        {row.nameOverridden ? (
-          <span className="block text-[10px] text-foreground/30 mt-0.5">
-            Varsayılan: {row.defaultName}
-          </span>
-        ) : null}
-      </td>
-      <td className="py-2 pr-4 text-foreground/40 font-audiowide text-[11px] whitespace-nowrap">
-        {row.productId}
-      </td>
-      <td className="py-2 pr-4">
-        <input
-          inputMode="decimal"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          className={inputCls + " w-28"}
-        />
-        {row.priceOverridden ? (
-          <span className="block text-[10px] text-foreground/30 mt-0.5">
-            Varsayılan: ₺{(row.defaultPriceCents / 100).toFixed(2)}
-          </span>
-        ) : null}
-      </td>
-      <td className="py-2 pr-4">
-        <input
-          type="number"
-          min={0}
-          value={stock}
-          onChange={(e) => setStock(e.target.value)}
-          className={inputCls + " w-24"}
-        />
-      </td>
-      <td className="py-2 pr-4">
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            disabled={!dirty || !valid || saving}
-            onClick={save}
-            className="px-3 py-1.5 font-audiowide text-[9px] uppercase tracking-[0.2em] border border-foreground/15 disabled:opacity-30 hover:border-foreground transition-colors"
+    <li
+      className={`flex items-center justify-between border border-foreground/10 p-3 sm:p-4 gap-3 bg-foreground/[0.015] ${
+        isRetired ? "opacity-50" : ""
+      }`}
+    >
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        {cover ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={cover} alt="" className="w-12 h-12 object-cover bg-foreground/5 shrink-0" />
+        ) : (
+          <div
+            className="w-12 h-12 bg-yellow-50 border border-yellow-200 flex items-center justify-center shrink-0"
+            title="Görsel eksik"
           >
-            Kaydet
-          </button>
-          <button
-            onClick={() => onEditFull(row)}
-            title="Görselleri, açıklamayı ve renk seçeneklerini düzenle"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 font-audiowide text-[9px] uppercase tracking-[0.2em] border border-foreground/15 text-foreground/70 hover:border-foreground hover:text-foreground transition-colors"
-          >
-            <Pencil size={12} /> Düzenle
-          </button>
-          <button
-            onClick={() => setEditingDesc(true)}
-            title="Açıklamayı düzenle"
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 font-audiowide text-[9px] uppercase tracking-[0.2em] border transition-colors ${
-              descriptionOverridden
-                ? "border-foreground text-foreground"
-                : "border-foreground/15 text-foreground/60 hover:border-foreground hover:text-foreground"
-            }`}
-          >
-            <FileText size={12} /> Açıklama
-          </button>
-          {overridden ? (
-            <button
-              onClick={revert}
-              disabled={saving}
-              title="İsim/fiyatı varsayılana döndür"
-              className="p-1.5 text-foreground/40 hover:text-foreground disabled:opacity-30"
-            >
-              <RotateCcw size={14} />
-            </button>
-          ) : null}
-          {err ? <span className="text-[11px] text-red-600">{err}</span> : null}
-          {editingDesc ? (
-            <DescriptionEditorModal
-              row={row}
-              onClose={() => setEditingDesc(false)}
-              onSaved={(p) => { onSaved(p); setEditingDesc(false); }}
-            />
-          ) : null}
+            <ImagePlus size={14} className="text-yellow-600" />
+          </div>
+        )}
+        <div className="min-w-0">
+          <p className="text-foreground truncate">{row.name}</p>
+          <p className="text-foreground/40 text-[12px] font-body">
+            ₺{(row.priceCents / 100).toFixed(2)}
+            {" · "}<span className="text-foreground/30">Yerleşik · {row.productId}</span>
+            {isRetired ? (
+              <> · <span className="text-yellow-700">Gizlendi</span></>
+            ) : null}
+            {err ? <> · <span className="text-red-600">{err}</span></> : null}
+          </p>
         </div>
-      </td>
-    </tr>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <button
+          onClick={() => onEdit(row)}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-foreground/15 font-audiowide text-[9px] uppercase tracking-[0.2em] hover:border-foreground transition-colors"
+        >
+          <Pencil size={12} /> Düzenle
+        </button>
+        {isRetired ? (
+          <button
+            onClick={() => setActive(true)}
+            disabled={busy}
+            title="Mağazaya geri al"
+            className="p-2 text-foreground/40 hover:text-green-700 transition-colors disabled:opacity-30"
+          >
+            <RotateCcw size={14} />
+          </button>
+        ) : (
+          <button
+            onClick={() => setActive(false)}
+            disabled={busy}
+            title="Mağazadan gizle"
+            className="p-2 text-foreground/40 hover:text-red-600 transition-colors disabled:opacity-30"
+          >
+            <Trash2 size={14} />
+          </button>
+        )}
+      </div>
+    </li>
   );
 }
 
@@ -1065,145 +995,6 @@ function ProductFormModal({
               ? "Görsel yükleniyor…"
               : isEdit ? "Değişiklikleri Kaydet" : "Ürünü Ekle"}
           </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DescriptionEditorModal({
-  row,
-  onClose,
-  onSaved,
-}: {
-  row: AdminProduct;
-  onClose: () => void;
-  onSaved: (p: AdminProduct) => void;
-}) {
-  // Defaults live in the static catalog (lib/products.ts) — the API only
-  // tracks the override, not the default.
-  const staticP = staticProducts.find((p) => p.id === row.productId);
-  const defaultShort = staticP?.shortDescription ?? "";
-  const defaultLong = staticP?.description ?? "";
-
-  const [shortDesc, setShortDesc] = useState<string>(
-    row.shortDescriptionOverride ?? defaultShort,
-  );
-  const [longDesc, setLongDesc] = useState<string>(
-    row.descriptionOverride ?? defaultLong,
-  );
-  const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-
-  const dirty =
-    shortDesc !== (row.shortDescriptionOverride ?? defaultShort) ||
-    longDesc !== (row.descriptionOverride ?? defaultLong);
-
-  const save = async () => {
-    if (saving) return;
-    setSaving(true);
-    setErr(null);
-    // Send null when the field matches the default → clears the override.
-    const patch: { shortDescription?: string | null; description?: string | null } = {};
-    const shortTrim = shortDesc.trim();
-    const longTrim = longDesc.trim();
-    patch.shortDescription = shortTrim === defaultShort.trim() || shortTrim === "" ? null : shortTrim;
-    patch.description = longTrim === defaultLong.trim() || longTrim === "" ? null : longTrim;
-    try {
-      const { product } = await adminApi.updateProduct(row.productId, patch);
-      onSaved(product);
-    } catch {
-      setErr("Kaydedilemedi");
-      setSaving(false);
-    }
-  };
-
-  const revertAll = () => {
-    setShortDesc(defaultShort);
-    setLongDesc(defaultLong);
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-background/80 backdrop-blur-sm pt-10 pb-20 px-4">
-      <div className="w-full max-w-2xl bg-background border border-foreground/15 p-6 md:p-8">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="font-audiowide text-lg uppercase tracking-[0.2em]">
-            Açıklamayı Düzenle
-          </h2>
-          <button
-            onClick={onClose}
-            aria-label="Kapat"
-            className="p-2 text-foreground/40 hover:text-foreground"
-          >
-            <X size={18} />
-          </button>
-        </div>
-        <p className="text-foreground/40 font-body text-[12px] mb-5">
-          {row.name} <span className="text-foreground/30">· {row.productId}</span>
-        </p>
-
-        {err ? <p className="mb-4 text-red-600 text-sm font-body">{err}</p> : null}
-
-        <label className="block mb-5">
-          <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">
-            Kısa Açıklama
-          </span>
-          <textarea
-            value={shortDesc}
-            onChange={(e) => setShortDesc(e.target.value)}
-            rows={2}
-            maxLength={500}
-            className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] resize-y focus:outline-none focus:border-foreground"
-          />
-          <span className="block text-[10px] text-foreground/30 mt-1">
-            {row.shortDescriptionOverride != null
-              ? `Varsayılan: ${defaultShort.slice(0, 110)}${defaultShort.length > 110 ? "…" : ""}`
-              : "Mağazada görünür · Ürün kartı altında özetlenir"}
-          </span>
-        </label>
-
-        <label className="block mb-5">
-          <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">
-            Detaylı Açıklama
-          </span>
-          <textarea
-            value={longDesc}
-            onChange={(e) => setLongDesc(e.target.value)}
-            rows={8}
-            maxLength={5000}
-            className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] leading-relaxed resize-y focus:outline-none focus:border-foreground whitespace-pre-line"
-          />
-          <span className="block text-[10px] text-foreground/30 mt-1">
-            {row.descriptionOverride != null
-              ? "Şu anda özel açıklama gösteriliyor."
-              : "Ürün detay sayfasının altında gösterilir · Yeni satırlar korunur"}
-          </span>
-        </label>
-
-        <div className="mt-8 flex justify-between items-center gap-3 border-t border-foreground/10 pt-6">
-          <button
-            onClick={revertAll}
-            disabled={saving}
-            className="inline-flex items-center gap-1.5 text-[10px] font-audiowide uppercase tracking-[0.3em] text-foreground/40 hover:text-foreground"
-          >
-            <RotateCcw size={12} /> Varsayılana Döndür
-          </button>
-          <div className="flex gap-3">
-            <button
-              onClick={onClose}
-              disabled={saving}
-              className="px-5 py-2 font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/50 hover:text-foreground"
-            >
-              Vazgeç
-            </button>
-            <button
-              disabled={!dirty || saving}
-              onClick={save}
-              className="px-6 py-2.5 bg-foreground text-background font-audiowide text-[10px] uppercase tracking-[0.3em] disabled:opacity-30 hover:opacity-90"
-            >
-              {saving ? "Kaydediliyor…" : "Kaydet"}
-            </button>
-          </div>
         </div>
       </div>
     </div>

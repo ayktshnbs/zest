@@ -127,6 +127,9 @@ export const listProducts = asyncHandler(async (_req, res) => {
         volumeLabelOverride: ovr?.volumeLabel ?? null,
         setSizeOverride: ovr?.setSize ?? null,
         badgesOverride: ovr?.badges ?? null,
+        // Retired built-ins stay in the admin list (so the admin can restore
+        // them) but render with a faded card. Default to active.
+        isActive: ovr?.isActive !== false,
       };
     })
     .sort((a, b) => a.productId.localeCompare(b.productId));
@@ -271,6 +274,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
   if ("volumeLabel" in body) ovrFields.volumeLabel = body.volumeLabel;
   if ("setSize" in body) ovrFields.setSize = body.setSize;
   if ("badges" in body) ovrFields.badges = body.badges;
+  if ("isActive" in body) ovrFields.isActive = body.isActive;
   if (Object.keys(ovrFields).length > 0) {
     await ProductOverrideModel.set(productId, ovrFields);
   }
@@ -310,6 +314,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
       volumeLabelOverride: row?.volume_label ?? null,
       setSizeOverride: row?.set_size ?? null,
       badgesOverride: row?.badges ?? null,
+      isActive: row?.is_active !== false,
     },
   });
 });

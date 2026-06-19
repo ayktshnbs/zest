@@ -180,6 +180,9 @@ export const updateProductSchema = z
       })
       .nullable()
       .optional(),
+    // Retire / restore. FALSE hides the built-in from the storefront (admin
+    // can't truly delete it because the seed lives in lib/products.ts).
+    isActive: z.boolean().optional(),
   })
   .refine(
     (v) =>
@@ -192,7 +195,8 @@ export const updateProductSchema = z
       "variants" in v ||
       "volumeLabel" in v ||
       "setSize" in v ||
-      "badges" in v,
+      "badges" in v ||
+      "isActive" in v,
     { message: "Provide at least one field to update" },
   );
 
