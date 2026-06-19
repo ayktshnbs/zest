@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  bestSellers,
   featuredProducts,
   newArrivals,
   discountedProducts,
@@ -10,6 +9,7 @@ import {
 } from "@/lib/products";
 import { categoryMap } from "@/lib/categories";
 import { useLiveCatalog } from "@/lib/useStock";
+import { customToProduct } from "@/lib/customProducts";
 import { formatPrice } from "@/lib/utils";
 import { Product } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
@@ -101,8 +101,15 @@ export default function Home() {
 
   const featured = live(featuredProducts).slice(0, 4);
   const homeFallback = featured.length > 0 ? featured : live(products).slice(0, 4);
-  const bestSellersRow =
-    live(bestSellers).length > 0 ? live(bestSellers) : live(products).slice(4, 8);
+
+  // Set ürünleri vitrini — Bonny ailesi + 4'lü Dikdörtgen. Read live so admin
+  // edits flow through. Order is hand-picked: 3'lü first (cheapest entry),
+  // then dikdörtgen, then bigger Bonny sets.
+  const SET_PRODUCT_IDS = ["c-bonny-3lu", "c-dikdortgen-4lu", "c-bonny-6li", "c-bonny-12li"];
+  const setsRow = SET_PRODUCT_IDS
+    .map((id) => liveCatalog.customProducts.find((p) => p.id === id && p.isActive))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p))
+    .map((cp) => customToProduct(cp, liveCatalog.categories));
   const newArrivalsRow =
     live(newArrivals).length > 0 ? live(newArrivals) : live(products).slice(0, 4);
   const discountedRow =
@@ -333,15 +340,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Best sellers */}
-      <ProductRow
-        eyebrow="Çok Satanlar"
-        title="Müşterilerimizin Favorileri"
-        description="Binlerce mutfakta yerini almış, en çok tercih edilen ürünler."
-        products={bestSellersRow}
-        href="/shop?badges=bestseller"
-        hrefLabel="Tüm Çok Satanlar"
-      />
+      {/* Set ürünleri */}
+      {setsRow.length > 0 ? (
+        <ProductRow
+          eyebrow="Setler"
+          title="Setlerimize Göz Atın"
+          description="Bonny ailesi ve 4'lü Dikdörtgen — kapağı ile birlikte üst üste düzgün yerleşen saklama setleri."
+          products={setsRow}
+          href="/shop/saklama-kaplari"
+          hrefLabel="Tüm Setler"
+        />
+      ) : null}
 
       {/* New arrivals */}
       <ProductRow
