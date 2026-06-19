@@ -4,7 +4,7 @@
 
 import { pool } from "../database/pool.js";
 
-const SELECT_COLS = `product_id, name, price_cents, short_description, description, is_active, image_urls`;
+const SELECT_COLS = `product_id, name, price_cents, short_description, description, is_active, image_urls, volume_label, set_size, badges`;
 
 /** { productId: { name, priceCents, shortDescription, description, isActive, imageUrls } }
  *  for every product with an override row. NULL fields stay null (caller falls
@@ -22,6 +22,9 @@ export const getMap = async () => {
       description: r.description,
       isActive: r.is_active,
       imageUrls: r.image_urls,
+      volumeLabel: r.volume_label,
+      setSize: r.set_size,
+      badges: r.badges,
     };
   }
   return out;
@@ -58,6 +61,9 @@ export const set = async (productId, fields) => {
       description: null,
       is_active: true,
       image_urls: null,
+      volume_label: null,
+      set_size: null,
+      badges: null,
     };
   const name = "name" in fields ? fields.name : cur.name;
   const priceCents = "priceCents" in fields ? fields.priceCents : cur.price_cents;
@@ -72,19 +78,44 @@ export const set = async (productId, fields) => {
         ? fields.imageUrls
         : null
       : cur.image_urls;
+  const volumeLabel =
+    "volumeLabel" in fields
+      ? fields.volumeLabel && fields.volumeLabel.trim() !== ""
+        ? fields.volumeLabel
+        : null
+      : cur.volume_label;
+  const setSize =
+    "setSize" in fields
+      ? fields.setSize == null || fields.setSize === ""
+        ? null
+        : Number(fields.setSize)
+      : cur.set_size;
+  // badges is JSONB — accept an object, send as JSON string. Empty object
+  // collapses to null so the catalog default badges win.
+  const badgesRaw = "badges" in fields ? fields.badges : cur.badges;
+  const hasBadgeKeys =
+    badgesRaw && typeof badgesRaw === "object" && Object.keys(badgesRaw).length > 0;
+  const badges = hasBadgeKeys ? JSON.stringify(badgesRaw) : null;
   const { rows } = await pool.query(
     `INSERT INTO product_overrides
-       (product_id, name, price_cents, short_description, description, is_active, image_urls)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+       (product_id, name, price_cents, short_description, description, is_active,
+        image_urls, volume_label, set_size, badges)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
      ON CONFLICT (product_id) DO UPDATE
        SET name = EXCLUDED.name,
            price_cents = EXCLUDED.price_cents,
            short_description = EXCLUDED.short_description,
            description = EXCLUDED.description,
            is_active = EXCLUDED.is_active,
-           image_urls = EXCLUDED.image_urls
+           image_urls = EXCLUDED.image_urls,
+           volume_label = EXCLUDED.volume_label,
+           set_size = EXCLUDED.set_size,
+           badges = EXCLUDED.badges
      RETURNING ${SELECT_COLS}`,
-    [productId, name, priceCents, shortDescription, description, isActive, imageUrls],
+    [
+      productId, name, priceCents, shortDescription, description, isActive,
+      imageUrls, volumeLabel, setSize, badges,
+    ],
   );
   return rows[0];
 };

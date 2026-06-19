@@ -122,6 +122,11 @@ export const listProducts = asyncHandler(async (_req, res) => {
         descriptionOverride: ovr?.description ?? null,
         // Image override: null means "use static catalog images on disk".
         imageUrlsOverride: ovr?.imageUrls ?? null,
+        // Set + badge overrides (parity with custom products in the admin
+        // editor). NULL = use the static catalog default.
+        volumeLabelOverride: ovr?.volumeLabel ?? null,
+        setSizeOverride: ovr?.setSize ?? null,
+        badgesOverride: ovr?.badges ?? null,
       };
     })
     .sort((a, b) => a.productId.localeCompare(b.productId));
@@ -263,6 +268,9 @@ export const updateProduct = asyncHandler(async (req, res) => {
   if ("shortDescription" in body) ovrFields.shortDescription = body.shortDescription;
   if ("description" in body) ovrFields.description = body.description;
   if ("imageUrls" in body) ovrFields.imageUrls = body.imageUrls;
+  if ("volumeLabel" in body) ovrFields.volumeLabel = body.volumeLabel;
+  if ("setSize" in body) ovrFields.setSize = body.setSize;
+  if ("badges" in body) ovrFields.badges = body.badges;
   if (Object.keys(ovrFields).length > 0) {
     await ProductOverrideModel.set(productId, ovrFields);
   }
@@ -299,6 +307,9 @@ export const updateProduct = asyncHandler(async (req, res) => {
       shortDescriptionOverride: row?.short_description ?? null,
       descriptionOverride: row?.description ?? null,
       imageUrlsOverride: row?.image_urls ?? null,
+      volumeLabelOverride: row?.volume_label ?? null,
+      setSizeOverride: row?.set_size ?? null,
+      badgesOverride: row?.badges ?? null,
     },
   });
 });

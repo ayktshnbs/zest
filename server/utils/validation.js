@@ -168,6 +168,18 @@ export const updateProductSchema = z
     // Replace-all semantics: pass the full desired variant list, or omit to
     // leave variants untouched. Pass [] to clear all variants.
     variants: z.lazy(() => z.array(productVariantSchema).max(20).optional()),
+    // Built-in product parity with custom products. NULL on any of these
+    // clears the override → static catalog default wins.
+    volumeLabel: z.string().trim().max(40).nullable().optional(),
+    setSize: z.number().int().positive().max(999).nullable().optional(),
+    badges: z
+      .object({
+        isNew: z.boolean().optional(),
+        isBestSeller: z.boolean().optional(),
+        isFeatured: z.boolean().optional(),
+      })
+      .nullable()
+      .optional(),
   })
   .refine(
     (v) =>
@@ -177,7 +189,10 @@ export const updateProductSchema = z
       "shortDescription" in v ||
       "description" in v ||
       "imageUrls" in v ||
-      "variants" in v,
+      "variants" in v ||
+      "volumeLabel" in v ||
+      "setSize" in v ||
+      "badges" in v,
     { message: "Provide at least one field to update" },
   );
 

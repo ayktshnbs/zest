@@ -64,7 +64,20 @@ export default function Home() {
       else applySlowMo();
     };
 
-    tryPlay();
+    // Defer kicking off the 2 MB video until the browser is idle so it doesn't
+    // compete with the LCP image/text for bandwidth on first paint. The poster
+    // (`/hero.jpg`) fills the frame in the meantime, so the hero never breaks.
+    const idle = (cb: () => void) => {
+      const ric = (window as unknown as { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+      if (typeof ric === "function") ric(cb);
+      else setTimeout(cb, 400);
+    };
+    idle(() => {
+      // preload="none" means the source isn't fetched until we ask. Calling
+      // load() then play() triggers download and starts playback in one go.
+      try { v.load(); } catch {}
+      tryPlay();
+    });
     v.addEventListener("loadedmetadata", tryPlay);
     v.addEventListener("canplay", tryPlay);
 
@@ -137,7 +150,7 @@ export default function Home() {
             loop
             playsInline
             poster="/hero.jpg"
-            preload="auto"
+            preload="none"
           >
             <source src="/hero.mp4" type="video/mp4" />
           </video>

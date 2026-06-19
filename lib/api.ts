@@ -48,31 +48,63 @@ const primeCsrf = async () => {
   }
 };
 
+// JWT access cookie lives 15 min; the long-lived refresh_token cookie can mint
+// a fresh one. Without this, every admin save after sitting on the page for a
+// quarter hour fails with "Authentication required". Coalesce concurrent 401s
+// so a flurry of failed requests trigger one refresh, not N.
+let refreshInflight: Promise<boolean> | null = null;
+const tryRefreshSession = async (): Promise<boolean> => {
+  if (refreshInflight) return refreshInflight;
+  refreshInflight = (async () => {
+    try {
+      const token = readCookie("csrf");
+      const res = await fetch(`${API_BASE}/api/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+        headers: token ? { "x-csrf-token": token } : undefined,
+      });
+      return res.ok;
+    } catch {
+      return false;
+    } finally {
+      // Allow the next 401 (after some user action later) to refresh again.
+      setTimeout(() => { refreshInflight = null; }, 0);
+    }
+  })();
+  return refreshInflight;
+};
+
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
 }
 
-export const api = async <T = unknown>(path: string, options: RequestOptions = {}): Promise<T> => {
+export const api = async <T = unknown>(
+  path: string,
+  options: RequestOptions = {},
+  _retried = false,
+): Promise<T> => {
   const method = (options.method ?? "GET").toUpperCase();
   const needsCsrf = !["GET", "HEAD", "OPTIONS"].includes(method);
 
   if (needsCsrf) await primeCsrf();
 
-  const headers = new Headers(options.headers);
-  if (options.body !== undefined && !(options.body instanceof FormData)) {
-    headers.set("content-type", "application/json");
-  }
-  if (needsCsrf) {
-    const token = readCookie("csrf");
-    if (token) headers.set("x-csrf-token", token);
-  }
+  const buildHeaders = () => {
+    const h = new Headers(options.headers);
+    if (options.body !== undefined && !(options.body instanceof FormData)) {
+      h.set("content-type", "application/json");
+    }
+    if (needsCsrf) {
+      const token = readCookie("csrf");
+      if (token) h.set("x-csrf-token", token);
+    }
+    return h;
+  };
 
-  let res: Response;
-  try {
-    res = await fetch(`${API_BASE}${path}`, {
+  const sendRequest = (): Promise<Response> =>
+    fetch(`${API_BASE}${path}`, {
       ...options,
       method,
-      headers,
+      headers: buildHeaders(),
       credentials: "include",
       body:
         options.body === undefined
@@ -81,12 +113,24 @@ export const api = async <T = unknown>(path: string, options: RequestOptions = {
             ? options.body
             : JSON.stringify(options.body),
     });
+
+  let res: Response;
+  try {
+    res = await sendRequest();
   } catch (err) {
     throw new ApiError("Network error", {
       status: 0,
       code: "network_error",
       details: err instanceof Error ? err.message : String(err),
     });
+  }
+
+  // Access cookie expired mid-session → try a single silent refresh and replay
+  // the same request. Skip if we just refreshed, or if this IS the refresh
+  // call, to avoid loops.
+  if (res.status === 401 && !_retried && !path.startsWith("/api/auth/")) {
+    const ok = await tryRefreshSession();
+    if (ok) return api<T>(path, options, true);
   }
 
   // 204 No Content
@@ -268,6 +312,14 @@ export interface AdminProduct {
   descriptionOverride: string | null;
   // Image override: null means "use static catalog images on disk".
   imageUrlsOverride: string[] | null;
+  // Set + badge overrides (parity with custom products).
+  volumeLabelOverride: string | null;
+  setSizeOverride: number | null;
+  badgesOverride: {
+    isNew?: boolean;
+    isBestSeller?: boolean;
+    isFeatured?: boolean;
+  } | null;
 }
 
 export const adminApi = {
@@ -319,6 +371,14 @@ export const adminApi = {
         stock?: number;
         imageUrls?: string[];
       }[];
+      // Parity with custom products — null clears the override.
+      volumeLabel?: string | null;
+      setSize?: number | null;
+      badges?: {
+        isNew?: boolean;
+        isBestSeller?: boolean;
+        isFeatured?: boolean;
+      } | null;
     },
   ) =>
     api<{ product: AdminProduct }>(
@@ -334,6 +394,13 @@ export interface CatalogOverride {
   shortDescription: string | null;
   description: string | null;
   imageUrls: string[] | null;
+  volumeLabel: string | null;
+  setSize: number | null;
+  badges: {
+    isNew?: boolean;
+    isBestSeller?: boolean;
+    isFeatured?: boolean;
+  } | null;
 }
 
 export interface PublicCategory {

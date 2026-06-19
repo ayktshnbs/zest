@@ -1254,6 +1254,20 @@ function BuiltinProductFormModal({
     row.descriptionOverride ?? defaultLong,
   );
   const [imageUrls, setImageUrls] = useState<string[]>(initialImages);
+  // Set Bilgileri (parity with custom products). Built-ins don't store these
+  // in the static catalog; the override row holds whatever the admin enters.
+  const [volumeLabel, setVolumeLabel] = useState<string>(row.volumeLabelOverride ?? "");
+  const [setSize, setSetSize] = useState<string>(
+    row.setSizeOverride != null ? String(row.setSizeOverride) : "",
+  );
+  // Badges. Default to the static catalog flags when no override is set; the
+  // admin can flip them and we save the FULL effective state as an override.
+  const initialBadges = row.badgesOverride ?? {
+    isNew: staticP?.isNew ?? false,
+    isFeatured: staticP?.isFeatured ?? false,
+  };
+  const [isNew, setIsNew] = useState<boolean>(Boolean(initialBadges.isNew));
+  const [isFeatured, setIsFeatured] = useState<boolean>(Boolean(initialBadges.isFeatured));
   const [variants, setVariants] = useState<DraftVariant[]>(
     existingVariants.map((v) => ({
       colorKey: v.colorKey,
@@ -1410,6 +1424,23 @@ function BuiltinProductFormModal({
       stock: Math.max(0, Math.floor(v.stock || 0)),
       imageUrls: v.imageUrls,
     }));
+    // Set Bilgileri: empty values mean "clear the override" → static default
+    // wins. Built-ins normally have no volume/setSize, so leaving them blank
+    // is the right zero state.
+    const volumeOut = volumeLabel.trim() === "" ? null : volumeLabel.trim();
+    const setSizeNum = setSize.trim() === "" ? null : Math.floor(Number(setSize));
+    const setSizeOut =
+      setSizeNum != null && Number.isFinite(setSizeNum) && setSizeNum > 0
+        ? setSizeNum
+        : null;
+    // Badges: only persist as an override if the admin flipped anything off
+    // the static catalog default. Otherwise clear the override.
+    const staticBadges = {
+      isNew: Boolean(staticP?.isNew),
+      isFeatured: Boolean(staticP?.isFeatured),
+    };
+    const matchesDefault = isNew === staticBadges.isNew && isFeatured === staticBadges.isFeatured;
+    const badgesOut = matchesDefault ? null : { isNew, isFeatured };
     try {
       const { product } = await adminApi.updateProduct(row.productId, {
         name: nameOut,
@@ -1419,6 +1450,9 @@ function BuiltinProductFormModal({
         description: longOut,
         imageUrls: imagesOut,
         variants: variantsOut,
+        volumeLabel: volumeOut,
+        setSize: setSizeOut,
+        badges: badgesOut,
       });
       onSaved(product);
       await onDone();
@@ -1533,6 +1567,39 @@ function BuiltinProductFormModal({
                 className="hidden"
                 onChange={(e) => handleFiles(e.target.files)}
                 disabled={uploading}
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* ── Set Bilgileri (parity with Bonny modal) ─────────────── */}
+        <div className="mt-8 pt-6 border-t border-foreground/10">
+          <p className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/60 mb-3">
+            Set Bilgileri <span className="text-foreground/30">(opsiyonel)</span>
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <label className="block">
+              <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">
+                Hacim / Boy
+              </span>
+              <input
+                value={volumeLabel}
+                onChange={(e) => setVolumeLabel(e.target.value)}
+                placeholder="600ml, 1L, Orta…"
+                className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
+              />
+            </label>
+            <label className="block">
+              <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">
+                Set Boyutu
+              </span>
+              <input
+                type="number"
+                min={1}
+                value={setSize}
+                onChange={(e) => setSetSize(e.target.value)}
+                placeholder="3, 6, 12…"
+                className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
               />
             </label>
           </div>
@@ -1658,6 +1725,28 @@ function BuiltinProductFormModal({
               );
             })}
           </div>
+        </div>
+
+        {/* ── Badges (parity with Bonny modal) ────────────────────── */}
+        <div className="mt-6 flex flex-wrap gap-4">
+          <label className="inline-flex items-center gap-2 text-[12px] font-body">
+            <input
+              type="checkbox"
+              checked={isNew}
+              onChange={(e) => setIsNew(e.target.checked)}
+              className="accent-foreground"
+            />
+            Yeni rozeti
+          </label>
+          <label className="inline-flex items-center gap-2 text-[12px] font-body">
+            <input
+              type="checkbox"
+              checked={isFeatured}
+              onChange={(e) => setIsFeatured(e.target.checked)}
+              className="accent-foreground"
+            />
+            Öne çıkar
+          </label>
         </div>
 
         <div className="mt-8 flex justify-end gap-3 border-t border-foreground/10 pt-6">

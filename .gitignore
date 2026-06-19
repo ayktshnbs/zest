@@ -36,6 +36,9 @@ code.html
 DESIGN.md
 screen.png
 
+# pre-compression photo backups (kept locally as a safety net; never deployed)
+/public/products-original
+
 # claude code
 /memory
 /.claude

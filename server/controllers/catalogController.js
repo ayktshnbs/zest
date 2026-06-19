@@ -41,6 +41,9 @@ export const getStock = asyncHandler(async (_req, res) => {
       shortDescription: ovr.shortDescription,
       description: ovr.description,
       imageUrls: ovr.imageUrls ?? null,
+      volumeLabel: ovr.volumeLabel ?? null,
+      setSize: ovr.setSize ?? null,
+      badges: ovr.badges ?? null,
     };
   }
 
