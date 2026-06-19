@@ -26,7 +26,14 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
   const effectiveStock = live.stock ?? product.stock;
   const effectiveName = live.name ?? product.name;
   const effectivePrice = live.priceCents != null ? live.priceCents / 100 : product.price;
-  const effectiveProduct = { ...product, name: effectiveName, price: effectivePrice };
+  // Admin-uploaded photos (Cloudinary) override the static cover when present.
+  const effectiveImageUrl = live.imageUrls?.[0] ?? product.imageUrl;
+  const effectiveProduct = {
+    ...product,
+    name: effectiveName,
+    price: effectivePrice,
+    imageUrl: effectiveImageUrl,
+  };
   const outOfStock = effectiveStock <= 0;
   const lowStock = !outOfStock && effectiveStock <= 5;
   const compact = variant === "compact";
@@ -45,7 +52,7 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
         className="block relative aspect-[4/5] overflow-hidden bg-secondary/30"
       >
         <Image
-          src={product.imageUrl}
+          src={effectiveImageUrl}
           alt={effectiveName}
           fill
           className={`object-cover transition-transform duration-1000 group-hover:scale-105 ${

@@ -51,6 +51,7 @@ export default function AdminProductsPage() {
   // useLiveCatalog so the editor can prefill them.
   const liveCatalog = useLiveCatalog();
   const [editing, setEditing] = useState<CustomProductData | null>(null);
+  const [editingBuiltin, setEditingBuiltin] = useState<AdminProduct | null>(null);
 
   const reload = async () => {
     try {
@@ -143,6 +144,21 @@ export default function AdminProductsPage() {
           onDone={async () => { await refreshLiveCatalog(); await reload(); setEditing(null); }}
         />
       ) : null}
+      {editingBuiltin ? (
+        <BuiltinProductFormModal
+          row={editingBuiltin}
+          existingVariants={liveCatalog.variants[editingBuiltin.productId] ?? []}
+          onClose={() => setEditingBuiltin(null)}
+          onSaved={(updated) => {
+            onSaved(updated);
+          }}
+          onDone={async () => {
+            await refreshLiveCatalog();
+            await reload();
+            setEditingBuiltin(null);
+          }}
+        />
+      ) : null}
 
       <p className="text-foreground/40 font-body text-[12px] mb-6">
         İsim ve fiyat değişiklikleri mağazada ve sipariş fiyatında anında geçerli olur. Boş bırakıp
@@ -160,6 +176,7 @@ export default function AdminProductsPage() {
           adminCats={adminCats}
           onSaved={onSaved}
           onEdit={setEditing}
+          onEditBuiltin={setEditingBuiltin}
           onDelete={deleteCustom}
         />
       )}
@@ -184,6 +201,7 @@ function ProductGroups({
   adminCats,
   onSaved,
   onEdit,
+  onEditBuiltin,
   onDelete,
 }: {
   builtinRows: AdminProduct[];
@@ -191,6 +209,7 @@ function ProductGroups({
   adminCats: AdminCategory[];
   onSaved: (p: AdminProduct) => void;
   onEdit: (p: CustomProductData) => void;
+  onEditBuiltin: (p: AdminProduct) => void;
   onDelete: (id: string, name: string) => void;
 }) {
   const resolveLabel = (slug: string) =>
@@ -274,7 +293,12 @@ function ProductGroups({
                   </thead>
                   <tbody>
                     {items.builtin.map((row) => (
-                      <ProductRowEditor key={row.productId} row={row} onSaved={onSaved} />
+                      <ProductRowEditor
+                        key={row.productId}
+                        row={row}
+                        onSaved={onSaved}
+                        onEditFull={onEditBuiltin}
+                      />
                     ))}
                   </tbody>
                 </table>
@@ -344,9 +368,11 @@ function CustomProductRow({
 function ProductRowEditor({
   row,
   onSaved,
+  onEditFull,
 }: {
   row: AdminProduct;
   onSaved: (p: AdminProduct) => void;
+  onEditFull: (row: AdminProduct) => void;
 }) {
   const [name, setName] = useState(row.name);
   const [price, setPrice] = useState((row.priceCents / 100).toString());
@@ -458,6 +484,13 @@ function ProductRowEditor({
             className="px-3 py-1.5 font-audiowide text-[9px] uppercase tracking-[0.2em] border border-foreground/15 disabled:opacity-30 hover:border-foreground transition-colors"
           >
             Kaydet
+          </button>
+          <button
+            onClick={() => onEditFull(row)}
+            title="Görselleri, açıklamayı ve renk seçeneklerini düzenle"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 font-audiowide text-[9px] uppercase tracking-[0.2em] border border-foreground/15 text-foreground/70 hover:border-foreground hover:text-foreground transition-colors"
+          >
+            <Pencil size={12} /> Düzenle
           </button>
           <button
             onClick={() => setEditingDesc(true)}
@@ -1173,6 +1206,483 @@ function DescriptionEditorModal({
               {saving ? "Kaydediliyor…" : "Kaydet"}
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Built-in product editor: same shape as ProductFormModal but pre-loaded
+// from the static catalog + admin overrides, and persisted through the
+// built-in /api/admin/products/:productId endpoint (which now accepts
+// imageUrls + variants since migration 018+019).
+// ─────────────────────────────────────────────────────────────────────────
+function BuiltinProductFormModal({
+  row,
+  existingVariants,
+  onClose,
+  onSaved,
+  onDone,
+}: {
+  row: AdminProduct;
+  existingVariants: ProductVariant[];
+  onClose: () => void;
+  onSaved: (p: AdminProduct) => void;
+  onDone: () => Promise<void> | void;
+}) {
+  const staticP = staticProducts.find((p) => p.id === row.productId);
+  const defaultShort = staticP?.shortDescription ?? "";
+  const defaultLong = staticP?.description ?? "";
+  // Image precedence: admin override > static images > single cover.
+  const initialImages =
+    row.imageUrlsOverride && row.imageUrlsOverride.length > 0
+      ? row.imageUrlsOverride
+      : staticP?.images && staticP.images.length > 0
+      ? staticP.images
+      : staticP?.imageUrl
+      ? [staticP.imageUrl]
+      : [];
+  const subcatLabel =
+    staticP?.subcategoryLabel ?? staticP?.categoryLabel ?? row.productId;
+
+  const [name, setName] = useState(row.name);
+  const [price, setPrice] = useState((row.priceCents / 100).toString());
+  const [stock, setStock] = useState(String(row.stock));
+  const [shortDesc, setShortDesc] = useState<string>(
+    row.shortDescriptionOverride ?? defaultShort,
+  );
+  const [description, setDescription] = useState<string>(
+    row.descriptionOverride ?? defaultLong,
+  );
+  const [imageUrls, setImageUrls] = useState<string[]>(initialImages);
+  const [variants, setVariants] = useState<DraftVariant[]>(
+    existingVariants.map((v) => ({
+      colorKey: v.colorKey,
+      colorLabel: v.colorLabel,
+      colorHex: v.colorHex,
+      stock: v.stock,
+      imageUrls: v.imageUrls,
+    })),
+  );
+  const [variantUploadingKey, setVariantUploadingKey] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const priceNum = Number(price.replace(",", "."));
+  const stockNum = Math.floor(Number(stock));
+  const valid =
+    name.trim().length > 0 &&
+    Number.isFinite(priceNum) &&
+    priceNum >= 0 &&
+    Number.isFinite(stockNum) &&
+    stockNum >= 0;
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setErr(null);
+    setUploading(true);
+    try {
+      const uploaded: string[] = [];
+      for (const f of Array.from(files).slice(0, 10)) {
+        const { secureUrl } = await uploadImage(f, "products");
+        uploaded.push(secureUrl);
+      }
+      setImageUrls((prev) => [...prev, ...uploaded].slice(0, 12));
+    } catch {
+      setErr(
+        "Görsel yüklenemedi. Render'da CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET ayarlı olmalı.",
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = (i: number) =>
+    setImageUrls((prev) => prev.filter((_, idx) => idx !== i));
+
+  // ── Variant helpers (same as ProductFormModal) ──────────────────────
+  const addVariant = () =>
+    setVariants((prev) => {
+      let n = prev.length + 1;
+      let key = `renk-${n}`;
+      while (prev.some((v) => v.colorKey === key)) {
+        n += 1;
+        key = `renk-${n}`;
+      }
+      return [
+        ...prev,
+        { colorKey: key, colorLabel: `Renk ${n}`, colorHex: "#888888", stock: 0, imageUrls: [] },
+      ];
+    });
+  const removeVariant = (key: string) =>
+    setVariants((prev) => prev.filter((v) => v.colorKey !== key));
+  const updateVariant = (key: string, patch: Partial<DraftVariant>) =>
+    setVariants((prev) => prev.map((v) => (v.colorKey === key ? { ...v, ...patch } : v)));
+  const updateVariantLabel = (key: string, label: string) =>
+    setVariants((prev) =>
+      prev.map((v) => {
+        if (v.colorKey !== key) return v;
+        const prevLabelSlug = slugifyColor(v.colorLabel);
+        const newKey =
+          v.colorKey === prevLabelSlug || v.colorKey.startsWith("renk-")
+            ? slugifyColor(label) || v.colorKey
+            : v.colorKey;
+        return { ...v, colorLabel: label, colorKey: newKey };
+      }),
+    );
+  const handleVariantFiles = async (key: string, files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setErr(null);
+    setVariantUploadingKey(key);
+    try {
+      const uploaded: string[] = [];
+      for (const f of Array.from(files).slice(0, 10)) {
+        const { secureUrl } = await uploadImage(f, "products");
+        uploaded.push(secureUrl);
+      }
+      setVariants((prev) =>
+        prev.map((v) =>
+          v.colorKey === key ? { ...v, imageUrls: [...v.imageUrls, ...uploaded].slice(0, 12) } : v,
+        ),
+      );
+    } catch {
+      setErr("Görsel yüklenemedi. Cloudinary anahtarları doğru mu?");
+    } finally {
+      setVariantUploadingKey(null);
+    }
+  };
+  const removeVariantImage = (key: string, idx: number) =>
+    setVariants((prev) =>
+      prev.map((v) =>
+        v.colorKey === key ? { ...v, imageUrls: v.imageUrls.filter((_, i) => i !== idx) } : v,
+      ),
+    );
+
+  const hasVariants = variants.length > 0;
+  const duplicateKeys = new Set(
+    variants.map((v) => v.colorKey).filter((k, i, arr) => arr.indexOf(k) !== i),
+  );
+  const variantsValid =
+    !hasVariants ||
+    variants.every(
+      (v) =>
+        v.colorKey.trim().length > 0 &&
+        v.colorLabel.trim().length > 0 &&
+        /^#[0-9a-fA-F]{6}$/.test(v.colorHex) &&
+        v.stock >= 0,
+    );
+
+  const save = async () => {
+    if (!valid || saving || uploading || variantUploadingKey) return;
+    if (!variantsValid) {
+      setErr("Renk varyantı eksik veya hatalı.");
+      return;
+    }
+    if (duplicateKeys.size > 0) {
+      setErr(`Aynı renk anahtarı iki kez kullanılamaz: ${[...duplicateKeys].join(", ")}`);
+      return;
+    }
+    setSaving(true);
+    setErr(null);
+    // Override semantics: send null for name/price/desc when they match the
+    // static defaults → revert the override row. Same for images.
+    const nameOut = name.trim() === (staticP?.name ?? row.defaultName) ? null : name.trim();
+    const priceOut =
+      Math.round(priceNum * 100) === row.defaultPriceCents
+        ? null
+        : Math.round(priceNum * 100);
+    const shortOut =
+      shortDesc.trim() === defaultShort.trim() || shortDesc.trim() === ""
+        ? null
+        : shortDesc.trim();
+    const longOut =
+      description.trim() === defaultLong.trim() || description.trim() === ""
+        ? null
+        : description.trim();
+    // If the gallery matches static disk images exactly, clear the override.
+    const staticSet = JSON.stringify(initialImages);
+    const isUnchanged =
+      JSON.stringify(imageUrls) === staticSet &&
+      (row.imageUrlsOverride == null || row.imageUrlsOverride.length === 0);
+    const imagesOut = isUnchanged ? null : imageUrls;
+    const variantsOut = variants.map((v) => ({
+      colorKey: v.colorKey.trim(),
+      colorLabel: v.colorLabel.trim(),
+      colorHex: v.colorHex.trim(),
+      stock: Math.max(0, Math.floor(v.stock || 0)),
+      imageUrls: v.imageUrls,
+    }));
+    try {
+      const { product } = await adminApi.updateProduct(row.productId, {
+        name: nameOut,
+        priceCents: priceOut,
+        stock: hasVariants ? undefined : stockNum,
+        shortDescription: shortOut,
+        description: longOut,
+        imageUrls: imagesOut,
+        variants: variantsOut,
+      });
+      onSaved(product);
+      await onDone();
+    } catch (e) {
+      setErr(e instanceof ApiError ? e.message : "Kaydedilemedi");
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-background/80 backdrop-blur-sm pt-10 pb-20 px-4">
+      <div className="w-full max-w-2xl bg-background border border-foreground/15 p-6 md:p-8">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="font-audiowide text-lg uppercase tracking-[0.2em]">
+            Ürünü Düzenle
+          </h2>
+          <button onClick={onClose} aria-label="Kapat" className="p-2 text-foreground/40 hover:text-foreground">
+            <X size={18} />
+          </button>
+        </div>
+        <p className="text-foreground/40 font-body text-[12px] mb-5">
+          {row.productId} <span className="text-foreground/30">· {subcatLabel}</span>
+        </p>
+
+        {err ? <p className="mb-4 text-red-600 text-sm font-body">{err}</p> : null}
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <label className="block sm:col-span-2">
+            <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">İsim</span>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
+            />
+            {row.nameOverridden ? (
+              <span className="block text-[10px] text-foreground/30 mt-1">
+                Varsayılan: {row.defaultName}
+              </span>
+            ) : null}
+          </label>
+          <label className="block">
+            <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Fiyat (₺)</span>
+            <input
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              inputMode="decimal"
+              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
+            />
+            {row.priceOverridden ? (
+              <span className="block text-[10px] text-foreground/30 mt-1">
+                Varsayılan: ₺{(row.defaultPriceCents / 100).toFixed(2)}
+              </span>
+            ) : null}
+          </label>
+          <label className="block">
+            <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">
+              {hasVariants ? "Stok (renk bazında ayrı)" : "Stok"}
+            </span>
+            <input
+              type="number"
+              min={0}
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+              disabled={hasVariants}
+              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground disabled:opacity-40"
+            />
+          </label>
+          <label className="block sm:col-span-2">
+            <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Kısa Açıklama</span>
+            <input
+              value={shortDesc}
+              onChange={(e) => setShortDesc(e.target.value)}
+              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
+            />
+          </label>
+          <label className="block sm:col-span-2">
+            <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Açıklama</span>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] resize-none focus:outline-none focus:border-foreground"
+            />
+          </label>
+        </div>
+
+        <div className="mt-6">
+          <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50 block mb-2">
+            Görseller {hasVariants ? <span className="text-foreground/30">(parent kapak — renk seçimi yapılırken renk görselleri öncelik kazanır)</span> : null}
+          </span>
+          <div className="flex flex-wrap items-center gap-3">
+            {imageUrls.map((u, i) => (
+              <div key={u + i} className="relative w-20 h-20 border border-foreground/10">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={u} alt="" className="w-full h-full object-cover" />
+                <button
+                  onClick={() => removeImage(i)}
+                  className="absolute -top-2 -right-2 bg-background border border-foreground/20 p-0.5 text-foreground/50 hover:text-red-600"
+                  aria-label="Sil"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+            <label className="inline-flex items-center gap-2 px-4 py-2 border border-dashed border-foreground/20 cursor-pointer hover:border-foreground transition-colors text-[12px] font-body">
+              <ImagePlus size={14} />
+              {uploading ? "Yükleniyor…" : "Görsel Ekle"}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => handleFiles(e.target.files)}
+                disabled={uploading}
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* ── Color variants editor ───────────────────────────────── */}
+        <div className="mt-8 pt-6 border-t border-foreground/10">
+          <div className="flex items-center justify-between mb-3">
+            <p className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/60">
+              Renk Varyantları <span className="text-foreground/30">({variants.length})</span>
+            </p>
+            <button
+              type="button"
+              onClick={addVariant}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-foreground/15 font-audiowide text-[9px] uppercase tracking-[0.2em] hover:border-foreground transition-colors"
+            >
+              <Plus size={12} /> Renk Ekle
+            </button>
+          </div>
+          {hasVariants ? (
+            <p className="text-foreground/40 font-body text-[11px] mb-4">
+              Renkleri eklediğinizde, mağazada müşteri rengi seçer. Stok her renk için ayrı tutulur ve görseller seçime göre değişir.
+            </p>
+          ) : (
+            <p className="text-foreground/40 font-body text-[11px] mb-4">
+              Bu ürün renk seçeneksiz tek üründür. Renk eklemek isterseniz yukarıdaki butonu kullanın.
+            </p>
+          )}
+          <div className="space-y-4">
+            {variants.map((v) => {
+              const isDup = duplicateKeys.has(v.colorKey);
+              const isUploadingThis = variantUploadingKey === v.colorKey;
+              const hexOk = /^#[0-9a-fA-F]{6}$/.test(v.colorHex);
+              return (
+                <div key={v.colorKey} className="border border-foreground/10 p-4">
+                  <div className="flex items-start gap-3 mb-3">
+                    <input
+                      type="color"
+                      value={hexOk ? v.colorHex : "#888888"}
+                      onChange={(e) => updateVariant(v.colorKey, { colorHex: e.target.value })}
+                      className="w-12 h-12 shrink-0 border border-foreground/15 cursor-pointer"
+                      aria-label={`${v.colorLabel} rengi`}
+                    />
+                    <div className="grid sm:grid-cols-3 gap-3 flex-1">
+                      <label className="block">
+                        <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Etiket</span>
+                        <input
+                          value={v.colorLabel}
+                          onChange={(e) => updateVariantLabel(v.colorKey, e.target.value)}
+                          className="mt-1 w-full border border-foreground/15 bg-background px-2 py-1.5 text-[13px] focus:outline-none focus:border-foreground"
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Slug</span>
+                        <input
+                          value={v.colorKey}
+                          onChange={(e) =>
+                            updateVariant(v.colorKey, {
+                              colorKey: slugifyColor(e.target.value) || v.colorKey,
+                            })
+                          }
+                          className={`mt-1 w-full border bg-background px-2 py-1.5 text-[13px] focus:outline-none ${
+                            isDup ? "border-red-400 focus:border-red-600" : "border-foreground/15 focus:border-foreground"
+                          }`}
+                        />
+                        {isDup ? (
+                          <span className="block text-[10px] text-red-600 mt-0.5">Bu slug zaten kullanılıyor</span>
+                        ) : null}
+                      </label>
+                      <label className="block">
+                        <span className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50">Stok</span>
+                        <input
+                          type="number"
+                          min={0}
+                          value={v.stock}
+                          onChange={(e) =>
+                            updateVariant(v.colorKey, {
+                              stock: Math.max(0, Math.floor(Number(e.target.value) || 0)),
+                            })
+                          }
+                          className="mt-1 w-full border border-foreground/15 bg-background px-2 py-1.5 text-[13px] focus:outline-none focus:border-foreground"
+                        />
+                      </label>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeVariant(v.colorKey)}
+                      title="Rengi sil"
+                      className="p-2 text-foreground/40 hover:text-red-600 shrink-0"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {v.imageUrls.map((u, i) => (
+                      <div key={u + i} className="relative w-16 h-16 border border-foreground/10">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={u} alt="" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => removeVariantImage(v.colorKey, i)}
+                          className="absolute -top-2 -right-2 bg-background border border-foreground/20 p-0.5 text-foreground/50 hover:text-red-600"
+                          aria-label="Sil"
+                        >
+                          <X size={10} />
+                        </button>
+                      </div>
+                    ))}
+                    <label className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-foreground/20 cursor-pointer hover:border-foreground transition-colors text-[11px] font-body">
+                      <ImagePlus size={12} />
+                      {isUploadingThis ? "Yükleniyor…" : "Görsel Ekle"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => handleVariantFiles(v.colorKey, e.target.files)}
+                        disabled={variantUploadingKey != null}
+                      />
+                    </label>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-8 flex justify-end gap-3 border-t border-foreground/10 pt-6">
+          <button
+            onClick={onClose}
+            disabled={saving}
+            className="px-5 py-2 font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/50 hover:text-foreground"
+          >
+            Vazgeç
+          </button>
+          <button
+            disabled={!valid || saving || uploading || variantUploadingKey != null}
+            onClick={save}
+            className="px-6 py-2.5 bg-foreground text-background font-audiowide text-[10px] uppercase tracking-[0.3em] disabled:opacity-30 hover:opacity-90"
+          >
+            {saving
+              ? "Kaydediliyor…"
+              : uploading || variantUploadingKey
+              ? "Görsel yükleniyor…"
+              : "Değişiklikleri Kaydet"}
+          </button>
         </div>
       </div>
     </div>

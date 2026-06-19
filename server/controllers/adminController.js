@@ -120,6 +120,8 @@ export const listProducts = asyncHandler(async (_req, res) => {
         // resolves defaults from the static catalog (lib/products.ts).
         shortDescriptionOverride: ovr?.shortDescription ?? null,
         descriptionOverride: ovr?.description ?? null,
+        // Image override: null means "use static catalog images on disk".
+        imageUrlsOverride: ovr?.imageUrls ?? null,
       };
     })
     .sort((a, b) => a.productId.localeCompare(b.productId));
@@ -245,8 +247,10 @@ export const deleteCustomProduct = asyncHandler(async (req, res) => {
   res.status(204).end();
 });
 
-// Edit a product's name/price override and/or stock. A present null clears the
-// override (reverts to the code default).
+// Edit a built-in product's overrides (name/price/desc/images), stock, and
+// color variants. A present null on any override clears it (reverts to the
+// code default). For variants, pass the full desired list to replace, or omit
+// to leave them as-is.
 export const updateProduct = asyncHandler(async (req, res) => {
   const { productId } = req.params;
   const base = getCatalogProduct(productId);
@@ -258,8 +262,15 @@ export const updateProduct = asyncHandler(async (req, res) => {
   if ("priceCents" in body) ovrFields.priceCents = body.priceCents;
   if ("shortDescription" in body) ovrFields.shortDescription = body.shortDescription;
   if ("description" in body) ovrFields.description = body.description;
+  if ("imageUrls" in body) ovrFields.imageUrls = body.imageUrls;
   if (Object.keys(ovrFields).length > 0) {
     await ProductOverrideModel.set(productId, ovrFields);
+  }
+
+  // Variants: replace-all semantics so the admin can add/remove/reorder them
+  // in a single PATCH. Migration 018 lifted the FK so built-in ids work here.
+  if (Array.isArray(body.variants)) {
+    await ProductVariantModel.replaceAll(productId, body.variants);
   }
 
   let stock;
@@ -287,6 +298,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
       stock: stock ?? 0,
       shortDescriptionOverride: row?.short_description ?? null,
       descriptionOverride: row?.description ?? null,
+      imageUrlsOverride: row?.image_urls ?? null,
     },
   });
 });

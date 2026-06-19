@@ -40,6 +40,7 @@ export const getStock = asyncHandler(async (_req, res) => {
       priceCents: ovr.priceCents,
       shortDescription: ovr.shortDescription,
       description: ovr.description,
+      imageUrls: ovr.imageUrls ?? null,
     };
   }
 

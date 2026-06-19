@@ -89,6 +89,13 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     }
   }, [selectedVariant?.colorKey, selectedVariant?.imageUrls]);
 
+  // Adopt the admin's uploaded cover when present (non-variant path).
+  useEffect(() => {
+    if (!selectedVariant && live.imageUrls?.[0]) {
+      setMainImage(live.imageUrls[0]);
+    }
+  }, [selectedVariant, live.imageUrls]);
+
   // 301 redirect for retired built-in products → users land on the storage
   // category instead of a dead page (better for old bookmarks + SEO).
   useEffect(() => {
@@ -138,9 +145,14 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const cat = categoryMap[product.category];
 
   const variantImages = selectedVariant?.imageUrls ?? [];
+  // Admin-uploaded gallery (Cloudinary) overrides the static images when set.
+  // Variants always win when chosen — the variant gallery follows the swatch.
+  const overrideImages = live.imageUrls ?? [];
   const productImages =
     variantImages.length > 0
       ? variantImages
+      : overrideImages.length > 0
+      ? overrideImages
       : product.images.length > 0
       ? product.images
       : [product.imageUrl];

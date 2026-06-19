@@ -80,6 +80,9 @@ export interface LiveProduct {
   priceCents: number | null; // null = no override
   shortDescription: string | null;
   description: string | null;
+  // Admin-uploaded photos that replace the static catalog images. null/empty
+  // means "use the static images on disk".
+  imageUrls: string[] | null;
 }
 
 const pick = (d: CatalogData | null, id: string): LiveProduct => {
@@ -101,6 +104,10 @@ const pick = (d: CatalogData | null, id: string): LiveProduct => {
     priceCents: d?.overrides[id]?.priceCents ?? null,
     shortDescription: d?.overrides[id]?.shortDescription ?? null,
     description: d?.overrides[id]?.description ?? null,
+    imageUrls:
+      d?.overrides[id]?.imageUrls && d.overrides[id].imageUrls!.length > 0
+        ? d.overrides[id].imageUrls
+        : null,
   };
 };
 

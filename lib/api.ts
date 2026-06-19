@@ -266,6 +266,8 @@ export interface AdminProduct {
   // returned by the API (they live in lib/products.ts); resolve client-side.
   shortDescriptionOverride: string | null;
   descriptionOverride: string | null;
+  // Image override: null means "use static catalog images on disk".
+  imageUrlsOverride: string[] | null;
 }
 
 export const adminApi = {
@@ -307,6 +309,16 @@ export const adminApi = {
       stock?: number;
       shortDescription?: string | null;
       description?: string | null;
+      // null or empty clears the image override → static photos take over.
+      imageUrls?: string[] | null;
+      // Replace-all semantics. Pass [] to remove all variants.
+      variants?: {
+        colorKey: string;
+        colorLabel: string;
+        colorHex: string;
+        stock?: number;
+        imageUrls?: string[];
+      }[];
     },
   ) =>
     api<{ product: AdminProduct }>(
@@ -321,6 +333,7 @@ export interface CatalogOverride {
   priceCents: number | null;
   shortDescription: string | null;
   description: string | null;
+  imageUrls: string[] | null;
 }
 
 export interface PublicCategory {
