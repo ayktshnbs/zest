@@ -173,23 +173,23 @@ export default function ContactPage() {
 
                       {item.label === "Adres" ? (
                         <div className="space-y-1">
-                          <p className="font-semibold text-white">
+                          <p className="font-semibold text-white/70">
                             MNG Blue Boutique Residence
                           </p>
 
-                          <p className="text-white/70 text-sm">
-                            Halkalı Merkez Mahallesi
+                          <p className="font-semibold text-white/70">
+                            Halkalı Merkez 
                           </p>
 
-                          <p className="text-white/70 text-sm">
-                            Halkalı Caddesi
+                          <p className="font-semibold text-white/70">
+                            Halkalı Caddesi no: 232
                           </p>
 
-                          <p className="text-white/70 text-sm">
-                            Küçükçekmece, İstanbul
+                          <p className="font-semibold text-white/70">
+                            Küçükçekmece İstanbul 34295
                           </p>
 
-                          <p className="text-primary text-sm font-medium">
+                          <p className="font-semibold text-white/70">
                             Türkiye
                           </p>
                         </div>
@@ -213,7 +213,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Instagram"
-                    className="p-4 bg-white/70 text-foreground rounded-2xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-sm"
+                    className="p-4 bg-white/50 text-foreground rounded-2xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-sm"
                   >
                     <Instagram size={20} />
                   </a>
@@ -222,7 +222,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="WhatsApp"
-                    className="p-4 bg-white/70 text-foreground rounded-2xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-sm"
+                    className="p-4 bg-white/50 text-foreground rounded-2xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-sm"
                   >
                     {/* WhatsApp glyph (lucide doesn't ship one) */}
                     <svg
