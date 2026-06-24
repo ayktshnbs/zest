@@ -14,7 +14,7 @@ export default function OnBilgilendirmePage() {
       sections={[
         {
           title: "1. Satıcı Bilgileri",
-          body: "Ünvan: ZestHome\nAdres: Küçükçekmece, İstanbul / Türkiye\nE-posta: info@zest-home.net\nTelefon: +90 532 280 92 06",
+          body: "Ünvan: ZestHome\nAdres: Halkalı Merkez Mahallesi, Halkalı Caddesi, MNG BlueBoutique Residence, Küçükçekmece, İstanbul / Türkiye\nE-posta: info@zest-home.net\nTelefon: +90 532 280 92 06",
         },
         {
           title: "2. Ürün ve Hizmetin Temel Nitelikleri",

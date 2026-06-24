@@ -14,7 +14,7 @@ export default function KvkkPage() {
       sections={[
         {
           title: "1. Veri Sorumlusu",
-          body: "Veri Sorumlusu: ZestHome\nAdres: Küçükçekmece, İstanbul / Türkiye\nİletişim: info@zest-home.net · +90 532 280 92 06",
+          body: "Veri Sorumlusu: ZestHome\nAdres: Halkalı Merkez Mahallesi, Halkalı Caddesi, MNG BlueBoutique Residence, Küçükçekmece, İstanbul / Türkiye\nİletişim: info@zest-home.net · +90 532 280 92 06",
         },
         {
           title: "2. İşlenen Kişisel Veriler",

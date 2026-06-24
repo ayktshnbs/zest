@@ -199,9 +199,13 @@ export default function RootLayout({
                             </a>
                           </li>
                           <li className="text-text-secondary leading-relaxed">
-                            Küçükçekmece
+                            Halkalı Merkez Mahallesi
                             <br />
-                            İstanbul, Türkiye
+                            Halkalı Caddesi
+                            <br />
+                            MNG BlueBoutique Residence
+                            <br />
+                            Küçükçekmece · İstanbul, Türkiye
                           </li>
                         </ul>
                       </div>

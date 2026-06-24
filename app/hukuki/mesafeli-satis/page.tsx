@@ -14,7 +14,7 @@ export default function MesafeliSatisPage() {
       sections={[
         {
           title: "1. Taraflar",
-          body: "Satıcı: ZestHome — Küçükçekmece, İstanbul / Türkiye — info@zest-home.net — +90 532 280 92 06.\nAlıcı: Sipariş sırasında bilgileri kayıt edilen tüketici.",
+          body: "Satıcı: ZestHome — Halkalı Merkez Mahallesi, Halkalı Caddesi, MNG BlueBoutique Residence, Küçükçekmece, İstanbul / Türkiye — info@zest-home.net — +90 532 280 92 06.\nAlıcı: Sipariş sırasında bilgileri kayıt edilen tüketici.",
         },
         {
           title: "2. Sözleşme Konusu",

@@ -14,7 +14,7 @@ export default function KullanimKosullariPage() {
       sections={[
         {
           title: "1. Taraflar",
-          body: "Bu sözleşme, ZestHome (Küçükçekmece, İstanbul / Türkiye — bundan sonra 'ZestHome' veya 'Satıcı' olarak anılacaktır) ile siteyi kullanan kullanıcı/alıcı (bundan sonra 'Kullanıcı' veya 'Alıcı') arasındadır.",
+          body: "Bu sözleşme, ZestHome (Halkalı Merkez Mahallesi, Halkalı Caddesi, MNG BlueBoutique Residence, Küçükçekmece, İstanbul / Türkiye — bundan sonra 'ZestHome' veya 'Satıcı' olarak anılacaktır) ile siteyi kullanan kullanıcı/alıcı (bundan sonra 'Kullanıcı' veya 'Alıcı') arasındadır.",
         },
         {
           title: "2. Tanımlar",

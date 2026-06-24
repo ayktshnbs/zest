@@ -3,13 +3,23 @@
 import { Mail, Phone, MapPin, Send, Instagram, Sparkles, MessageCircle, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { contactApi, ApiError } from "@/lib/api";
+
+// FormSubmit.co — free form-to-email relay, no API key, no signup. The first
+// submission triggers a one-time activation email to the recipient; click the
+// link in it once and every future submission lands in the inbox.
+// We use the AJAX endpoint so the page doesn't navigate away on submit — the
+// in-page success/error UI keeps working.
+const FORMSUBMIT_INBOX = "info@zest-home.net";
+const FORMSUBMIT_URL = `https://formsubmit.co/ajax/${FORMSUBMIT_INBOX}`;
 
 export default function ContactPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  // Honeypot — real users don't see this field, so it should stay empty.
+  // Bots that fill every input out themselves out by setting it.
+  const [website, setWebsite] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -22,22 +32,41 @@ export default function ContactPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!valid || sending) return;
+    if (website.trim().length > 0) return; // honeypot tripped
     setErr(null);
     setSending(true);
     try {
-      await contactApi.send({
-        name: name.trim(),
-        email: email.trim(),
-        subject: subject.trim(),
-        message: message.trim(),
+      const res = await fetch(FORMSUBMIT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          // FormSubmit reads these to shape the outbound message:
+          _subject: subject.trim()
+            ? `ZestHome İletişim · ${subject.trim()}`
+            : "ZestHome İletişim · Yeni mesaj",
+          _replyto: email.trim(),
+          _template: "table",
+          _captcha: "false",
+          message: message.trim(),
+        }),
       });
+      if (!res.ok) throw new Error(`Beklenmedik durum (${res.status})`);
+      const data = (await res.json().catch(() => ({}))) as { success?: string };
+      if (data.success !== "true" && data.success !== true) {
+        throw new Error("Mesaj gönderilemedi.");
+      }
       setSent(true);
       setName("");
       setEmail("");
       setSubject("");
       setMessage("");
     } catch (e) {
-      setErr(e instanceof ApiError ? e.message : "Mesaj gönderilemedi. Lütfen tekrar deneyin.");
+      setErr(e instanceof Error ? e.message : "Mesaj gönderilemedi. Lütfen tekrar deneyin.");
     } finally {
       setSending(false);
     }
@@ -92,7 +121,7 @@ export default function ContactPage() {
                 {[
                   { icon: <Mail size={24} />, label: "E-posta", value: "info@zest-home.net", color: "bg-primary/10 text-primary" },
                   { icon: <Phone size={24} />, label: "Telefon", value: "+90 532 280 92 06", color: "bg-secondary/10 text-secondary-foreground" },
-                  { icon: <MapPin size={24} />, label: "Adres", value: "Küçükçekmece, İstanbul, Türkiye", color: "bg-foreground/5 text-foreground/60" }
+                  { icon: <MapPin size={24} />, label: "Adres", value: "Halkalı Merkez Mahallesi, Halkalı Caddesi, MNG BlueBoutique Residence, Küçükçekmece, İstanbul, Türkiye", color: "bg-foreground/5 text-foreground/60" }
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-6 group cursor-pointer">
                     <div className={`p-4 ${item.color} rounded-2xl transition-transform group-hover:scale-110 duration-500`}>
@@ -153,6 +182,19 @@ export default function ContactPage() {
           >
             <div className="bg-white dark:bg-neutral-900 p-10 md:p-16 rounded-[4rem] border border-border shadow-premium">
               <form onSubmit={submit} className="space-y-10">
+                {/* Honeypot — invisible to real users, irresistible to dumb bots. */}
+                <div aria-hidden className="absolute -left-[5000px] top-0">
+                  <label>
+                    Web sitesi
+                    <input
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                    />
+                  </label>
+                </div>
                 <div className="grid md:grid-cols-2 gap-10">
                   <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 ml-4">Adınız</label>
