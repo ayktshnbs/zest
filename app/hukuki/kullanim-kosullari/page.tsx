@@ -10,7 +10,7 @@ export default function KullanimKosullariPage() {
     <LegalPage
       title="Kullanım Koşulları"
       updatedAt="2026-06-19"
-      intro="Bu Kullanım Koşulları, ZestHome web sitesini (www.zest-home.net) kullanan ziyaretçiler ve müşteriler için geçerlidir. Siteyi kullanarak aşağıdaki şartları kabul etmiş sayılırsınız."
+      intro="Bu Kullanım Koşulları, ZestHome web sitesini (www.zesthome.net) kullanan ziyaretçiler ve müşteriler için geçerlidir. Siteyi kullanarak aşağıdaki şartları kabul etmiş sayılırsınız."
       sections={[
         {
           title: "1. Taraflar",
@@ -18,7 +18,7 @@ export default function KullanimKosullariPage() {
         },
         {
           title: "2. Tanımlar",
-          body: "Site: www.zest-home.net adresinde yayınlanan web sitesidir.\nİçerik: Sitede yer alan tüm metin, görsel, video, marka ve veriler.\nÜrün: ZestHome tarafından site üzerinden satışa sunulan her türlü mutfak ve ev gereci.",
+          body: "Site: www.zesthome.net adresinde yayınlanan web sitesidir.\nİçerik: Sitede yer alan tüm metin, görsel, video, marka ve veriler.\nÜrün: ZestHome tarafından site üzerinden satışa sunulan her türlü mutfak ve ev gereci.",
         },
         {
           title: "3. Hesap Açma ve Güvenlik",
