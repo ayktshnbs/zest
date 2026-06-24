@@ -157,11 +157,11 @@ export default function Home() {
           {/* Scrim: light at top so the video reads through, noticeably darker
               toward the bottom so SAHNEDEKİ ÜRÜNLER + pills + buttons stay
               legible on bright frames. */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/15 to-black/50" />
           {/* Dedicated top scrim behind the floating navbar so menu text stays
               legible on bright video frames, without changing the navbar's
               transparent look. Only affects the top ~140px of the hero. */}
-          <div className="absolute inset-x-0 top-0 h-32 md:h-36 bg-gradient-to-b from-black/45 via-black/20 to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-32 md:h-36 bg-gradient-to-b from-black/35 via-black/15 to-transparent pointer-events-none" />
         </div>
 
         <motion.div
