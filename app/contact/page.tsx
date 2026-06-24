@@ -94,11 +94,11 @@ export default function ContactPage() {
             Sizi Dinlemeye <br/>
             <span className="text-primary italic">Hazırız.</span>
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="font-body text-xl text-foreground/50 max-w-2xl mx-auto font-medium"
+            className="font-body text-xl text-neutral-600 max-w-2xl mx-auto font-medium"
           >
             Her türlü soru, öneri ve iş birliği teklifleriniz için buradayız. Ekibimiz en kısa sürede size geri dönüş yapacaktır.
           </motion.p>
@@ -112,10 +112,10 @@ export default function ContactPage() {
             transition={{ delay: 0.3 }}
             className="lg:col-span-4 space-y-8"
           >
-            <div className="bg-white dark:bg-neutral-900 p-10 rounded-[3rem] border border-border shadow-premium relative overflow-hidden">
+            <div className="bg-white p-10 rounded-[3rem] border border-border shadow-premium relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16" />
-              
-              <h3 className="font-display text-2xl font-black mb-10 tracking-tighter">İletişim Kanalları</h3>
+
+              <h3 className="font-display text-2xl font-black mb-10 tracking-tighter text-foreground">İletişim Kanalları</h3>
               
               <div className="space-y-10">
                 {[
@@ -128,22 +128,22 @@ export default function ContactPage() {
                       {item.icon}
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30 mb-1">{item.label}</p>
-                      <p className="font-bold text-foreground leading-relaxed">{item.value}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-1">{item.label}</p>
+                      <p className="font-semibold text-foreground leading-relaxed">{item.value}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
               <div className="mt-16 pt-10 border-t border-border">
-                <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30 mb-6">Sosyal Medya</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-6">Sosyal Medya</p>
                 <div className="flex gap-4">
                   <a
                     href="https://www.instagram.com/zesthomekitchen/"
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Instagram"
-                    className="p-4 bg-accent rounded-2xl hover:bg-primary hover:text-white transition-all duration-500 shadow-sm"
+                    className="p-4 bg-secondary text-foreground rounded-2xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-sm"
                   >
                     <Instagram size={20} />
                   </a>
@@ -152,7 +152,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="WhatsApp"
-                    className="p-4 bg-accent rounded-2xl hover:bg-primary hover:text-white transition-all duration-500 shadow-sm"
+                    className="p-4 bg-secondary text-foreground rounded-2xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-sm"
                   >
                     {/* WhatsApp glyph (lucide doesn't ship one) */}
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -164,11 +164,18 @@ export default function ContactPage() {
             </div>
 
             <div className="bg-neutral-950 text-white p-10 rounded-[3rem] shadow-premium flex flex-col justify-between aspect-square">
-              <MessageCircle size={48} className="text-secondary" />
+              <MessageCircle size={48} className="text-white" />
               <div>
-                <h4 className="font-display text-2xl font-black tracking-tighter mb-4">Canlı Destek</h4>
-                <p className="text-neutral-400 font-medium mb-8">Hafta içi 09:00 - 18:00 saatleri arasında yanınızdayız.</p>
-                <button className="btn-secondary w-full py-4 text-xs tracking-widest uppercase">Yardım Al</button>
+                <h4 className="font-display text-2xl font-black tracking-tighter mb-4 text-white">Canlı Destek</h4>
+                <p className="text-white/70 font-medium mb-8">Hafta içi 09:00 - 18:00 saatleri arasında yanınızdayız.</p>
+                <a
+                  href="https://wa.me/905322809206"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-center w-full py-4 text-xs tracking-widest uppercase font-audiowide border border-white/30 text-white hover:bg-white hover:text-neutral-950 transition-colors"
+                >
+                  Yardım Al
+                </a>
               </div>
             </div>
           </motion.div>
@@ -180,7 +187,7 @@ export default function ContactPage() {
             transition={{ delay: 0.4 }}
             className="lg:col-span-8"
           >
-            <div className="bg-white dark:bg-neutral-900 p-10 md:p-16 rounded-[4rem] border border-border shadow-premium">
+            <div className="bg-white p-10 md:p-16 rounded-[4rem] border border-border shadow-premium">
               <form onSubmit={submit} className="space-y-10">
                 {/* Honeypot — invisible to real users, irresistible to dumb bots. */}
                 <div aria-hidden className="absolute -left-[5000px] top-0">
@@ -197,7 +204,7 @@ export default function ContactPage() {
                 </div>
                 <div className="grid md:grid-cols-2 gap-10">
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 ml-4">Adınız</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-4">Adınız</label>
                     <input
                       type="text"
                       placeholder="Ahmet Yılmaz"
@@ -205,11 +212,11 @@ export default function ContactPage() {
                       onChange={(e) => setName(e.target.value)}
                       maxLength={120}
                       required
-                      className="w-full px-8 py-5 rounded-[2rem] bg-accent/50 border border-transparent focus:border-primary/20 outline-none font-medium transition-all"
+                      className="w-full px-8 py-5 rounded-[2rem] bg-neutral-50 text-neutral-900 placeholder:text-neutral-400 border border-neutral-200 focus:border-neutral-900 focus:bg-white outline-none font-medium transition-all"
                     />
                   </div>
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 ml-4">E-posta</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-4">E-posta</label>
                     <input
                       type="email"
                       placeholder="ahmet@email.com"
@@ -217,25 +224,25 @@ export default function ContactPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       maxLength={254}
                       required
-                      className="w-full px-8 py-5 rounded-[2rem] bg-accent/50 border border-transparent focus:border-primary/20 outline-none font-medium transition-all"
+                      className="w-full px-8 py-5 rounded-[2rem] bg-neutral-50 text-neutral-900 placeholder:text-neutral-400 border border-neutral-200 focus:border-neutral-900 focus:bg-white outline-none font-medium transition-all"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 ml-4">Konu</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-4">Konu</label>
                   <input
                     type="text"
                     placeholder="Nasıl yardımcı olabiliriz?"
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     maxLength={200}
-                    className="w-full px-8 py-5 rounded-[2rem] bg-accent/50 border border-transparent focus:border-primary/20 outline-none font-medium transition-all"
+                    className="w-full px-8 py-5 rounded-[2rem] bg-neutral-50 text-neutral-900 placeholder:text-neutral-400 border border-neutral-200 focus:border-neutral-900 focus:bg-white outline-none font-medium transition-all"
                   />
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 ml-4">Mesajınız</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-4">Mesajınız</label>
                   <textarea
                     rows={6}
                     placeholder="Mesajınızı buraya yazın..."
@@ -243,7 +250,7 @@ export default function ContactPage() {
                     onChange={(e) => setMessage(e.target.value)}
                     maxLength={5000}
                     required
-                    className="w-full px-8 py-6 rounded-[2.5rem] bg-accent/50 border border-transparent focus:border-primary/20 outline-none font-medium transition-all resize-none"
+                    className="w-full px-8 py-6 rounded-[2.5rem] bg-neutral-50 text-neutral-900 placeholder:text-neutral-400 border border-neutral-200 focus:border-neutral-900 focus:bg-white outline-none font-medium transition-all resize-none"
                   />
                 </div>
 
