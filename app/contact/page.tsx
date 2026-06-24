@@ -1,6 +1,15 @@
 "use client";
 
-import { Mail, Phone, MapPin, Send, Instagram, Sparkles, MessageCircle, Check } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Send,
+  Instagram,
+  Sparkles,
+  MessageCircle,
+  Check,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
@@ -66,7 +75,11 @@ export default function ContactPage() {
       setSubject("");
       setMessage("");
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Mesaj gönderilemedi. Lütfen tekrar deneyin.");
+      setErr(
+        e instanceof Error
+          ? e.message
+          : "Mesaj gönderilemedi. Lütfen tekrar deneyin.",
+      );
     } finally {
       setSending(false);
     }
@@ -77,21 +90,23 @@ export default function ContactPage() {
       <div className="max-w-7xl mx-auto px-5 md:px-16">
         {/* Header */}
         <div className="mb-20 text-center">
-          <motion.div 
+          <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             className="flex items-center gap-2 mb-6 inline-flex bg-primary/5 px-4 py-2 rounded-full mx-auto"
           >
             <Sparkles size={16} className="text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Bize Ulaşın</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+              Bize Ulaşın
+            </span>
           </motion.div>
-          <motion.h1 
+          <motion.h1
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.1 }}
             className="font-display text-6xl md:text-8xl font-black text-foreground mb-8 tracking-tighter leading-tight"
           >
-            Sizi Dinlemeye <br/>
+            Sizi Dinlemeye <br />
             <span className="text-primary italic">Hazırız.</span>
           </motion.h1>
           <motion.p
@@ -100,50 +115,105 @@ export default function ContactPage() {
             transition={{ delay: 0.2 }}
             className="font-body text-xl text-neutral-600 max-w-2xl mx-auto font-medium"
           >
-            Her türlü soru, öneri ve iş birliği teklifleriniz için buradayız. Ekibimiz en kısa sürede size geri dönüş yapacaktır.
+            Her türlü soru, öneri ve iş birliği teklifleriniz için buradayız.
+            Ekibimiz en kısa sürede size geri dönüş yapacaktır.
           </motion.p>
         </div>
 
         <div className="grid lg:grid-cols-12 gap-16">
           {/* Contact Info */}
-          <motion.div 
+          <motion.div
             initial={{ x: -30, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
             className="lg:col-span-4 space-y-8"
           >
-            <div className="bg-white p-10 rounded-[3rem] border border-border shadow-premium relative overflow-hidden">
+            <div className="bg-neutral-950 p-10 md:p-16 rounded-[4rem] border border-white/10 shadow-premium">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16" />
 
-              <h3 className="font-display text-2xl font-black mb-10 tracking-tighter text-foreground">İletişim Kanalları</h3>
-              
+              <h3 className="font-display text-2xl font-black mb-10 tracking-tighter text-white">
+                İletişim Kanalları
+              </h3>
+
               <div className="space-y-10">
                 {[
-                  { icon: <Mail size={24} />, label: "E-posta", value: "info@zest-home.net", color: "bg-primary/10 text-primary" },
-                  { icon: <Phone size={24} />, label: "Telefon", value: "+90 532 280 92 06", color: "bg-secondary/10 text-secondary-foreground" },
-                  { icon: <MapPin size={24} />, label: "Adres", value: "Halkalı Merkez Mahallesi, Halkalı Caddesi, MNG BlueBoutique Residence, Küçükçekmece, İstanbul, Türkiye", color: "bg-foreground/5 text-foreground/60" }
+                  {
+                    icon: <Mail size={24} />,
+                    label: "E-posta",
+                    value: "info@zest-home.net",
+                    color: "bg-white/10 text-gray-100",
+                  },
+                  {
+                    icon: <Phone size={24} />,
+                    label: "Telefon",
+                    value: "0532 280 92 06",
+                    color: "bg-white/10 text-gray-100",
+                  },
+                  {
+                    icon: <MapPin size={22} />,
+                    label: "Adres",
+                    value:
+                      "",
+                    color: "bg-white/10 text-gray-100",
+                  },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-6 group cursor-pointer">
-                    <div className={`p-4 ${item.color} rounded-2xl transition-transform group-hover:scale-110 duration-500`}>
+                  <div
+                    key={i}
+                    className="flex items-start gap-6 group cursor-pointer"
+                  >
+                    <div
+                      className={`p-4 ${item.color} rounded-2xl transition-transform group-hover:scale-110 duration-500`}
+                    >
                       {item.icon}
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-1">{item.label}</p>
-                      <p className="font-semibold text-foreground leading-relaxed">{item.value}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">
+                        {item.label}
+                      </p>
+
+                      {item.label === "Adres" ? (
+                        <div className="space-y-1">
+                          <p className="font-semibold text-white">
+                            MNG Blue Boutique Residence
+                          </p>
+
+                          <p className="text-white/70 text-sm">
+                            Halkalı Merkez Mahallesi
+                          </p>
+
+                          <p className="text-white/70 text-sm">
+                            Halkalı Caddesi
+                          </p>
+
+                          <p className="text-white/70 text-sm">
+                            Küçükçekmece, İstanbul
+                          </p>
+
+                          <p className="text-primary text-sm font-medium">
+                            Türkiye
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="font-medium text-white/90 leading-relaxed">
+                          {item.value}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
 
               <div className="mt-16 pt-10 border-t border-border">
-                <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-6">Sosyal Medya</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/70 mb-6">
+                  Sosyal Medya
+                </p>
                 <div className="flex gap-4">
                   <a
                     href="https://www.instagram.com/zesthomekitchen/"
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Instagram"
-                    className="p-4 bg-secondary text-foreground rounded-2xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-sm"
+                    className="p-4 bg-white/70 text-foreground rounded-2xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-sm"
                   >
                     <Instagram size={20} />
                   </a>
@@ -152,10 +222,16 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="WhatsApp"
-                    className="p-4 bg-secondary text-foreground rounded-2xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-sm"
+                    className="p-4 bg-white/70 text-foreground rounded-2xl hover:bg-primary hover:text-primary-foreground transition-all duration-500 shadow-sm"
                   >
                     {/* WhatsApp glyph (lucide doesn't ship one) */}
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden
+                    >
                       <path d="M19.05 4.91A9.82 9.82 0 0 0 12 2a9.94 9.94 0 0 0-8.6 14.91L2 22l5.25-1.37A9.94 9.94 0 0 0 12 22a9.93 9.93 0 0 0 9.95-9.95 9.86 9.86 0 0 0-2.9-7.14zM12 20.16a8.2 8.2 0 0 1-4.21-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.27 8.27 0 1 1 14.99-4.65A8.27 8.27 0 0 1 12 20.16zm4.53-6.16c-.25-.12-1.47-.72-1.7-.81s-.39-.12-.55.12-.64.81-.78.97-.29.18-.54.06a6.74 6.74 0 0 1-2-1.23 7.51 7.51 0 0 1-1.38-1.72c-.14-.25 0-.38.11-.5s.25-.29.37-.43.16-.25.25-.42.04-.32-.02-.44-.55-1.32-.75-1.81-.4-.41-.55-.42h-.47a.9.9 0 0 0-.66.31 2.78 2.78 0 0 0-.87 2.06 4.84 4.84 0 0 0 1 2.56 11.05 11.05 0 0 0 4.24 3.74c.6.25 1.07.4 1.43.51a3.47 3.47 0 0 0 1.58.1 2.57 2.57 0 0 0 1.7-1.2 2.13 2.13 0 0 0 .15-1.2c-.06-.1-.23-.16-.48-.28z" />
                     </svg>
                   </a>
@@ -166,8 +242,12 @@ export default function ContactPage() {
             <div className="bg-neutral-950 text-white p-10 rounded-[3rem] shadow-premium flex flex-col justify-between aspect-square">
               <MessageCircle size={48} className="text-white" />
               <div>
-                <h4 className="font-display text-2xl font-black tracking-tighter mb-4 text-white">Canlı Destek</h4>
-                <p className="text-white/70 font-medium mb-8">Hafta içi 09:00 - 18:00 saatleri arasında yanınızdayız.</p>
+                <h4 className="font-display text-2xl font-black tracking-tighter mb-4 text-white">
+                  Canlı Destek
+                </h4>
+                <p className="text-white/70 font-medium mb-8">
+                  Hafta içi 09:00 - 18:00 saatleri arasında yanınızdayız.
+                </p>
                 <a
                   href="https://wa.me/905322809206"
                   target="_blank"
@@ -181,13 +261,13 @@ export default function ContactPage() {
           </motion.div>
 
           {/* Form */}
-          <motion.div 
+          <motion.div
             initial={{ x: 30, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.4 }}
             className="lg:col-span-8"
           >
-            <div className="bg-white p-10 md:p-16 rounded-[4rem] border border-border shadow-premium">
+            <div className="bg-neutral-950 p-10 md:p-16 rounded-[4rem] border border-white/10 shadow-premium relative overflow-hidden">
               <form onSubmit={submit} className="space-y-10">
                 {/* Honeypot — invisible to real users, irresistible to dumb bots. */}
                 <div aria-hidden className="absolute -left-[5000px] top-0">
@@ -204,7 +284,9 @@ export default function ContactPage() {
                 </div>
                 <div className="grid md:grid-cols-2 gap-10">
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-4">Adınız</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 ml-4">
+                      Adınız
+                    </label>
                     <input
                       type="text"
                       placeholder="Ahmet Yılmaz"
@@ -212,11 +294,13 @@ export default function ContactPage() {
                       onChange={(e) => setName(e.target.value)}
                       maxLength={120}
                       required
-                      className="w-full px-8 py-5 rounded-[2rem] bg-neutral-50 text-neutral-900 placeholder:text-neutral-400 border border-neutral-200 focus:border-neutral-900 focus:bg-white outline-none font-medium transition-all"
+                      className="w-full px-8 py-5 rounded-[2rem] bg-white/5 text-white placeholder:text-white/40 border border-white/10 focus:border-white/30 focus:bg-white/10 outline-none font-medium transition-all"
                     />
                   </div>
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-4">E-posta</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 ml-4">
+                      E-posta
+                    </label>
                     <input
                       type="email"
                       placeholder="ahmet@email.com"
@@ -224,25 +308,29 @@ export default function ContactPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       maxLength={254}
                       required
-                      className="w-full px-8 py-5 rounded-[2rem] bg-neutral-50 text-neutral-900 placeholder:text-neutral-400 border border-neutral-200 focus:border-neutral-900 focus:bg-white outline-none font-medium transition-all"
+                      className="w-full px-8 py-5 rounded-[2rem] bg-white/5 text-white placeholder:text-white/40 border border-white/10 focus:border-white/30 focus:bg-white/10 outline-none font-medium transition-all"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-4">Konu</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 ml-4">
+                    Konu
+                  </label>
                   <input
                     type="text"
                     placeholder="Nasıl yardımcı olabiliriz?"
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     maxLength={200}
-                    className="w-full px-8 py-5 rounded-[2rem] bg-neutral-50 text-neutral-900 placeholder:text-neutral-400 border border-neutral-200 focus:border-neutral-900 focus:bg-white outline-none font-medium transition-all"
+                    className="w-full px-8 py-5 rounded-[2rem] bg-white/5 text-white placeholder:text-white/40 border border-white/10 focus:border-white/30 focus:bg-white/10 outline-none font-medium transition-all"
                   />
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-4">Mesajınız</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 ml-4">
+                    Mesajınız
+                  </label>
                   <textarea
                     rows={6}
                     placeholder="Mesajınızı buraya yazın..."
@@ -250,7 +338,7 @@ export default function ContactPage() {
                     onChange={(e) => setMessage(e.target.value)}
                     maxLength={5000}
                     required
-                    className="w-full px-8 py-6 rounded-[2.5rem] bg-neutral-50 text-neutral-900 placeholder:text-neutral-400 border border-neutral-200 focus:border-neutral-900 focus:bg-white outline-none font-medium transition-all resize-none"
+                    className="w-full px-8 py-6 rounded-[2.5rem] bg-white/5 text-white placeholder:text-white/40 border border-white/10 focus:border-white/30 focus:bg-white/10 outline-none font-medium transition-all resize-none"
                   />
                 </div>
 
@@ -259,7 +347,8 @@ export default function ContactPage() {
                 ) : null}
                 {sent ? (
                   <p className="inline-flex items-center gap-2 text-green-700 font-medium">
-                    <Check size={18} /> Mesajınız gönderildi. En kısa sürede dönüş yapacağız.
+                    <Check size={18} /> Mesajınız gönderildi. En kısa sürede
+                    dönüş yapacağız.
                   </p>
                 ) : null}
 
@@ -269,7 +358,10 @@ export default function ContactPage() {
                   className="w-full md:w-auto btn-primary py-6 px-16 text-lg tracking-[0.2em] group uppercase disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {sending ? "Gönderiliyor…" : "Mesaj Gönder"}
-                  <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  <Send
+                    size={20}
+                    className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"
+                  />
                 </button>
               </form>
             </div>
