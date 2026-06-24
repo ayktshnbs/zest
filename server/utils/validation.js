@@ -306,3 +306,12 @@ export const updateCustomProductSchema = z
 export const signUploadSchema = z.object({
   type: z.enum(["products", "categories"]),
 });
+
+// Contact form payload from /contact. Kept tight so the inbox doesn't get
+// hammered with mile-long messages.
+export const contactSchema = z.object({
+  name: z.string().trim().min(2).max(120),
+  email: emailSchema,
+  subject: z.string().trim().max(200).optional().default(""),
+  message: z.string().trim().min(10).max(5000),
+});

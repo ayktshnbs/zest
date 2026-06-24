@@ -24,6 +24,7 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import catalogRoutes from "./routes/catalogRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 
 export const createApp = () => {
   const app = express();
@@ -90,6 +91,7 @@ export const createApp = () => {
   app.use("/api/payments", paymentRoutes);
   app.use("/api/favorites", favoriteRoutes);
   app.use("/api/admin", adminRoutes);
+  app.use("/api/contact", contactRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

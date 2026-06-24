@@ -115,6 +115,47 @@ Bu hesabı siz oluşturmadıysanız bu e-postayı yok sayabilirsiniz.
   return sendEmail({ to, subject, html, text });
 };
 
+// Contact form → forwards what a visitor wrote on /contact to the support
+// inbox. The visitor's email goes in the `replyTo` so hitting Reply in the
+// inbox replies directly to them.
+export const sendContactEmail = async ({ name, email, subject, message }) => {
+  const inbox = config.contact?.inbox || "info@zest-home.net";
+  const fullSubject = `Zest Home · İletişim · ${subject || "Yeni mesaj"}`;
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeSubject = escapeHtml(subject || "—");
+  const safeMessage = escapeHtml(message).replace(/\n/g, "<br>");
+  const text = `Yeni iletişim formu mesajı
+
+Ad: ${name}
+E-posta: ${email}
+Konu: ${subject || "—"}
+
+${message}
+`;
+  const html = `
+    <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:32px;color:#111">
+      <p style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#888;margin:0 0 16px">Zest Home · İletişim Formu</p>
+      <h1 style="font-size:22px;margin:0 0 20px">${safeSubject}</h1>
+      <table style="font-size:14px;border-collapse:collapse;width:100%;margin:0 0 24px">
+        <tr><td style="padding:6px 12px 6px 0;color:#666;width:120px">Ad</td><td>${safeName}</td></tr>
+        <tr><td style="padding:6px 12px 6px 0;color:#666">E-posta</td><td><a href="mailto:${safeEmail}">${safeEmail}</a></td></tr>
+      </table>
+      <div style="border-top:1px solid #eee;padding-top:20px;font-size:15px;line-height:1.6">${safeMessage}</div>
+    </div>
+  `;
+  // Use the visitor's address as replyTo so the support team can hit Reply
+  // and answer them directly, regardless of what config.resend.replyTo is.
+  return resend.emails.send({
+    from: config.resend.from,
+    to: inbox,
+    replyTo: email,
+    subject: fullSubject,
+    html,
+    text,
+  });
+};
+
 // Minimal HTML escape for values interpolated into the email templates.
 function escapeHtml(s) {
   return String(s)

@@ -585,3 +585,10 @@ export const uploadImage = async (
   const data = await res.json();
   return { secureUrl: data.secure_url, publicId: data.public_id };
 };
+
+// Public contact form. Backend forwards the message to CONTACT_INBOX (default
+// info@zest-home.net) and stamps the visitor's address as Reply-To.
+export const contactApi = {
+  send: (body: { name: string; email: string; subject?: string; message: string }) =>
+    api<{ ok: true }>("/api/contact", { method: "POST", body }),
+};

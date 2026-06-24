@@ -1,9 +1,48 @@
 "use client";
 
-import { Mail, Phone, MapPin, Send, Instagram, Twitter, Facebook, Sparkles, MessageCircle } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Instagram, Sparkles, MessageCircle, Check } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { contactApi, ApiError } from "@/lib/api";
 
 export default function ContactPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const valid =
+    name.trim().length >= 2 &&
+    /^\S+@\S+\.\S+$/.test(email.trim()) &&
+    message.trim().length >= 10;
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!valid || sending) return;
+    setErr(null);
+    setSending(true);
+    try {
+      await contactApi.send({
+        name: name.trim(),
+        email: email.trim(),
+        subject: subject.trim(),
+        message: message.trim(),
+      });
+      setSent(true);
+      setName("");
+      setEmail("");
+      setSubject("");
+      setMessage("");
+    } catch (e) {
+      setErr(e instanceof ApiError ? e.message : "Mesaj gönderilemedi. Lütfen tekrar deneyin.");
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
     <main className="min-h-screen pt-32 pb-24 bg-background">
       <div className="max-w-7xl mx-auto px-5 md:px-16">
@@ -51,9 +90,9 @@ export default function ContactPage() {
               
               <div className="space-y-10">
                 {[
-                  { icon: <Mail size={24} />, label: "E-posta", value: "hello@zeststudio.com", color: "bg-primary/10 text-primary" },
-                  { icon: <Phone size={24} />, label: "Telefon", value: "+90 (212) 555 00 00", color: "bg-secondary/10 text-secondary-foreground" },
-                  { icon: <MapPin size={24} />, label: "Adres", value: "Mutfak Sokak, No: 34, Beşiktaş, İstanbul", color: "bg-foreground/5 text-foreground/60" }
+                  { icon: <Mail size={24} />, label: "E-posta", value: "info@zest-home.net", color: "bg-primary/10 text-primary" },
+                  { icon: <Phone size={24} />, label: "Telefon", value: "+90 532 280 92 06", color: "bg-secondary/10 text-secondary-foreground" },
+                  { icon: <MapPin size={24} />, label: "Adres", value: "Küçükçekmece, İstanbul, Türkiye", color: "bg-foreground/5 text-foreground/60" }
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-6 group cursor-pointer">
                     <div className={`p-4 ${item.color} rounded-2xl transition-transform group-hover:scale-110 duration-500`}>
@@ -70,11 +109,27 @@ export default function ContactPage() {
               <div className="mt-16 pt-10 border-t border-border">
                 <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30 mb-6">Sosyal Medya</p>
                 <div className="flex gap-4">
-                  {[Instagram, Twitter, Facebook].map((Icon, i) => (
-                    <a key={i} href="#" className="p-4 bg-accent rounded-2xl hover:bg-primary hover:text-white transition-all duration-500 shadow-sm">
-                      <Icon size={20} />
-                    </a>
-                  ))}
+                  <a
+                    href="https://www.instagram.com/zesthomekitchen/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                    className="p-4 bg-accent rounded-2xl hover:bg-primary hover:text-white transition-all duration-500 shadow-sm"
+                  >
+                    <Instagram size={20} />
+                  </a>
+                  <a
+                    href="https://wa.me/905322809206"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="WhatsApp"
+                    className="p-4 bg-accent rounded-2xl hover:bg-primary hover:text-white transition-all duration-500 shadow-sm"
+                  >
+                    {/* WhatsApp glyph (lucide doesn't ship one) */}
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                      <path d="M19.05 4.91A9.82 9.82 0 0 0 12 2a9.94 9.94 0 0 0-8.6 14.91L2 22l5.25-1.37A9.94 9.94 0 0 0 12 22a9.93 9.93 0 0 0 9.95-9.95 9.86 9.86 0 0 0-2.9-7.14zM12 20.16a8.2 8.2 0 0 1-4.21-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.27 8.27 0 1 1 14.99-4.65A8.27 8.27 0 0 1 12 20.16zm4.53-6.16c-.25-.12-1.47-.72-1.7-.81s-.39-.12-.55.12-.64.81-.78.97-.29.18-.54.06a6.74 6.74 0 0 1-2-1.23 7.51 7.51 0 0 1-1.38-1.72c-.14-.25 0-.38.11-.5s.25-.29.37-.43.16-.25.25-.42.04-.32-.02-.44-.55-1.32-.75-1.81-.4-.41-.55-.42h-.47a.9.9 0 0 0-.66.31 2.78 2.78 0 0 0-.87 2.06 4.84 4.84 0 0 0 1 2.56 11.05 11.05 0 0 0 4.24 3.74c.6.25 1.07.4 1.43.51a3.47 3.47 0 0 0 1.58.1 2.57 2.57 0 0 0 1.7-1.2 2.13 2.13 0 0 0 .15-1.2c-.06-.1-.23-.16-.48-.28z" />
+                    </svg>
+                  </a>
                 </div>
               </div>
             </div>
@@ -97,21 +152,29 @@ export default function ContactPage() {
             className="lg:col-span-8"
           >
             <div className="bg-white dark:bg-neutral-900 p-10 md:p-16 rounded-[4rem] border border-border shadow-premium">
-              <form className="space-y-10">
+              <form onSubmit={submit} className="space-y-10">
                 <div className="grid md:grid-cols-2 gap-10">
                   <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 ml-4">Adınız</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder="Ahmet Yılmaz"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      maxLength={120}
+                      required
                       className="w-full px-8 py-5 rounded-[2rem] bg-accent/50 border border-transparent focus:border-primary/20 outline-none font-medium transition-all"
                     />
                   </div>
                   <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 ml-4">E-posta</label>
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       placeholder="ahmet@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      maxLength={254}
+                      required
                       className="w-full px-8 py-5 rounded-[2rem] bg-accent/50 border border-transparent focus:border-primary/20 outline-none font-medium transition-all"
                     />
                   </div>
@@ -119,24 +182,44 @@ export default function ContactPage() {
 
                 <div className="space-y-3">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 ml-4">Konu</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="Nasıl yardımcı olabiliriz?"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    maxLength={200}
                     className="w-full px-8 py-5 rounded-[2rem] bg-accent/50 border border-transparent focus:border-primary/20 outline-none font-medium transition-all"
                   />
                 </div>
 
                 <div className="space-y-3">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 ml-4">Mesajınız</label>
-                  <textarea 
+                  <textarea
                     rows={6}
                     placeholder="Mesajınızı buraya yazın..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    maxLength={5000}
+                    required
                     className="w-full px-8 py-6 rounded-[2.5rem] bg-accent/50 border border-transparent focus:border-primary/20 outline-none font-medium transition-all resize-none"
-                  ></textarea>
+                  />
                 </div>
 
-                <button className="w-full md:w-auto btn-primary py-6 px-16 text-lg tracking-[0.2em] group uppercase">
-                  Mesaj Gönder
+                {err ? (
+                  <p className="text-red-600 font-medium text-sm">{err}</p>
+                ) : null}
+                {sent ? (
+                  <p className="inline-flex items-center gap-2 text-green-700 font-medium">
+                    <Check size={18} /> Mesajınız gönderildi. En kısa sürede dönüş yapacağız.
+                  </p>
+                ) : null}
+
+                <button
+                  type="submit"
+                  disabled={!valid || sending}
+                  className="w-full md:w-auto btn-primary py-6 px-16 text-lg tracking-[0.2em] group uppercase disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {sending ? "Gönderiliyor…" : "Mesaj Gönder"}
                   <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </button>
               </form>

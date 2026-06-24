@@ -44,6 +44,9 @@ const envSchema = z.object({
   RESEND_API_KEY: z.string().min(1),
   EMAIL_FROM: z.string().min(3),
   EMAIL_REPLY_TO: z.string().optional(),
+  // Inbox for contact-form submissions. Defaults to info@zest-home.net if unset
+  // so a fresh deploy "just works"; override in prod env if you change addresses.
+  CONTACT_INBOX: z.string().email().default("info@zest-home.net"),
 
   GOOGLE_OAUTH_CLIENT_ID: z.string().min(1),
 
@@ -130,6 +133,10 @@ export const config = {
     apiKey: env.RESEND_API_KEY,
     from: env.EMAIL_FROM,
     replyTo: env.EMAIL_REPLY_TO,
+  },
+
+  contact: {
+    inbox: env.CONTACT_INBOX,
   },
 
   google: {
