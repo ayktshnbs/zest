@@ -55,9 +55,9 @@ export default function ContactPage() {
           message: message.trim(),
         }),
       });
-      if (!res.ok) throw new Error(`Beklenmedik durum (${res.status})`);
-      const data = (await res.json().catch(() => ({}))) as { success?: string };
-      if (data.success !== "true" && data.success !== true) {
+      const data = await res.json().catch(() => ({}));
+
+      if (!data?.success) {
         throw new Error("Mesaj gönderilemedi.");
       }
       setSent(true);
