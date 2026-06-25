@@ -319,6 +319,61 @@ export default function Home() {
         </div>
       </section>
 
+      {/* İmza ürün — single hand-picked product, full editorial treatment.
+          Breaks the product-grid → product-grid rhythm with a quieter,
+          art-directed moment. Swap PRODUCT_ID when you want a different
+          hero pick (or wire it to an admin "featured of the week" later). */}
+      {(() => {
+        const SPOTLIGHT_ID = "rnd-rev";
+        const p = getProductById(SPOTLIGHT_ID);
+        if (!p) return null;
+        return (
+          <section className="py-20 md:py-32 px-5 md:px-16 bg-background border-t border-foreground/5">
+            <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 md:gap-16 lg:gap-24 items-center">
+              {/* Image card */}
+              <Link
+                href={`/products/${p.id}`}
+                className="group relative aspect-square overflow-hidden bg-secondary/40 rounded-3xl md:rounded-[2rem]"
+              >
+                <Image
+                  src={p.imageUrl}
+                  alt={p.name}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </Link>
+
+              {/* Editorial copy */}
+              <div className="space-y-6 md:space-y-8">
+                <span className="font-audiowide text-[9px] uppercase tracking-[0.4em] text-foreground/40 block">
+                  İmza Ürün
+                </span>
+                <h2 className="font-audiowide text-3xl md:text-4xl lg:text-5xl text-foreground uppercase tracking-tight leading-[1.1]">
+                  {p.name}
+                </h2>
+                <p className="text-foreground/65 text-base md:text-lg leading-relaxed max-w-md">
+                  Beş değiştirilebilir bıçak, geniş toplama haznesi ve kaymaz
+                  tabanla restoran kalitesinde sonuçlar. Tek bir alette tüm
+                  mutfak doğrama ihtiyacınız.
+                </p>
+                <div className="flex items-center gap-5 pt-2">
+                  <Link
+                    href={`/products/${p.id}`}
+                    className="inline-flex items-center gap-2 px-7 py-3.5 bg-foreground text-background font-audiowide text-[10px] uppercase tracking-[0.3em] hover:opacity-90 transition-opacity rounded-full"
+                  >
+                    İncele <ArrowRight size={14} />
+                  </Link>
+                  <span className="font-audiowide text-sm text-foreground/60 tracking-wide">
+                    {formatPrice(p.price)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      })()}
+
       {/* Set ürünleri */}
       {setsRow.length > 0 ? (
         <ProductRow
