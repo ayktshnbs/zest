@@ -15,7 +15,7 @@ import { Product } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductRow } from "@/components/ProductRow";
 import { RecentlyViewedRow } from "@/components/RecentlyViewedRow";
-import { ChevronRight, ArrowRight, Truck, RefreshCw } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
@@ -139,10 +139,10 @@ export default function Home() {
       <section ref={heroRef} className="relative bg-background pt-24 md:pt-28 pb-10 md:pb-14">
         <div className="max-w-7xl mx-auto px-5 md:px-16">
           {/* The video frame itself */}
-          <div className="relative aspect-[16/9] md:aspect-[21/9] w-full rounded-3xl md:rounded-[2.5rem] overflow-hidden bg-neutral-900 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.35)] border border-foreground/5">
+          <div className="relative aspect-[3/4] sm:aspect-[16/9] lg:aspect-[21/9] w-full rounded-3xl md:rounded-[2.5rem] overflow-hidden bg-neutral-900 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.35)] border border-foreground/5">
             <video
               ref={videoRef}
-              className="absolute inset-0 w-full h-full object-cover object-center brightness-[1.18] contrast-[1.05] saturate-[1.08]"
+              className="absolute inset-0 w-full h-full object-cover object-center brightness-[1.08] contrast-[1.03] saturate-[1.05]"
               autoPlay
               muted
               loop
@@ -249,29 +249,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Trust strip — same warm bg as hero so the section break reads as a
-          delicate top border, not a sudden colour shift after the video. */}
-      <section className="py-8 md:py-10 px-5 md:px-16 bg-background border-t border-foreground/5">
-        <div className="max-w-2xl mx-auto grid grid-cols-2 gap-8">
-          {[
-            { icon: <Truck size={20} />, title: "Ücretsiz Kargo", note: "750 TL üzeri siparişlerde" },
-            { icon: <RefreshCw size={20} />, title: "Kolay İade", note: "14 gün koşulsuz iade" },
-          ].map((item) => (
-            <div key={item.title} className="flex items-center gap-4">
-              <div className="text-black/60">{item.icon}</div>
-              <div>
-                <p className="font-audiowide text-[10px] uppercase tracking-[0.25em] text-black">
-                  {item.title}
-                </p>
-                <p className="text-[11px] text-black/40 mt-1 font-body">{item.note}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* Categories */}
-      <section className="py-20 md:py-28 px-5 md:px-16 bg-white">
+      <section className="py-20 md:py-28 px-5 md:px-16 bg-background border-t border-foreground/5">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
             <div className="space-y-3 max-w-xl">
@@ -318,25 +297,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured */}
-      <section className="py-20 md:py-32 px-5 md:px-16 bg-white border-t border-black/5">
+      {/* Featured — header sits on its own; the section title already implies
+          "browse more", so the rail-end CTA was redundant. */}
+      <section className="py-20 md:py-32 px-5 md:px-16 bg-background border-t border-foreground/5">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 md:mb-24 gap-8 text-center md:text-left">
-            <div className="space-y-6 w-full md:w-auto">
-              <span className="text-black/30 font-audiowide text-[9px] uppercase tracking-[0.4em] block">
-                Küratörlük
-              </span>
-              <h2 className="text-4xl md:text-6xl font-audiowide text-black tracking-tighter leading-[1.1]">
-                Üstün Performans <br className="hidden md:block" />
-                Ve Minimalizm.
-              </h2>
-            </div>
-            <Link
-              href="/shop"
-              className="mx-auto md:mx-0 font-audiowide text-[10px] uppercase tracking-[0.3em] text-black border-b border-black/10 pb-2 hover:border-black transition-all"
-            >
-              Tümünü Gör
-            </Link>
+          <div className="mb-16 md:mb-24 space-y-6 text-center md:text-left max-w-xl">
+            <span className="text-foreground/30 font-audiowide text-[9px] uppercase tracking-[0.4em] block">
+              Küratörlük
+            </span>
+            <h2 className="text-4xl md:text-6xl font-audiowide text-foreground tracking-tighter leading-[1.1]">
+              Üstün Performans <br className="hidden md:block" />
+              Ve Minimalizm
+            </h2>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 sm:gap-x-8 sm:gap-y-20">
@@ -359,18 +331,17 @@ export default function Home() {
         />
       ) : null}
 
-      {/* New arrivals */}
+      {/* New arrivals — no rail-end CTA here; we keep one on the Discounted
+          section below and it's enough. */}
       <ProductRow
         eyebrow="Yeni Gelenler"
         title="Koleksiyona Eklenen Son Ürünler"
         description="Yeni nesil mutfak gereçleri; modern tasarım ve fonksiyonel detaylar."
         products={newArrivalsRow}
-        href="/shop?badges=new"
-        hrefLabel="Tüm Yeni Ürünler"
       />
 
       {/* Discounted */}
-      <section className="py-20 md:py-28 px-5 md:px-16 bg-[#f9fafb] border-y border-black/5">
+      <section className="py-20 md:py-28 px-5 md:px-16 bg-background border-y border-foreground/5">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
             <div className="space-y-3 max-w-xl">
@@ -403,15 +374,15 @@ export default function Home() {
       <RecentlyViewedRow />
 
       {/* Quote */}
-      <section className="py-32 md:py-48 px-5 bg-[#f9fafb]">
+      <section className="py-20 md:py-28 px-5 bg-background">
         <div className="max-w-3xl mx-auto text-center px-4">
-          <p className="font-body text-xl md:text-3xl text-black leading-relaxed font-light italic">
+          <p className="font-body text-xl md:text-3xl text-foreground leading-relaxed font-light italic">
             &ldquo;Mükemmellik, eklenecek bir şey kalmadığında değil, çıkarılacak bir şey
             kalmadığında elde edilir.&rdquo;
           </p>
-          <div className="mt-12 flex flex-col items-center gap-4">
-            <div className="w-12 h-px bg-black/10" />
-            <span lang="en" className="font-audiowide text-[9px] uppercase tracking-[0.5em] text-black/30">
+          <div className="mt-10 flex flex-col items-center gap-4">
+            <div className="w-12 h-px bg-foreground/15" />
+            <span lang="en" className="font-audiowide text-[9px] uppercase tracking-[0.5em] text-foreground/40">
               Zest Home Philosophy
             </span>
           </div>
