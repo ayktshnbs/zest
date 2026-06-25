@@ -79,10 +79,10 @@ export const Navbar = () => {
   return (
     <>
       <header
-        className={`fixed top-0 w-full z-40 transition-[padding,box-shadow] duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] bg-surface border-b border-foreground/10 ${
+        className={`fixed top-0 w-full z-40 transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] border-b ${
           isScrolled
-            ? "py-2.5 md:py-4 shadow-[0_1px_0_rgba(0,0,0,0.04)]"
-            : "py-3.5 md:py-6"
+            ? "bg-[rgba(234,230,223,0.72)] backdrop-blur-xl backdrop-saturate-150 border-foreground/10 py-2.5 md:py-4 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.12)]"
+            : "bg-surface border-foreground/10 py-3.5 md:py-6"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 md:px-16 flex items-center justify-between gap-3">

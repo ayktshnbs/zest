@@ -101,29 +101,23 @@ export default function AboutPage() {
               Hikayemiz · <span lang="en">Our Story</span>
             </p>
             <h1 className="font-audiowide text-4xl md:text-6xl lg:text-7xl uppercase tracking-tight text-foreground leading-[1.05]">
-              Mutfak için
+              Ev için
               <br />
               daha iyisi.
             </h1>
             <p lang="en" className="font-audiowide text-sm md:text-base uppercase tracking-[0.35em] text-foreground/40">
-              Better for the kitchen.
+              Better for the home.
             </p>
-            <p className="text-foreground/60 text-base md:text-lg max-w-2xl leading-relaxed">
-              Zest Home; mühendislik atölyesinden doğan, mutfak sahnesine
-              taşınan bir markadır. Bıçağı tutan ele, tezgâhın üzerine, kapağın
-              tıkırtısına kadar her detayı tasarlıyor; tasarımdan sevkiyata kadar
-              her aşamayı kendi çatımız altında üretiyoruz.
-            </p>
-            <div className="flex flex-wrap gap-2 pt-2">
-              <span className="font-audiowide text-[10px] uppercase tracking-[0.3em] border border-foreground/15 px-3 py-1.5 text-foreground/60">
-                Since 2009
-              </span>
-              <span className="font-audiowide text-[10px] uppercase tracking-[0.3em] border border-foreground/15 px-3 py-1.5 text-foreground/60">
-                In-House Production
-              </span>
-              <span className="font-audiowide text-[10px] uppercase tracking-[0.3em] border border-foreground/15 px-3 py-1.5 text-foreground/60">
-                ISO Certified
-              </span>
+            <div className="space-y-5 text-foreground/70 text-base md:text-lg leading-relaxed font-body max-w-xl pt-4">
+              <p>
+                Evde geçirilen zamanı daha iyi hale getirmek için.
+                Zest Home, günlük yaşamı kolaylaştıran, düzeni destekleyen ve yaşam alanlarına değer katan ürünler sunma fikriyle doğdu.
+              </p>
+              <p>
+                Ev, yalnızca yaşadığımız bir yer değil; günün başladığı, dinlendiğimiz, sevdiklerimizle vakit geçirdiğimiz ve anılar biriktirdiğimiz alandır.
+                Bu yüzden ürünlerimizin yalnızca işlevsel değil, aynı zamanda yaşam alanlarının doğal bir parçası olmasına önem veriyoruz.
+                Her koleksiyonumuzda sadelik, kalite ve kullanım kolaylığını bir araya getirerek evin farklı köşelerinde ihtiyaç duyulan çözümler geliştirmeyi hedefliyoruz.
+              </p>
             </div>
           </motion.div>
 
@@ -135,7 +129,7 @@ export default function AboutPage() {
           >
             <div className="relative aspect-[4/5] overflow-hidden bg-secondary/30">
               <Image
-                src="/products/srv-kal1001/0.jpg"
+                src="/products/rnd-m1/7.jpg"
                 alt="Zest Home atölyesinden bir kare"
                 fill
                 className="object-cover"
@@ -161,58 +155,64 @@ export default function AboutPage() {
         <section className="grid lg:grid-cols-12 gap-10 lg:gap-16 mb-28 md:mb-40">
           <div className="lg:col-span-4">
             <p className="font-audiowide text-[10px] uppercase tracking-[0.5em] text-foreground/40 mb-4">
-              01 · Köken
+              01
             </p>
             <h2 className="font-audiowide text-2xl md:text-3xl uppercase tracking-tight text-foreground leading-tight">
-              Atölyeden
-              <br />
-              sofraya.
+              Yaklaşımımız
             </h2>
             <p lang="en" className="font-audiowide text-[10px] uppercase tracking-[0.4em] text-foreground/30 mt-3">
-              From workshop to table
+              Tasarımın amacı hayatı kolaylaştırmaktır.
             </p>
           </div>
-          <div className="lg:col-span-8 space-y-6 text-foreground/65 text-base md:text-lg leading-relaxed">
+          <div className="lg:col-span-8 space-y-6 text-foreground/70 text-base md:text-lg leading-relaxed font-body">
             <p>
-              Yolculuğumuz, plastik enjeksiyon kalıpçılığında geçirdiğimiz uzun
-              yıllarda yoğrulan teknik birikimle başladı. Sanayi parçası üreten
-              bir ekipten, evlerin en samimi alanı olan mutfağa geçmek; tasarım
-              disiplinimizi ve ölçüm hassasiyetimizi yeni bir dile çevirmek
-              demekti.
+              Bizim için iyi bir ürün yalnızca güzel görünmekten ibaret değildir.
+              İyi bir ürün, yaşam alanına değer katar ve günlük yaşamı kolaylaştırır.
+              Bu nedenle ürünlerimizi geliştirirken aşağıdaki kriterleri göz önünde bulunduruyoruz:
             </p>
-            <p>
-              2022'de bu birikimi Zest Home markasıyla bir araya getirdik.
-              Doğrayıcılardan saklama kaplarına, rendelerden servis tabaklarına
-              uzanan ürün ailemizi; günlük kullanımda yıpranmayan, tezgâhın
-              üzerinde sade durmayı bilen, elinize doğal yerleşen detaylarla
-              tasarlıyoruz.
-            </p>
-            <p>
-              Üretimin her adımı — tasarım, kalıp, enjeksiyon, montaj, paketleme —
-              kendi tesislerimizde gerçekleşiyor. Bu, hem üzerinde durduğumuz
-              kalite standardını korumamızı, hem de yeni bir fikri günler içinde
-              denenebilir bir prototipe dönüştürmemizi sağlıyor.
+            <ul className="space-y-3 pt-2 border-l border-foreground/15 pl-6">
+              <li className="flex items-start gap-3">
+                <span className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/40 mt-1.5 shrink-0">01</span>
+                <span>Günlük kullanımı kolaylaştırmalıdır.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/40 mt-1.5 shrink-0">02</span>
+                <span>Uzun süre güvenle kullanılmalıdır.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/40 mt-1.5 shrink-0">03</span>
+                <span>Yaşam alanına uyum sağlamalıdır.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/40 mt-1.5 shrink-0">04</span>
+                <span>Hem işlevsel hem estetik bir deneyim sunmalıdır.</span>
+              </li>
+            </ul>
+            <p className="pt-2">
+              Bu anlayışla geliştirdiğimiz her ürün, estetik ve işlevsellik arasında dengeli bir deneyim sunmak üzere seçilir.
             </p>
           </div>
         </section>
 
         {/* Production journey */}
-        <section className="mb-28 md:mb-40">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
-            <div>
+        <section className="mb-20 md:mb-40">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 mb-12 md:mb-16">
+            <div className="lg:col-span-4">
               <p className="font-audiowide text-[10px] uppercase tracking-[0.5em] text-foreground/40 mb-4">
-                02 · Üretim Yolculuğu
+                02
               </p>
               <h2 className="font-audiowide text-2xl md:text-3xl uppercase tracking-tight text-foreground leading-tight">
-                Beş aşama, bir çatı.
+                Ne İçin Çalışıyoruz?
               </h2>
               <p lang="en" className="font-audiowide text-[10px] uppercase tracking-[0.4em] text-foreground/30 mt-3">
-                Five stages, one roof
+                Daha düzenli, daha konforlu yaşam alanları.
               </p>
             </div>
-            <p className="text-foreground/50 text-sm md:text-base max-w-md leading-relaxed">
-              Bir Zest Home ürünü, sizin elinize ulaşana kadar bizimle beş
-              durakta buluşur. Hepsi de aynı kapının altında.
+            <p className="lg:col-span-8 text-foreground/70 text-base md:text-lg leading-relaxed font-body">
+              Zest Home olarak amacımız yalnızca ürün sunmak değil,
+              insanların evlerinde geçirdiği zamanı daha keyifli hale getirmektir.
+              Mutfaktan yemek masasına,
+              saklama çözümlerinden günlük yaşam ürünlerine kadar uzanan koleksiyonlarımızla evin her alanında yer almayı hedefliyoruz.
             </p>
           </div>
 
@@ -251,52 +251,26 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Timeline */}
-        <section className="mb-28 md:mb-40">
-          <div className="mb-10 md:mb-14">
+        {/* Vizyonumuz */}
+        <section className="mb-28 md:mb-40 grid lg:grid-cols-12 gap-10 lg:gap-16">
+          <div className="lg:col-span-4">
             <p className="font-audiowide text-[10px] uppercase tracking-[0.5em] text-foreground/40 mb-4">
-              03 · Zaman Çizelgesi
+              03 · Vizyonumuz
             </p>
             <h2 className="font-audiowide text-2xl md:text-3xl uppercase tracking-tight text-foreground leading-tight">
-              Üç durak, tek çizgi.
+              Modern yaşam için tasarlanmış ürünler.
             </h2>
           </div>
 
-          <ol className="relative border-l border-foreground/15 pl-8 md:pl-12 space-y-12">
-            {timeline.map((t, i) => (
-              <motion.li
-                key={t.year}
-                initial={{ opacity: 0, x: -16 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="relative"
-              >
-                <span className="absolute -left-[37px] md:-left-[49px] top-1.5 w-2.5 h-2.5 rounded-full bg-foreground" />
-                <div className="grid md:grid-cols-12 gap-4 md:gap-10">
-                  <div className="md:col-span-3">
-                    <div className="font-audiowide text-2xl md:text-3xl tracking-tight text-foreground">
-                      {t.year}
-                    </div>
-                    <p
-                      lang="en"
-                      className="font-audiowide text-[9px] uppercase tracking-[0.4em] text-foreground/30 mt-1"
-                    >
-                      {t.en}
-                    </p>
-                  </div>
-                  <div className="md:col-span-9">
-                    <h3 className="font-audiowide text-sm uppercase tracking-[0.3em] text-foreground mb-3">
-                      {t.title}
-                    </h3>
-                    <p className="text-foreground/60 text-base leading-relaxed">
-                      {t.body}
-                    </p>
-                  </div>
-                </div>
-              </motion.li>
-            ))}
-          </ol>
+          <div className="lg:col-span-8 relative">
+            <div className="absolute -left-3 top-0 hidden md:block h-full w-px bg-foreground/15" />
+            <p className="text-foreground/70 text-base md:text-lg leading-relaxed font-body max-w-2xl md:pl-6">
+              Günümüz yaşamının değişen ihtiyaçlarını takip ediyor,
+              işlevsellik ve estetiği bir araya getiren ürünlerle koleksiyonumuzu sürekli geliştiriyoruz.
+              Hedefimiz, kaliteli tasarım anlayışını erişilebilir hale getirerek Zest Home&apos;u ev yaşamı kategorisinde
+              güven duyulan ve tercih edilen bir marka haline getirmektir.
+            </p>
+          </div>
         </section>
 
         {/* Closing band */}
@@ -307,10 +281,10 @@ export default function AboutPage() {
               lang="en"
               className="font-audiowide text-[10px] uppercase tracking-[0.5em] text-background/50"
             >
-              Better for the kitchen
+              Better for the home
             </p>
             <h2 className="font-audiowide text-3xl md:text-5xl uppercase tracking-tight text-background mt-4 mb-8 leading-[1.05]">
-              Mutfak için
+              Ev için
               <br />
               daha iyisi.
             </h2>
