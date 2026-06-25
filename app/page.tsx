@@ -424,28 +424,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Newsletter */}
-      <section className="py-24 md:py-48 px-5 bg-white border-t border-black/5">
-        <div className="max-w-4xl mx-auto text-center space-y-12 md:space-y-16">
-          <h2 className="font-audiowide text-2xl md:text-5xl text-black tracking-tight uppercase">
-            Abone Olun
-          </h2>
-          <p className="text-black/50 text-base md:text-xl max-w-xl mx-auto font-light">
-            Yeni koleksiyonlar ve özel davetlerden haberdar olun. Minimalist yaşam tarzını
-            mutfağınıza taşıyın.
-          </p>
-          <form className="flex flex-col sm:flex-row gap-0 max-w-lg mx-auto pt-4 md:pt-8 border-b border-black">
-            <input
-              type="email"
-              placeholder="E-posta adresiniz"
-              className="flex-1 bg-transparent px-0 py-5 focus:outline-none text-black font-light placeholder:text-black/20 text-base md:text-lg"
-            />
-            <button className="py-5 text-[10px] font-audiowide tracking-[0.3em] uppercase text-black hover:opacity-50 transition-opacity text-right">
-              Gönder
-            </button>
-          </form>
-        </div>
-      </section>
     </main>
   );
 }
