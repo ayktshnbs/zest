@@ -128,79 +128,69 @@ export default function ContactPage() {
             transition={{ delay: 0.3 }}
             className="lg:col-span-4 space-y-8"
           >
-            <div className="bg-neutral-950 p-10 md:p-16 rounded-[4rem] border border-white/10 shadow-premium">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16" />
+            <div className="relative overflow-hidden bg-neutral-950 p-8 md:p-12 rounded-[3rem] md:rounded-[4rem] border border-white/10 shadow-premium">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-white/[0.03] rounded-full -mr-20 -mt-20 pointer-events-none" />
 
-              <h3 className="font-display text-2xl font-black mb-10 tracking-tighter text-white">
+              <h3 className="relative font-display text-2xl font-black mb-10 tracking-tighter text-white">
                 İletişim Kanalları
               </h3>
 
-              <div className="space-y-10">
-                {[
-                  {
-                    icon: <Mail size={24} />,
-                    label: "E-posta",
-                    value: "info@zest-home.net",
-                    color: "bg-white/10 text-gray-100",
-                  },
-                  {
-                    icon: <Phone size={24} />,
-                    label: "Telefon",
-                    value: "0532 280 92 06",
-                    color: "bg-white/10 text-gray-100",
-                  },
-                  {
-                    icon: <MapPin size={22} />,
-                    label: "Adres",
-                    value:
-                      "",
-                    color: "bg-white/10 text-gray-100",
-                  },
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-6 group cursor-pointer"
-                  >
-                    <div
-                      className={`p-4 ${item.color} rounded-2xl transition-transform group-hover:scale-110 duration-500`}
-                    >
-                      {item.icon}
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">
-                        {item.label}
-                      </p>
-
-                      {item.label === "Adres" ? (
-                        <div className="space-y-1">
-                          <p className="font-semibold text-white/70">
-                            MNG Blue Boutique Residence
-                          </p>
-
-                          <p className="font-semibold text-white/70">
-                            Halkalı Merkez 
-                          </p>
-
-                          <p className="font-semibold text-white/70">
-                            Halkalı Caddesi no: 232
-                          </p>
-
-                          <p className="font-semibold text-white/70">
-                            Küçükçekmece İstanbul 34295
-                          </p>
-
-                          <p className="font-semibold text-white/70">
-                            Türkiye
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="font-medium text-white/90 leading-relaxed">
-                          {item.value}
-                        </p>
-                      )}
-                    </div>
+              <div className="relative space-y-4">
+                {/* E-posta — clickable mailto */}
+                <a
+                  href="mailto:info@zest-home.net"
+                  className="flex items-center gap-5 -mx-3 px-3 py-3 rounded-2xl group hover:bg-white/[0.04] transition-colors"
+                >
+                  <div className="shrink-0 w-12 h-12 grid place-items-center bg-white/[0.08] text-white rounded-2xl group-hover:bg-white group-hover:text-neutral-950 transition-colors">
+                    <Mail size={18} strokeWidth={1.5} />
                   </div>
-                ))}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/50 mb-1">
+                      E-posta
+                    </p>
+                    <p className="font-medium text-white truncate">info@zest-home.net</p>
+                  </div>
+                </a>
+
+                {/* Telefon — clickable tel */}
+                <a
+                  href="tel:+905322809206"
+                  className="flex items-center gap-5 -mx-3 px-3 py-3 rounded-2xl group hover:bg-white/[0.04] transition-colors"
+                >
+                  <div className="shrink-0 w-12 h-12 grid place-items-center bg-white/[0.08] text-white rounded-2xl group-hover:bg-white group-hover:text-neutral-950 transition-colors">
+                    <Phone size={18} strokeWidth={1.5} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/50 mb-1">
+                      Telefon
+                    </p>
+                    <p className="font-medium text-white">0532 280 92 06</p>
+                  </div>
+                </a>
+
+                {/* Adres — opens Google Maps */}
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=MNG+Blue+Boutique+Residence+Halkalı+Caddesi+Küçükçekmece+İstanbul"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-5 -mx-3 px-3 py-3 rounded-2xl group hover:bg-white/[0.04] transition-colors"
+                >
+                  <div className="shrink-0 w-12 h-12 grid place-items-center bg-white/[0.08] text-white rounded-2xl group-hover:bg-white group-hover:text-neutral-950 transition-colors">
+                    <MapPin size={18} strokeWidth={1.5} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/50 mb-1">
+                      Adres
+                    </p>
+                    <address className="not-italic font-medium text-white leading-snug">
+                      MNG Blue Boutique Residence
+                      <br />
+                      Halkalı Merkez · Halkalı Caddesi No: 232
+                      <br />
+                      <span className="text-white/65">Küçükçekmece, İstanbul 34295 · Türkiye</span>
+                    </address>
+                  </div>
+                </a>
               </div>
 
               <div className="mt-16 pt-10 border-t border-border">
