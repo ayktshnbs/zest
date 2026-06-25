@@ -133,131 +133,125 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-background relative">
-      {/* Hero */}
-      <section
-        ref={heroRef}
-        className="relative min-h-dvh flex items-center justify-center overflow-hidden bg-neutral-900"
-      >
-        {/* Ambient background video — full opacity for a vivid, cinematic look.
-            Falls back to the poster image until it loads / if autoplay is
-            blocked, so the hero never breaks. */}
-        <div className="absolute inset-0 z-0">
-          <video
-            ref={videoRef}
-            className="w-full h-full object-cover object-center brightness-[1.18] contrast-[1.05] saturate-[1.08]"
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster="/hero.jpg"
-            preload="none"
-          >
-            <source src="/hero.mp4" type="video/mp4" />
-          </video>
-          {/* Scrim: light at top so the video reads through, noticeably darker
-              toward the bottom so SAHNEDEKİ ÜRÜNLER + pills + buttons stay
-              legible on bright frames. */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/15 to-black/50" />
-          {/* Dedicated top scrim behind the floating navbar so menu text stays
-              legible on bright video frames, without changing the navbar's
-              transparent look. Only affects the top ~140px of the hero. */}
-          <div className="absolute inset-x-0 top-0 h-32 md:h-36 bg-gradient-to-b from-black/35 via-black/15 to-transparent pointer-events-none" />
-        </div>
-
-        <motion.div
-          style={{ y: textY, opacity: textOpacity }}
-          className="max-w-7xl mx-auto px-5 md:px-16 relative z-10 w-full text-center mt-[6vh] md:mt-[10vh]"
-        >
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            animate={{
-              y: [30, 0],
-              opacity: 1,
-            }}
-            transition={{
-              duration: 1,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            className="max-w-4xl mx-auto"
-          >
-            <motion.div
-              animate={{ y: [0, -5, 0] }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
+      {/* Hero — contained video frame on a calm warm-white page. The video no
+          longer bleeds to the viewport edges; it sits inside a centered card
+          so the page has breathing room and the navbar matches the footer. */}
+      <section ref={heroRef} className="relative bg-background pt-24 md:pt-28 pb-10 md:pb-14">
+        <div className="max-w-7xl mx-auto px-5 md:px-16">
+          {/* The video frame itself */}
+          <div className="relative aspect-[16/9] md:aspect-[21/9] w-full rounded-3xl md:rounded-[2.5rem] overflow-hidden bg-neutral-900 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.35)] border border-foreground/5">
+            <video
+              ref={videoRef}
+              className="absolute inset-0 w-full h-full object-cover object-center brightness-[1.18] contrast-[1.05] saturate-[1.08]"
+              autoPlay
+              muted
+              loop
+              playsInline
+              poster="/hero.jpg"
+              preload="none"
             >
-              <h1 className="font-audiowide text-[2rem] sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-6 md:mb-10 tracking-[-0.01em] text-white [text-wrap:balance] [text-shadow:0_2px_18px_rgba(0,0,0,0.5)]">
-                Seçkin Ev Gereçleri
-                <br />
-                <span className="text-white/70">Zahmetsiz Yaşam</span>
-              </h1>
+              <source src="/hero.mp4" type="video/mp4" />
+            </video>
+            {/* Soft bottom-only scrim so the headline + CTAs stay legible
+                without darkening the whole frame. */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
+
+            {/* Headline + CTAs overlay (inside the video frame) */}
+            <motion.div
+              style={{ y: textY, opacity: textOpacity }}
+              className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-5 md:px-16"
+            >
+              <motion.div
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: [30, 0], opacity: 1 }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                className="max-w-4xl mx-auto"
+              >
+                <motion.div
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <h1 className="font-audiowide text-[1.75rem] sm:text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-5 md:mb-8 tracking-[-0.01em] text-white [text-wrap:balance] [text-shadow:0_2px_18px_rgba(0,0,0,0.5)]">
+                    Seçkin Ev Gereçleri
+                    <br />
+                    <span className="text-white/75">Zahmetsiz Yaşam</span>
+                  </h1>
+                </motion.div>
+
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center">
+                  <Link
+                    href="/shop"
+                    className="w-full sm:w-auto px-8 md:px-10 py-3.5 md:py-4 bg-white text-[#1d1d1f] font-audiowide text-[10px] sm:text-[12px] tracking-[0.2em] uppercase rounded-full hover:bg-white/90 transition-all duration-300 shadow-xl shadow-black/20"
+                  >
+                    Hemen Al
+                  </Link>
+                  <Link
+                    href="/kategoriler"
+                    className="group inline-flex items-center justify-center gap-2 px-2 py-3 font-audiowide text-[10px] sm:text-[12px] tracking-[0.25em] uppercase text-white/85 hover:text-white transition-colors [text-shadow:0_1px_8px_rgba(0,0,0,0.5)]"
+                  >
+                    Kategorileri Keşfet
+                    <ArrowRight
+                      size={14}
+                      className="transition-transform duration-300 group-hover:translate-x-1"
+                    />
+                  </Link>
+                </div>
+              </motion.div>
             </motion.div>
+          </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link
-                href="/shop"
-                className="w-full sm:w-auto px-10 py-4 bg-white text-[#1d1d1f] font-audiowide text-[10px] sm:text-[12px] tracking-[0.2em] uppercase rounded-full hover:bg-white/90 transition-all duration-300 shadow-xl shadow-black/20"
-              >
-                Hemen Al
-              </Link>
-              {/* Secondary CTA: minimal text + arrow so the primary HEMEN AL
-                  button stands alone, instead of two heavy floating pills. */}
-              <Link
-                href="/kategoriler"
-                className="group inline-flex items-center justify-center gap-2 px-2 py-3 font-audiowide text-[10px] sm:text-[12px] tracking-[0.25em] uppercase text-white/85 hover:text-white transition-colors [text-shadow:0_1px_8px_rgba(0,0,0,0.5)]"
-              >
-                Kategorileri Keşfet
-                <ArrowRight
-                  size={14}
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </Link>
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* Shop the look — real catalog products featured in the scene */}
-        {heroProducts.length > 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-24 lg:bottom-10 inset-x-0 z-20 px-5 md:px-16"
-          >
-            <div className="max-w-7xl mx-auto">
-              <span className="block font-audiowide text-[9px] uppercase tracking-[0.4em] text-white/60 mb-3">
-                Sahnedeki Ürünler
-              </span>
+          {/* Sahnedeki Ürünler — flush against the video frame so the eye reads
+              video → product pills as one block, not "card with whitespace
+              then more cards". The eyebrow + horizontal scroller anchor the
+              hero on the warm page bg without needing the frosted glass treatment
+              they used to wear when they floated over the video. */}
+          {heroProducts.length > 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-6 md:mt-8"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="block font-audiowide text-[9px] uppercase tracking-[0.4em] text-foreground/50">
+                  Sahnedeki Ürünler
+                </span>
+                <Link
+                  href="/shop"
+                  className="font-audiowide text-[9px] uppercase tracking-[0.3em] text-foreground/50 hover:text-foreground transition-colors"
+                >
+                  Tümünü gör →
+                </Link>
+              </div>
               <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
                 {heroProducts.map((p) => (
                   <Link
                     key={p.id}
                     href={`/products/${p.id}`}
-                    className="group shrink-0 flex items-center gap-3 bg-white/90 backdrop-blur-md border border-black/10 rounded-3xl pl-2 pr-5 py-2 shadow-lg shadow-black/10 hover:bg-white transition-colors"
+                    className="group shrink-0 flex items-center gap-3 bg-white border border-foreground/10 rounded-3xl pl-2 pr-5 py-2 shadow-sm hover:border-foreground/30 transition-colors"
                   >
-                    <span className="relative w-12 h-12 shrink-0 rounded-full overflow-hidden bg-secondary/30">
+                    <span className="relative w-12 h-12 shrink-0 rounded-full overflow-hidden bg-secondary/40">
                       <Image src={p.imageUrl} alt={p.name} fill className="object-cover" sizes="48px" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block font-body text-[13px] font-medium text-[#1d1d1f] leading-tight line-clamp-2 max-w-[170px] md:max-w-[200px]">
+                      <span className="block font-body text-[13px] font-medium text-foreground leading-tight line-clamp-2 max-w-[170px] md:max-w-[200px]">
                         {p.name}
                       </span>
-                      <span className="block font-audiowide text-[11px] tracking-wide text-[#1d1d1f]/70 mt-0.5">
+                      <span className="block font-audiowide text-[11px] tracking-wide text-foreground/60 mt-0.5">
                         {formatPrice(p.price)}
                       </span>
                     </span>
                   </Link>
                 ))}
               </div>
-            </div>
-          </motion.div>
-        ) : null}
+            </motion.div>
+          ) : null}
+        </div>
       </section>
 
-      {/* Trust strip */}
-      <section className="py-10 md:py-14 px-5 md:px-16 bg-white border-b border-black/5">
+      {/* Trust strip — same warm bg as hero so the section break reads as a
+          delicate top border, not a sudden colour shift after the video. */}
+      <section className="py-8 md:py-10 px-5 md:px-16 bg-background border-t border-foreground/5">
         <div className="max-w-2xl mx-auto grid grid-cols-2 gap-8">
           {[
             { icon: <Truck size={20} />, title: "Ücretsiz Kargo", note: "750 TL üzeri siparişlerde" },

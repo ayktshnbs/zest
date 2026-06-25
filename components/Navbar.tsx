@@ -71,18 +71,18 @@ export const Navbar = () => {
     router.push(`/shop?q=${encodeURIComponent(searchQuery.trim())}`);
   };
 
-  const isHome = pathname === "/";
-  // At the top of the home page the navbar floats over the dark video hero, so
-  // its text/icons must be light; elsewhere (and once scrolled) keep dark.
-  const onDarkHero = !isScrolled && isHome;
+  // Solid surface header on every page now. The hero video is contained in
+  // its own frame, so there's no dark background to fade the navbar over —
+  // it sits on the warm-stone surface that matches the footer.
+  const onDarkHero = false;
 
   return (
     <>
       <header
-        className={`fixed top-0 w-full z-40 transition-all duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${
+        className={`fixed top-0 w-full z-40 transition-[padding,box-shadow] duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] bg-surface border-b border-foreground/10 ${
           isScrolled
-            ? "bg-background/95 backdrop-blur-lg py-2.5 md:py-4 border-b border-foreground/10 shadow-[0_1px_0_rgba(0,0,0,0.02)]"
-            : "bg-transparent py-3.5 md:py-8"
+            ? "py-2.5 md:py-4 shadow-[0_1px_0_rgba(0,0,0,0.04)]"
+            : "py-3.5 md:py-6"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 md:px-16 flex items-center justify-between gap-3">
