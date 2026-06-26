@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Truck, Package, Clock, MapPin } from "lucide-react";
+import { Truck, Package, Clock } from "lucide-react";
 
 export const metadata = {
   title: "Kargo & Teslimat | Zest Home",
@@ -21,11 +21,6 @@ const sections = [
     icon: <Package size={20} />,
     title: "Sipariş Takibi",
     body: "Siparişiniz kargoya verildiğinde size e-posta ve SMS ile takip kodu gönderilir. Bu kod ile MNG veya Yurtiçi Kargo web sitelerinden kolaylıkla siparişinizi takip edebilirsiniz.",
-  },
-  {
-    icon: <MapPin size={20} />,
-    title: "Mağazadan Teslim Alma",
-    body: "İstanbul Beşiktaş Mutfak Sokak No: 34 adresindeki mağazamızdan ücretsiz teslim alma seçeneğimiz mevcuttur. Siparişiniz hazırlandığında SMS ile bilgilendirme yapılır.",
   },
 ];
 

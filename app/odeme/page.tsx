@@ -45,7 +45,7 @@ type ShippingForm = {
   district: string;
   postalCode: string;
 };
-type DeliveryMethod = "standart" | "ekspres" | "magazadan";
+type DeliveryMethod = "standart" | "ekspres";
 type PaymentMethod = "kart" | "havale" | "kapida";
 type PaymentForm = {
   cardName: string;
@@ -57,13 +57,11 @@ type PaymentForm = {
 const deliveryPricing: Record<DeliveryMethod, number> = {
   standart: STANDARD_SHIPPING_COST,
   ekspres: 89.9,
-  magazadan: 0,
 };
 
 const deliveryDescriptions: Record<DeliveryMethod, string> = {
   standart: `Tahmini ${estimatedDelivery()}`,
   ekspres: "1 iş günü içinde teslim",
-  magazadan: "Mağazadan ücretsiz teslim alın (İstanbul Beşiktaş)",
 };
 
 export default function CheckoutPage() {
@@ -157,12 +155,7 @@ export default function CheckoutPage() {
     setSubmitting(true);
     setError(null);
 
-    const deliveryLabel =
-      delivery === "standart"
-        ? "Standart Kargo"
-        : delivery === "ekspres"
-        ? "Ekspres Kargo"
-        : "Mağazadan Teslim";
+    const deliveryLabel = delivery === "ekspres" ? "Ekspres Kargo" : "Standart Kargo";
     const paymentLabel =
       payment === "kart" ? "Kredi/Banka Kartı" : payment === "havale" ? "Havale/EFT" : "Kapıda Ödeme";
 
@@ -396,7 +389,6 @@ export default function CheckoutPage() {
                         [
                           ["standart", "Standart Kargo", "MNG / Yurtiçi"],
                           ["ekspres", "Ekspres Kargo", "Aynı gün hazırlanır"],
-                          ["magazadan", "Mağazadan Teslim", "Ücretsiz seçenek"],
                         ] as [DeliveryMethod, string, string][]
                       ).map(([value, label, hint]) => {
                         const selected = delivery === value;
@@ -570,11 +562,7 @@ export default function CheckoutPage() {
                       </ReviewBlock>
                       <ReviewBlock title="Kargo" onEdit={() => setStep("delivery")}>
                         <p>
-                          {delivery === "standart"
-                            ? "Standart Kargo"
-                            : delivery === "ekspres"
-                            ? "Ekspres Kargo"
-                            : "Mağazadan Teslim"}
+                          {delivery === "ekspres" ? "Ekspres Kargo" : "Standart Kargo"}
                           {" · "}
                           {deliveryDescriptions[delivery]}
                         </p>

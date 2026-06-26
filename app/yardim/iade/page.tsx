@@ -15,7 +15,7 @@ const sections = [
   {
     icon: <Clock size={20} />,
     title: "İade Süreci",
-    body: "İade talebinizi hesabınızdan veya iade@zeststudio.com adresine e-posta göndererek başlatabilirsiniz. Onay sonrası ücretsiz kargo kodu paylaşılır. Ürün tarafımıza ulaştıktan sonra 5 iş günü içinde ödemeniz iade edilir.",
+    body: "İade talebinizi hesabınızdan veya info@zest-home.net adresine e-posta göndererek başlatabilirsiniz. Onay sonrası ücretsiz kargo kodu paylaşılır. Ürün tarafımıza ulaştıktan sonra 5 iş günü içinde ödemeniz iade edilir.",
   },
   {
     icon: <AlertCircle size={20} />,
