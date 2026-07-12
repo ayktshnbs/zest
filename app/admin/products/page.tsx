@@ -188,7 +188,7 @@ export default function AdminProductsPage() {
 // looked up via the adminCats list (label set by the admin themselves).
 const BUILTIN_CATEGORY_LABEL: Record<string, string> = {
   mutfak: "Mutfak",
-  "genel-ev-urunleri": "Genel Ev Ürünleri",
+  "genel-ev-urunleri": "Ev Gereçleri",
   "saklama-kaplari": "Saklama Kapları",
   "dograyicilar-rendeler": "Doğrayıcılar & Rendeler",
   "servis-sofra": "Servis & Sofra",

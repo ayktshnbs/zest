@@ -34,7 +34,7 @@ export const categories: Category[] = [
   {
     slug: "genel-ev-urunleri",
     shortLabel: "Ev",
-    label: "Genel Ev Ürünleri",
+    label: "Ev Gereçleri",
     description:
       "Evinizin her alanına değer katan pratik ve şık ürünler. Yeni koleksiyon çok yakında sizlerle.",
     image:

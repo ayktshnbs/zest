@@ -44,7 +44,9 @@ type ShippingForm = {
   district: string;
   postalCode: string;
 };
-type DeliveryMethod = "standart" | "ekspres";
+// Single shipping option: standard courier. Express was removed — we don't
+// have a same-day handling agreement with any carrier.
+type DeliveryMethod = "standart";
 // "kart" (online card payment) is intentionally NOT selectable yet: PayTR
 // virtual POS integration is pending. We never render our own card fields —
 // when PayTR lands, the customer will pay on PayTR's hosted page/iframe.
@@ -52,12 +54,10 @@ type PaymentMethod = "havale" | "kapida";
 
 const deliveryPricing: Record<DeliveryMethod, number> = {
   standart: STANDARD_SHIPPING_COST,
-  ekspres: 89.9,
 };
 
 const deliveryDescriptions: Record<DeliveryMethod, string> = {
   standart: `Tahmini ${estimatedDelivery()}`,
-  ekspres: "1 iş günü içinde teslim",
 };
 
 export default function CheckoutPage() {
@@ -137,7 +137,7 @@ export default function CheckoutPage() {
     setSubmitting(true);
     setError(null);
 
-    const deliveryLabel = delivery === "ekspres" ? "Ekspres Kargo" : "Standart Kargo";
+    const deliveryLabel = "Standart Kargo";
     const paymentLabel = payment === "havale" ? "Havale/EFT" : "Kapıda Ödeme";
 
     try {
@@ -369,7 +369,6 @@ export default function CheckoutPage() {
                       {(
                         [
                           ["standart", "Standart Kargo", "MNG / Yurtiçi"],
-                          ["ekspres", "Ekspres Kargo", "Aynı gün hazırlanır"],
                         ] as [DeliveryMethod, string, string][]
                       ).map(([value, label, hint]) => {
                         const selected = delivery === value;
@@ -500,7 +499,7 @@ export default function CheckoutPage() {
                       </ReviewBlock>
                       <ReviewBlock title="Kargo" onEdit={() => setStep("delivery")}>
                         <p>
-                          {delivery === "ekspres" ? "Ekspres Kargo" : "Standart Kargo"}
+                          Standart Kargo
                           {" · "}
                           {deliveryDescriptions[delivery]}
                         </p>

@@ -10,12 +10,12 @@ const sections = [
   {
     icon: <Truck size={20} />,
     title: "Kargo Ücretleri",
-    body: "750 TL ve üzeri tüm siparişlerde standart kargo ücretsizdir. Bu tutarın altındaki siparişlerde sabit 49,90 TL standart kargo ücreti uygulanır. Ekspres kargo seçeneği için 89,90 TL eklenir.",
+    body: "750 TL ve üzeri tüm siparişlerde kargo ücretsizdir. Bu tutarın altındaki siparişlerde sabit 49,90 TL kargo ücreti uygulanır.",
   },
   {
     icon: <Clock size={20} />,
     title: "Teslimat Süreleri",
-    body: "Standart kargoda siparişler hafta içi her gün saat 15:00'e kadar hazırlanır ve 2-4 iş günü içinde teslim edilir. Ekspres kargo seçtiyseniz aynı gün hazırlanır ve ertesi iş günü kapınızda olur.",
+    body: "Siparişler hafta içi her gün saat 15:00'e kadar hazırlanır ve 2-4 iş günü içinde teslim edilir.",
   },
   {
     icon: <Package size={20} />,
