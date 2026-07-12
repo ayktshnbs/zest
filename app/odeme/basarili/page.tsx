@@ -1,27 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { Check, Mail, Package, ArrowRight } from "lucide-react";
+import { Check, Clock, Package, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
 import { estimatedDelivery } from "@/lib/utils";
 
-const generateOrderNumber = () => {
-  const stamp = Date.now().toString(36).toUpperCase();
-  const rand = Math.floor(Math.random() * 9000 + 1000);
-  return `ZST-${stamp}-${rand}`;
-};
-
 export default function OrderSuccessPage() {
-  // Real order number comes from the checkout redirect (?order=…); fall back to
-  // a generated one only if the page is opened directly. Read from the URL
-  // rather than useSearchParams to avoid a Suspense boundary on this leaf page.
+  // Real order number comes from the checkout redirect (?order=…). We never
+  // fabricate one — if the page is opened directly, we show a dash and point
+  // the visitor to their account instead.
   const orderNumber = useMemo(() => {
     if (typeof window !== "undefined") {
       const fromUrl = new URLSearchParams(window.location.search).get("order");
       if (fromUrl) return fromUrl;
     }
-    return generateOrderNumber();
+    return null;
   }, []);
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24 bg-background">
@@ -43,36 +37,46 @@ export default function OrderSuccessPage() {
             Teşekkür Ederiz
           </h1>
           <p className="text-foreground/50 leading-relaxed">
-            Siparişiniz başarıyla oluşturuldu. Onay e-postası birkaç dakika içinde adresinize
-            ulaşacak.
+            Siparişiniz oluşturuldu ve <strong className="text-foreground">ödeme bekleniyor</strong>{" "}
+            durumundadır. Ödemeniz onaylandığında siparişiniz hazırlanmaya başlar ve size
+            e-posta ile bilgi verilir.
           </p>
         </div>
 
         <div className="border border-foreground/10 p-8 space-y-4 text-left">
-          <SummaryRow label="Sipariş No" value={orderNumber} />
-          <SummaryRow label="Tahmini Teslimat" value={estimatedDelivery()} />
+          <SummaryRow label="Sipariş No" value={orderNumber ?? "—"} />
           <SummaryRow
-            label="Bildirimler"
+            label="Ödeme Durumu"
             value={
-              <span className="inline-flex items-center gap-2 text-foreground/70">
-                <Mail size={12} /> E-posta ile gönderildi
+              <span className="inline-flex items-center gap-2 text-yellow-700">
+                <Clock size={12} /> Ödeme bekleniyor
               </span>
             }
           />
+          <SummaryRow label="Tahmini Teslimat" value={`Ödeme onayı sonrası · ${estimatedDelivery()}`} />
         </div>
+
+        <p className="text-[12px] text-foreground/50 font-body leading-relaxed">
+          Havale/EFT seçtiyseniz banka bilgilerimiz e-posta adresinize gönderilecektir.
+          Siparişinizin güncel durumunu{" "}
+          <Link href="/hesabim" className="underline text-foreground">
+            hesabım
+          </Link>{" "}
+          sayfasından takip edebilirsiniz.
+        </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            href="/shop"
+            href="/hesabim"
             className="px-10 py-4 bg-foreground text-background font-audiowide text-[10px] uppercase tracking-[0.3em] hover:opacity-90 transition-opacity inline-flex items-center justify-center gap-2"
           >
-            Alışverişe Devam Et <ArrowRight size={12} />
+            <Package size={12} /> Siparişlerim
           </Link>
           <Link
-            href="/yardim/kargo"
+            href="/shop"
             className="px-10 py-4 border border-foreground/15 font-audiowide text-[10px] uppercase tracking-[0.3em] hover:border-foreground transition-colors inline-flex items-center justify-center gap-2"
           >
-            <Package size={12} /> Sipariş Takibi
+            Alışverişe Devam Et <ArrowRight size={12} />
           </Link>
         </div>
       </div>

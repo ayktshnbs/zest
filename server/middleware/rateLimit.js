@@ -28,3 +28,18 @@ export const authRateLimiter = rateLimit({
   // Don't count successful auth — only retries / failures eat the budget
   skipSuccessfulRequests: true,
 });
+
+// Order creation reserves stock, so it gets a much tighter budget than
+// general browsing (default 10 per 15-minute window per IP). Applied ONLY to
+// POST /api/orders — reading order history stays on the global limiter.
+export const checkoutRateLimiter = rateLimit({
+  ...standardOptions,
+  windowMs: config.rateLimit.windowMs,
+  max: config.rateLimit.checkoutMax,
+  message: {
+    error: {
+      code: "rate_limited",
+      message: "Çok fazla sipariş denemesi yapıldı. Lütfen birkaç dakika sonra tekrar deneyin.",
+    },
+  },
+});

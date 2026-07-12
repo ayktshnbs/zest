@@ -64,6 +64,19 @@ const envSchema = z.object({
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(15 * 60 * 1000),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(300),
   AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(20),
+  // Order creation is stricter than general browsing: each POST reserves
+  // stock, so an abusive client could hold inventory hostage.
+  CHECKOUT_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(10),
+
+  // Pending-order expiry (jobs/expirePendingOrders.js). TTL = how long a
+  // pending order may hold stock; interval = in-process sweep cadence.
+  ORDER_EXPIRY_ENABLED: z
+    .string()
+    .optional()
+    .default("true")
+    .transform((v) => v !== "false"),
+  ORDER_PENDING_TTL_MINUTES: z.coerce.number().int().positive().default(60),
+  ORDER_EXPIRY_INTERVAL_MINUTES: z.coerce.number().int().positive().default(10),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -155,5 +168,12 @@ export const config = {
     windowMs: env.RATE_LIMIT_WINDOW_MS,
     max: env.RATE_LIMIT_MAX,
     authMax: env.AUTH_RATE_LIMIT_MAX,
+    checkoutMax: env.CHECKOUT_RATE_LIMIT_MAX,
+  },
+
+  orderExpiry: {
+    enabled: env.ORDER_EXPIRY_ENABLED,
+    ttlMinutes: env.ORDER_PENDING_TTL_MINUTES,
+    intervalMinutes: env.ORDER_EXPIRY_INTERVAL_MINUTES,
   },
 };

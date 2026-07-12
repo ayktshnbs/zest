@@ -5,6 +5,7 @@ import { z } from "zod";
 import * as orderController from "../controllers/orderController.js";
 import { validate } from "../middleware/validate.js";
 import { requireAuth } from "../middleware/auth.js";
+import { checkoutRateLimiter } from "../middleware/rateLimit.js";
 import {
   createOrderSchema,
   paginationSchema,
@@ -23,6 +24,7 @@ router.get(
 
 router.post(
   "/",
+  checkoutRateLimiter,
   validate({ body: createOrderSchema }),
   orderController.createOrder,
 );

@@ -8,13 +8,12 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
-  CreditCard,
+  Clock,
   Lock,
   Mail,
   Package,
   Phone,
   Truck,
-  User,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -46,13 +45,10 @@ type ShippingForm = {
   postalCode: string;
 };
 type DeliveryMethod = "standart" | "ekspres";
-type PaymentMethod = "kart" | "havale" | "kapida";
-type PaymentForm = {
-  cardName: string;
-  cardNumber: string;
-  cardExp: string;
-  cardCvv: string;
-};
+// "kart" (online card payment) is intentionally NOT selectable yet: PayTR
+// virtual POS integration is pending. We never render our own card fields —
+// when PayTR lands, the customer will pay on PayTR's hosted page/iframe.
+type PaymentMethod = "havale" | "kapida";
 
 const deliveryPricing: Record<DeliveryMethod, number> = {
   standart: STANDARD_SHIPPING_COST,
@@ -79,13 +75,7 @@ export default function CheckoutPage() {
     postalCode: "",
   });
   const [delivery, setDelivery] = useState<DeliveryMethod>("standart");
-  const [payment, setPayment] = useState<PaymentMethod>("kart");
-  const [card, setCard] = useState<PaymentForm>({
-    cardName: "",
-    cardNumber: "",
-    cardExp: "",
-    cardCvv: "",
-  });
+  const [payment, setPayment] = useState<PaymentMethod>("havale");
   const [agree, setAgree] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -123,18 +113,10 @@ export default function CheckoutPage() {
       );
     }
     if (step === "delivery") return Boolean(delivery);
-    if (step === "payment") {
-      if (payment !== "kart") return true;
-      return (
-        card.cardName.trim().length >= 3 &&
-        card.cardNumber.replace(/\s/g, "").length >= 14 &&
-        /\d{2}\/\d{2}/.test(card.cardExp) &&
-        card.cardCvv.length >= 3
-      );
-    }
+    if (step === "payment") return Boolean(payment);
     if (step === "review") return agree;
     return true;
-  }, [step, contact, shipping, delivery, payment, card, agree]);
+  }, [step, contact, shipping, delivery, payment, agree]);
 
   const goNext = () => {
     const idx = steps.findIndex((s) => s.id === step);
@@ -156,8 +138,7 @@ export default function CheckoutPage() {
     setError(null);
 
     const deliveryLabel = delivery === "ekspres" ? "Ekspres Kargo" : "Standart Kargo";
-    const paymentLabel =
-      payment === "kart" ? "Kredi/Banka Kartı" : payment === "havale" ? "Havale/EFT" : "Kapıda Ödeme";
+    const paymentLabel = payment === "havale" ? "Havale/EFT" : "Kapıda Ödeme";
 
     try {
       // Only productId + quantity are trusted by the API — price, shipping and
@@ -434,9 +415,28 @@ export default function CheckoutPage() {
                 {step === "payment" ? (
                   <FormCard title="Ödeme Yöntemi" eyebrow="4. Adım">
                     <div className="space-y-3 mb-6">
+                      {/* Online card payment — visible but not selectable until
+                          PayTR virtual POS goes live. We do NOT render card
+                          fields ourselves; PayTR's hosted page will handle
+                          card entry when the integration is complete. */}
+                      <div
+                        aria-disabled
+                        className="flex items-start gap-4 p-5 border border-dashed border-foreground/15 opacity-60 select-none"
+                      >
+                        <input type="radio" name="payment" disabled className="mt-1" />
+                        <div>
+                          <p className="font-audiowide text-[11px] uppercase tracking-[0.3em] text-foreground">
+                            Kredi / Banka Kartı
+                          </p>
+                          <p className="text-[12px] text-foreground/50 mt-1 font-body">
+                            Çok yakında — PayTR güvenli ödeme entegrasyonu tamamlandığında
+                            aktif olacaktır.
+                          </p>
+                        </div>
+                      </div>
+
                       {(
                         [
-                          ["kart", "Kredi / Banka Kartı", "Visa, MasterCard, Troy"],
                           ["havale", "Havale / EFT", "Banka bilgileri e-posta ile gönderilir"],
                           ["kapida", "Kapıda Ödeme", "Nakit veya kart ile teslimat anında"],
                         ] as [PaymentMethod, string, string][]
@@ -471,76 +471,14 @@ export default function CheckoutPage() {
                       })}
                     </div>
 
-                    {payment === "kart" ? (
-                      <div className="space-y-5">
-                        <Field label="Kart Üzerindeki İsim" icon={<User size={14} />}>
-                          <input
-                            value={card.cardName}
-                            onChange={(e) =>
-                              setCard({ ...card, cardName: e.target.value })
-                            }
-                            placeholder="Adınız Soyadınız"
-                            autoComplete="cc-name"
-                            className="form-input"
-                          />
-                        </Field>
-                        <Field label="Kart Numarası" icon={<CreditCard size={14} />}>
-                          <input
-                            value={card.cardNumber}
-                            onChange={(e) =>
-                              setCard({
-                                ...card,
-                                cardNumber: e.target.value
-                                  .replace(/[^\d ]/g, "")
-                                  .replace(/(\d{4})(?=\d)/g, "$1 ")
-                                  .slice(0, 19),
-                              })
-                            }
-                            placeholder="0000 0000 0000 0000"
-                            autoComplete="cc-number"
-                            inputMode="numeric"
-                            className="form-input tracking-widest"
-                          />
-                        </Field>
-                        <div className="grid grid-cols-2 gap-5">
-                          <Field label="Son Kullanma (AA/YY)">
-                            <input
-                              value={card.cardExp}
-                              onChange={(e) => {
-                                const digits = e.target.value.replace(/\D/g, "").slice(0, 4);
-                                const formatted =
-                                  digits.length > 2
-                                    ? `${digits.slice(0, 2)}/${digits.slice(2)}`
-                                    : digits;
-                                setCard({ ...card, cardExp: formatted });
-                              }}
-                              placeholder="MM/YY"
-                              autoComplete="cc-exp"
-                              className="form-input"
-                            />
-                          </Field>
-                          <Field label="CVV">
-                            <input
-                              value={card.cardCvv}
-                              onChange={(e) =>
-                                setCard({
-                                  ...card,
-                                  cardCvv: e.target.value.replace(/\D/g, "").slice(0, 4),
-                                })
-                              }
-                              placeholder="123"
-                              autoComplete="cc-csc"
-                              inputMode="numeric"
-                              className="form-input"
-                            />
-                          </Field>
-                        </div>
-                        <p className="text-[11px] text-foreground/40 font-body flex items-center gap-2">
-                          <Lock size={11} /> 256-bit SSL ile şifrelenmiş ödeme. Kart bilgileriniz
-                          saklanmaz.
-                        </p>
-                      </div>
-                    ) : null}
+                    <p className="text-[12px] text-foreground/60 bg-foreground/[0.03] border border-foreground/10 px-4 py-3 font-body flex items-start gap-2">
+                      <Clock size={13} className="mt-0.5 shrink-0" />
+                      <span>
+                        Siparişiniz <strong className="text-foreground">“ödeme bekleniyor”</strong>{" "}
+                        durumunda alınır. Havale/EFT seçtiyseniz banka bilgilerimiz e-posta ile
+                        gönderilir; ödemeniz onaylandığında siparişiniz hazırlanmaya başlar.
+                      </span>
+                    </p>
                   </FormCard>
                 ) : null}
 
@@ -568,12 +506,9 @@ export default function CheckoutPage() {
                         </p>
                       </ReviewBlock>
                       <ReviewBlock title="Ödeme" onEdit={() => setStep("payment")}>
-                        <p>
-                          {payment === "kart"
-                            ? `Kredi/Banka Kartı · **** ${card.cardNumber.slice(-4)}`
-                            : payment === "havale"
-                            ? "Havale / EFT"
-                            : "Kapıda Ödeme"}
+                        <p>{payment === "havale" ? "Havale / EFT" : "Kapıda Ödeme"}</p>
+                        <p className="text-foreground/50">
+                          Sipariş “ödeme bekleniyor” durumunda oluşturulur.
                         </p>
                       </ReviewBlock>
 

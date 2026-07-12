@@ -12,6 +12,7 @@
     "start": "node --env-file=.env server.js",
     "migrate": "node --env-file=.env database/migrate.js",
     "seed:inventory": "node --env-file=.env database/seed-inventory.js",
+    "expire-orders": "node --env-file=.env jobs/run-expire-orders.js",
     "lint": "eslint ."
   },
   "dependencies": {

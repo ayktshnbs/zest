@@ -4,12 +4,18 @@ import { createApp } from "./app.js";
 import { config } from "./config.js";
 import { logger } from "./utils/logger.js";
 import { pool } from "./database/pool.js";
+import { startOrderExpiryScheduler } from "./jobs/expirePendingOrders.js";
 
 const app = createApp();
 
 const server = app.listen(config.port, () => {
   logger.info({ port: config.port, env: config.env }, "Server listening");
 });
+
+// Releases stock held by abandoned pending orders. Idempotent — safe even if
+// several instances run it. Disable with ORDER_EXPIRY_ENABLED=false when
+// moving to an external scheduler (e.g. Render Cron → npm run expire-orders).
+startOrderExpiryScheduler();
 
 server.keepAliveTimeout = 65_000;
 server.headersTimeout = 66_000;
