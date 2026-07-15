@@ -39,7 +39,12 @@ export const categories: Category[] = [
       "Evinizin her alanına değer katan pratik ve şık ürünler. Yeni koleksiyon çok yakında sizlerle.",
     image:
       "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?auto=format&fit=crop&q=80&w=1200",
-    subcategories: [],
+    subcategories: [
+      {
+        slug: "organizerlar",
+        label: "Organizerlar",
+      },
+    ],
   },
 ];
 

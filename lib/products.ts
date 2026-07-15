@@ -11,6 +11,7 @@ interface ProductSeed {
   id: string;
   imageCount: number;
   name: string;
+  topCategory?: string;
   category: string;
   subcategory?: string;
   price: number;
@@ -1129,6 +1130,408 @@ const seeds: ProductSeed[] = [
     tags: ["kase", "set", "lunar", "kapakli", "saklama"],
     isNew: true,
   },
+
+  // ── Ev Gereçleri › Organizerlar ──────────────────────────────────
+  {
+    id: "org-ak499",
+    imageCount: 0,
+    name: "Piramit Kozmetik Ürün Düzenleyicisi",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 249.99,
+    stock: 24,
+    rating: 4.6,
+    reviewCount: 0,
+    shortDescription:
+      "Piramit formlu çok gözlü kozmetik düzenleyici; tüm makyaj malzemeleriniz tek yerde.",
+    description:
+      "Piramit Kozmetik Ürün Düzenleyicisi, kademeli raf yapısıyla rujlar, fondötenler ve fırçalar için ayrı bölmeler sunar. Şeffaf tasarımı sayesinde aradığınızı anında bulursunuz.",
+    features: [
+      "Piramit kademeli tasarım",
+      "Çok gözlü bölmeler",
+      "Şeffaf gövde",
+      "Kolay temizlenebilir yüzey",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "kozmetik", "piramit"],
+    isNew: true,
+  },
+  {
+    id: "org-ak500",
+    imageCount: 0,
+    name: "Podyum Kozmetik Ürün Düzenleyicisi",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 159.99,
+    stock: 24,
+    rating: 4.5,
+    reviewCount: 0,
+    shortDescription:
+      "Podyum tarzı kompakt kozmetik düzenleyici; tezgâhınızda şık durur.",
+    description:
+      "Podyum Kozmetik Ürün Düzenleyicisi, yükseltilmiş platformuyla kozmetik ürünlerinizi sergiler gibi düzenler. Kompakt boyutuyla banyo tezgâhında az yer kaplar.",
+    features: [
+      "Yükseltilmiş podyum tasarım",
+      "Kompakt boyut",
+      "Kolay erişim",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "kozmetik", "podyum"],
+    isNew: true,
+  },
+  {
+    id: "org-ak503",
+    imageCount: 0,
+    name: "2'li Makyaj Organizer Set",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 169.99,
+    stock: 12,
+    rating: 4.7,
+    reviewCount: 0,
+    shortDescription:
+      "İki parçadan oluşan makyaj organizer seti; yan yana veya ayrı kullanılabilir.",
+    description:
+      "2'li Makyaj Organizer Set, birbirini tamamlayan iki modülle makyaj malzemelerinizi düzenli tutar. Yan yana koyarak geniş bir düzenleme alanı oluşturabilir veya ayrı kullanabilirsiniz.",
+    features: [
+      "2 parçalı modüler tasarım",
+      "Yan yana veya ayrı kullanım",
+      "Çoklu bölmeler",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "makyaj", "set", "2li"],
+    isNew: true,
+  },
+  {
+    id: "org-ak504",
+    imageCount: 0,
+    name: "3'lü Makyaj Organizer Set",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 189.99,
+    stock: 12,
+    rating: 4.7,
+    reviewCount: 0,
+    shortDescription:
+      "Üç parçalı makyaj organizer seti; geniş koleksiyon sahipleri için.",
+    description:
+      "3'lü Makyaj Organizer Set, üç ayrı modülüyle geniş makyaj koleksiyonlarını düzenli tutar. Fırçalar, rujlar ve bakım ürünleri için ayrı bölmeler sunar.",
+    features: [
+      "3 parçalı modüler tasarım",
+      "Geniş düzenleme alanı",
+      "Her modül ayrı kullanılabilir",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "makyaj", "set", "3lu"],
+    isNew: true,
+  },
+  {
+    id: "org-ak505",
+    imageCount: 0,
+    name: "Makyaj Pamukluğu",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 99.99,
+    stock: 24,
+    rating: 4.5,
+    reviewCount: 0,
+    shortDescription:
+      "Kapaklı pamuk ve kulak çubuğu düzenleyicisi; banyonuzda hijyenik saklama.",
+    description:
+      "Makyaj Pamukluğu, kapaklı bölmeleriyle pamuk pedleri ve kulak çubuklarını toz ve nemden korur. Şık tasarımıyla banyo tezgâhında dekoratif bir aksesuar görevi görür.",
+    features: [
+      "Kapaklı hijyenik saklama",
+      "Ayrı bölmeler",
+      "Kompakt boyut",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "pamuk", "banyo"],
+    isNew: true,
+  },
+  {
+    id: "org-ak515",
+    imageCount: 0,
+    name: "4 Katlı Silindir Makyaj Organizeri",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 159.99,
+    stock: 12,
+    rating: 4.8,
+    reviewCount: 0,
+    shortDescription:
+      "Döner silindir formunda 4 katlı makyaj organizeri; 360° erişim kolaylığı.",
+    description:
+      "4 Katlı Silindir Makyaj Organizeri, döner yapısıyla tüm makyaj malzemelerinize 360 derece erişim sağlar. Dört ayrı kat sayesinde ürünlerinizi kategorize edebilirsiniz.",
+    features: [
+      "360° döner silindir tasarım",
+      "4 ayrı kat",
+      "Geniş saklama kapasitesi",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "silindir", "4-katli", "doner"],
+    isNew: true,
+  },
+  {
+    id: "org-ak522",
+    imageCount: 0,
+    name: "Küçük Çekmece Modülü",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 149.99,
+    stock: 24,
+    rating: 4.6,
+    reviewCount: 0,
+    shortDescription:
+      "Kompakt çekmeceli modül; küçük aksesuarlar ve makyaj malzemeleri için.",
+    description:
+      "Küçük Çekmece Modülü, çekmeceli yapısıyla mücevher, saç tokası ve küçük makyaj aksesuarlarınızı düzenli tutar. Tezgâh üstünde minimum yer kaplar.",
+    features: [
+      "Çekmeceli kompakt tasarım",
+      "Küçük aksesuar saklama",
+      "Minimum alan kullanımı",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "cekmece", "kucuk"],
+    isNew: true,
+  },
+  {
+    id: "org-ak523",
+    imageCount: 0,
+    name: "Çekmeceli Piramit Kozmetik Ürün Düzenleyicisi",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 329.99,
+    stock: 12,
+    rating: 4.8,
+    reviewCount: 0,
+    shortDescription:
+      "Çekmeceli piramit düzenleyici; üstte açık bölmeler, altta çekmece.",
+    description:
+      "Çekmeceli Piramit Kozmetik Ürün Düzenleyicisi, piramit formlu üst bölmeleriyle sık kullandığınız ürünlere kolay erişim sağlarken, alt çekmecesiyle küçük aksesuarları gizli tutar.",
+    features: [
+      "Piramit üst bölmeler + alt çekmece",
+      "Çift fonksiyonlu tasarım",
+      "Geniş saklama alanı",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "piramit", "cekmece"],
+    isNew: true,
+  },
+  {
+    id: "org-ak634",
+    imageCount: 0,
+    name: "Üç Gözlü Çekmece",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 399.99,
+    stock: 12,
+    rating: 4.7,
+    reviewCount: 0,
+    shortDescription:
+      "Üç gözlü çekmece sistemi; makyaj ve aksesuarlarınızı kategorize edin.",
+    description:
+      "Üç Gözlü Çekmece, üç ayrı çekmecesiyle makyaj malzemelerini, takıları ve aksesuarları kategorize etmenizi sağlar. Her çekmece bağımsız açılır ve kolayca temizlenir.",
+    features: [
+      "3 bağımsız çekmece",
+      "Geniş saklama kapasitesi",
+      "Kolay açma/kapama",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "cekmece", "3-gozlu"],
+    isNew: true,
+  },
+  {
+    id: "org-ak635",
+    imageCount: 0,
+    name: "Organizerli Üç Çekmeceli Set",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 499.99,
+    stock: 8,
+    rating: 4.9,
+    reviewCount: 0,
+    shortDescription:
+      "Üst organizer + üç çekmeceli alt modül; komple makyaj istasyonu.",
+    description:
+      "Organizerli Üç Çekmeceli Set, üst kısmındaki açık organizerle sık kullanılan ürünlere anında erişim sağlarken, üç katlı çekmece sistemiyle geniş bir saklama alanı sunar.",
+    features: [
+      "Üst açık organizer bölümü",
+      "3 katlı çekmece sistemi",
+      "Komple makyaj istasyonu",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "cekmece", "set", "istasyon"],
+    isNew: true,
+  },
+  {
+    id: "org-ak730",
+    imageCount: 0,
+    name: "Yuvarlak İkili Organizer",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 249.99,
+    stock: 24,
+    rating: 4.6,
+    reviewCount: 0,
+    shortDescription:
+      "Yuvarlak formlu iki parçalı organizer; fırçalar ve kozmetik için.",
+    description:
+      "Yuvarlak İkili Organizer, silindirik iki modülüyle makyaj fırçalarını ve kozmetik ürünlerini şık biçimde düzenler. Yuvarlak formu tezgâhta hoş bir görünüm sağlar.",
+    features: [
+      "2 parçalı yuvarlak tasarım",
+      "Fırça ve kozmetik bölmeleri",
+      "Şık silindirik form",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "yuvarlak", "ikili"],
+    isNew: true,
+  },
+  {
+    id: "org-ak731",
+    imageCount: 0,
+    name: "Mücevher Kutusu",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 399.99,
+    stock: 12,
+    rating: 4.8,
+    reviewCount: 0,
+    shortDescription:
+      "Çok bölmeli mücevher kutusu; yüzük, kolye ve küpeleriniz için özel gözler.",
+    description:
+      "Mücevher Kutusu, kadife kaplı iç bölmeleriyle yüzük, kolye, bileklik ve küpelerinizi çizilmeden saklar. Şeffaf kapağı sayesinde içeriği görebilirsiniz.",
+    features: [
+      "Çok bölmeli iç yapı",
+      "Yüzük, kolye, küpe bölmeleri",
+      "Şeffaf kapaklı tasarım",
+      "Dekoratif görünüm",
+    ],
+    materials: "Akrilik gövde, kadife iç astar.",
+    care: "Nemli bezle silin. Kadife kısmı kuru fırçayla temizleyin.",
+    tags: ["organizer", "mucevher", "kutu", "taki"],
+    isNew: true,
+  },
+  {
+    id: "org-ak766",
+    imageCount: 0,
+    name: "Aynalı 4 Katlı Kare Organizer",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 189.99,
+    stock: 12,
+    rating: 4.7,
+    reviewCount: 0,
+    shortDescription:
+      "Aynalı kapaklı, 4 katlı kare organizer; makyaj yaparken ayna elinizin altında.",
+    description:
+      "Aynalı 4 Katlı Kare Organizer, üst kapağındaki ayna ile makyaj yaparken ekstra aksesuar ihtiyacını ortadan kaldırır. Dört katlı döner yapısıyla geniş saklama sunar.",
+    features: [
+      "Üst kapakta entegre ayna",
+      "4 katlı döner yapı",
+      "Kare kompakt form",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik, cam ayna.",
+    care: "Nemli bezle silin. Aynayı cam temizleyiciyle silin.",
+    tags: ["organizer", "aynali", "4-katli", "kare"],
+    isNew: true,
+  },
+  {
+    id: "org-ak865",
+    imageCount: 0,
+    name: "Premium Makyaj Organizeri",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 899.99,
+    stock: 4,
+    rating: 4.9,
+    reviewCount: 0,
+    shortDescription:
+      "Büyük boy premium makyaj organizeri; profesyonel koleksiyonlar için tasarlandı.",
+    description:
+      "Premium Makyaj Organizeri, çok sayıda bölme, çekmece ve açık raf sistemiyle profesyonel makyaj koleksiyonlarını eksiksiz düzenler. Geniş kapasitesi ve sağlam yapısıyla uzun ömürlüdür.",
+    features: [
+      "Profesyonel geniş kapasite",
+      "Çekmece + açık raf kombinasyonu",
+      "Çok bölmeli tasarım",
+      "Dayanıklı kalın akrilik",
+    ],
+    materials: "Premium kalınlıkta şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "premium", "profesyonel", "buyuk"],
+    isNew: true,
+  },
+  {
+    id: "org-ak869",
+    imageCount: 0,
+    name: "7 Gözlü Makyaj Organizeri",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 229.99,
+    stock: 12,
+    rating: 4.7,
+    reviewCount: 0,
+    shortDescription:
+      "7 ayrı gözlü makyaj organizeri; her ürün grubuna özel bölme.",
+    description:
+      "7 Gözlü Makyaj Organizeri, yedi farklı boyutta bölmesiyle ruj, far, fondöten, fırça ve daha fazlasını ayrı ayrı düzenlemenizi sağlar.",
+    features: [
+      "7 farklı boyutta göz",
+      "Her ürün grubuna özel bölme",
+      "Pratik düzenleme",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "7-gozlu", "makyaj"],
+    isNew: true,
+  },
+  {
+    id: "org-mtaki",
+    imageCount: 0,
+    name: "Takı Organizeri",
+    topCategory: "genel-ev-urunleri",
+    category: "organizerlar",
+    price: 159.99,
+    stock: 24,
+    rating: 4.6,
+    reviewCount: 0,
+    shortDescription:
+      "Kompakt takı organizeri; yüzük, küpe ve bilekliklerinizi düzenli saklayın.",
+    description:
+      "Takı Organizeri, özel bölmeleriyle yüzük, küpe, kolye ve bilekliklerinizi karışmadan saklar. Kompakt boyutuyla çekmece içi veya tezgâh üstü kullanıma uygundur.",
+    features: [
+      "Takı türlerine göre özel bölmeler",
+      "Kompakt boyut",
+      "Çekmece içi veya tezgâh üstü kullanım",
+      "Şeffaf gövde",
+    ],
+    materials: "Şeffaf akrilik.",
+    care: "Nemli bezle silin. Alkol bazlı temizleyicilerden kaçının.",
+    tags: ["organizer", "taki", "yuzuk", "kupe"],
+    isNew: true,
+  },
 ];
 
 const buildImages = (id: string, count: number) =>
@@ -1144,11 +1547,8 @@ const imagesFor = (id: string, count: number) => {
 
 const ensureSlug = (s: string) => slugify(s);
 
-// Every existing product belongs to the "Mutfak" (kitchen) top-level category.
-// The seed's `category` field (the former top-level group) becomes a
-// subcategory of Mutfak; its former fine-grained `subcategory` is preserved as
-// a search tag so the older groupings stay discoverable via search.
-const KITCHEN_CATEGORY = "mutfak";
+const DEFAULT_TOP_CATEGORY = "mutfak";
+const PLACEHOLDER_IMAGE = "/placeholder-product.svg";
 
 const FINE_SUBCATEGORY_LABELS: Record<string, string> = {
   "vakumlu-kavanozlar": "Vakumlu Kavanozlar",
@@ -1175,14 +1575,14 @@ const FINE_SUBCATEGORY_LABELS: Record<string, string> = {
 };
 
 export const products: Product[] = seeds.map((seed) => {
-  const cat = categoryMap[KITCHEN_CATEGORY];
-  if (!cat) throw new Error(`Unknown category: ${KITCHEN_CATEGORY}`);
-  // The former top-level group is now a subcategory of Mutfak.
+  const topSlug = seed.topCategory ?? DEFAULT_TOP_CATEGORY;
+  const cat = categoryMap[topSlug];
+  if (!cat) throw new Error(`Unknown category: ${topSlug}`);
   const subSlug = seed.category;
   const sub = cat.subcategories.find((x) => x.slug === subSlug);
 
   const images = imagesFor(seed.id, seed.imageCount);
-  const cover = images[0];
+  const cover = images[0] ?? PLACEHOLDER_IMAGE;
   const discountPercent = seed.originalPrice
     ? Math.round(
         ((seed.originalPrice - seed.price) / seed.originalPrice) * 100,
@@ -1208,7 +1608,7 @@ export const products: Product[] = seeds.map((seed) => {
     price: seed.price,
     originalPrice: seed.originalPrice,
     discountPercent,
-    category: KITCHEN_CATEGORY,
+    category: topSlug,
     categoryLabel: cat.label,
     subcategory: subSlug,
     subcategoryLabel: sub?.label,
