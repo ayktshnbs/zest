@@ -7,8 +7,15 @@ import {
   uploadImage,
   type AdminCategory,
 } from "@/lib/api";
-import { Trash2, ImagePlus } from "lucide-react";
+import { Trash2, ImagePlus, Lock } from "lucide-react";
 import { refreshLiveCatalog } from "@/lib/useStock";
+import { categories as builtinCategories } from "@/lib/categories";
+
+// Slugs owned by the code-defined catalog (top-level + subcategories). The
+// server rejects these on create too; checking here gives instant feedback.
+const BUILTIN_SLUGS = new Set(
+  builtinCategories.flatMap((c) => [c.slug, ...c.subcategories.map((s) => s.slug)]),
+);
 
 const slugifyTr = (s: string) => {
   const tr: Record<string, string> = { ı:"i", İ:"i", ş:"s", Ş:"s", ğ:"g", Ğ:"g", ü:"u", Ü:"u", ö:"o", Ö:"o", ç:"c", Ç:"c" };
@@ -59,6 +66,15 @@ export default function AdminCategoriesPage() {
 
   const create = async () => {
     if (!label.trim() || !slug.trim()) return;
+    const cleanSlug = slug.trim();
+    if (BUILTIN_SLUGS.has(cleanSlug)) {
+      setErr("Bu slug yerleşik bir kategoriye ait. Lütfen farklı bir slug seçin.");
+      return;
+    }
+    if (list.some((c) => c.slug === cleanSlug)) {
+      setErr("Bu slug ile bir kategori zaten var.");
+      return;
+    }
     setCreating(true);
     setErr(null);
     try {
@@ -156,6 +172,53 @@ export default function AdminCategoriesPage() {
       <h2 className="font-audiowide text-[11px] uppercase tracking-[0.3em] text-foreground/60 mb-4">
         Mevcut Kategoriler
       </h2>
+
+      {/* Built-in (code-defined) categories — always present, not deletable
+          from here because storefront URLs, products, and SEO depend on them. */}
+      <ul className="space-y-2 mb-6">
+        {builtinCategories.map((c) => (
+          <li key={c.slug} className="border border-foreground/10 p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                {c.image ? (
+                  <img src={c.image} alt="" className="w-12 h-12 object-cover" />
+                ) : (
+                  <div className="w-12 h-12 bg-foreground/5" />
+                )}
+                <div>
+                  <p className="text-foreground">
+                    {c.label}
+                    <span className="ml-2 align-middle inline-flex items-center gap-1 border border-foreground/15 px-2 py-0.5 font-audiowide text-[8px] uppercase tracking-[0.25em] text-foreground/50">
+                      <Lock size={9} /> Yerleşik
+                    </span>
+                  </p>
+                  <p className="text-foreground/40 font-audiowide text-[11px]">{c.slug}</p>
+                </div>
+              </div>
+              <span
+                className="p-2 text-foreground/20 cursor-not-allowed"
+                title="Yerleşik kategori — mağaza sayfaları ve ürünler buna bağlı olduğu için silinemez"
+              >
+                <Trash2 size={16} />
+              </span>
+            </div>
+            {c.subcategories.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5 mt-3 pl-16">
+                {c.subcategories.map((s) => (
+                  <span
+                    key={s.slug}
+                    className="text-[10px] font-body border border-foreground/10 px-2.5 py-1 text-foreground/60"
+                  >
+                    {s.label}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+
+      {/* Admin-created categories */}
       {loading ? (
         <p className="text-foreground/40 font-body text-sm">Yükleniyor…</p>
       ) : list.length === 0 ? (
