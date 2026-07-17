@@ -28,6 +28,7 @@ const GROUP_ORDER = [
   "Doğrayıcılar & Rendeler",
   "Servis & Sofra",
   "Mutfak Yardımcıları",
+  "Organizerlar",
   "Diğer",
 ];
 
@@ -37,6 +38,8 @@ const BUILTIN_CATEGORY_OPTIONS = [
   { slug: "dograyicilar-rendeler", label: "Mutfak › Doğrayıcılar & Rendeler" },
   { slug: "servis-sofra", label: "Mutfak › Servis & Sofra" },
   { slug: "mutfak-yardimcilari", label: "Mutfak › Mutfak Yardımcıları" },
+  { slug: "genel-ev-urunleri", label: "Ev Gereçleri" },
+  { slug: "organizerlar", label: "Ev Gereçleri › Organizerlar" },
 ];
 
 export default function AdminProductsPage() {
@@ -193,6 +196,7 @@ const BUILTIN_CATEGORY_LABEL: Record<string, string> = {
   "dograyicilar-rendeler": "Doğrayıcılar & Rendeler",
   "servis-sofra": "Servis & Sofra",
   "mutfak-yardimcilari": "Mutfak Yardımcıları",
+  organizerlar: "Organizerlar",
 };
 
 function ProductGroups({

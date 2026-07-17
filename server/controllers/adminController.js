@@ -24,6 +24,7 @@ const BUILTIN_CATEGORY_SLUGS = new Set([
   "servis-sofra",
   "mutfak-yardimcilari",
   "genel-ev-urunleri",
+  "organizerlar",
 ]);
 
 const ensureCategoryExists = async (slug) => {
