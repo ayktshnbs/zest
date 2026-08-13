@@ -1,166 +1,185 @@
-// Creem webhook handler.
+// PayTR callback (bildirim) handler.
 //
 // Critical contract:
-//   1. Request body arrives as a raw Buffer (configured in app.js).
-//   2. Verify HMAC signature BEFORE parsing JSON.
-//   3. Claim the event ID in webhook_events. If we've seen it, ack and stop.
-//   4. Dispatch by event type.
-//
-// Always return 2xx after we've safely persisted the event — even on
-// processing errors. Otherwise the provider retries and we lose
-// idempotency. Processing failures are flagged in the webhook_events row.
+//   1. PayTR POSTs application/x-www-form-urlencoded data.
+//   2. Verify HMAC hash BEFORE processing.
+//   3. Use webhook_events for idempotency — same merchant_oid never processed twice.
+//   4. Update payment + order status inside a DB transaction.
+//   5. ALWAYS return plain-text "OK" (HTTP 200) after claiming the event,
+//      even on processing errors. Otherwise PayTR retries endlessly.
 
+import { pool } from "../database/pool.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { verifyWebhookSignature } from "../services/paymentService.js";
+import { verifyPaytrHash } from "../services/paymentService.js";
 import * as WebhookEventModel from "../models/WebhookEventModel.js";
 import * as PaymentModel from "../models/PaymentModel.js";
 import * as OrderModel from "../models/OrderModel.js";
 import { recordAuditEvent } from "../services/auditService.js";
 import { logger } from "../utils/logger.js";
 
-export const creemWebhook = asyncHandler(async (req, res) => {
-  // 1. Signature check
-  const ok = verifyWebhookSignature(req.body, req.headers);
-  if (!ok) {
-    logger.warn({ ip: req.ip }, "Rejected webhook with bad signature");
-    return res.status(400).json({ error: { code: "bad_signature" } });
+/**
+ * Extract the order UUID from a merchant_oid like "PAYTR-{uuid}".
+ */
+const parseOrderId = (merchantOid) => {
+  if (!merchantOid) return null;
+  const str = String(merchantOid);
+  return str.startsWith("PAYTR-") ? str.slice(6) : str;
+};
+
+export const paytrCallback = asyncHandler(async (req, res) => {
+  // 1. Read form-urlencoded body fields
+  const {
+    merchant_oid: merchantOid,
+    status,
+    total_amount: totalAmount,
+    hash,
+    payment_type: paymentType,
+    failed_reason_code: failedReasonCode,
+    failed_reason_msg: failedReasonMsg,
+    currency,
+    test_mode: testMode,
+  } = req.body;
+
+  // 2. Hash verification — reject immediately if invalid.
+  const hashValid = verifyPaytrHash({
+    merchantOid,
+    status,
+    totalAmount,
+    hash,
+  });
+
+  if (!hashValid) {
+    logger.warn(
+      { merchantOid, ip: req.ip },
+      "PayTR callback rejected: invalid hash",
+    );
+    // PayTR expects "OK" even on rejection to stop retries. However, for
+    // an invalid hash we return a non-OK response so PayTR knows we
+    // didn't accept it — this is a security boundary.
+    return res.status(400).type("text/plain").send("HASH_MISMATCH");
   }
 
-  // 2. Parse JSON (only after signature is verified)
-  let event;
-  try {
-    event = JSON.parse(req.body.toString("utf8"));
-  } catch {
-    return res.status(400).json({ error: { code: "invalid_json" } });
-  }
+  // 3. Idempotent claim — if this returns null, we already processed it.
+  const eventId = `paytr-${merchantOid}`;
+  const eventType = status === "success" ? "payment.succeeded" : "payment.failed";
 
-  const eventId = event.id || event.event_id;
-  const eventType = event.type || event.event_type;
-  if (!eventId || !eventType) {
-    return res.status(400).json({ error: { code: "missing_event_fields" } });
-  }
-
-  // 3. Idempotent claim — if this returns null, we've already processed.
   const claim = await WebhookEventModel.tryClaim({
-    provider: "creem",
+    provider: "paytr",
     eventId,
     eventType,
-    payload: event,
+    payload: {
+      merchant_oid: merchantOid,
+      status,
+      total_amount: totalAmount,
+      payment_type: paymentType,
+      failed_reason_code: failedReasonCode,
+      failed_reason_msg: failedReasonMsg,
+      currency,
+      test_mode: testMode,
+    },
   });
+
   if (!claim) {
-    return res.json({ ok: true, duplicate: true });
+    // Already processed — acknowledge to stop retries.
+    return res.status(200).type("text/plain").send("OK");
   }
 
-  // 4. Dispatch
+  // 4. Process the callback atomically within a transaction
+  const client = await pool.connect();
   try {
-    switch (eventType) {
-      case "checkout.completed":
-      case "checkout.session.completed":
-      case "payment.succeeded":
-        await handlePaymentSucceeded(event);
-        break;
+    await client.query("BEGIN");
+    
+    const orderId = parseOrderId(merchantOid);
+    if (!orderId) throw new Error(`Cannot parse order ID from ${merchantOid}`);
 
-      case "checkout.failed":
-      case "payment.failed":
-        await handlePaymentFailed(event);
-        break;
+    // Lock the order row to prevent concurrent modifications during the transaction.
+    const { rows } = await client.query("SELECT * FROM orders WHERE id = $1 FOR UPDATE", [orderId]);
+    const order = rows[0];
+    
+    if (!order) throw new Error(`Unknown order ${orderId}`);
 
-      case "payment.refunded":
-        await handlePaymentRefunded(event);
-        break;
-
-      default:
-        logger.info({ eventType, eventId }, "Unhandled webhook event type");
+    // Verify amount matches what we expect (kuruş).
+    const expectedAmount = Number(order.total_cents);
+    const receivedAmount = Number(totalAmount);
+    if (expectedAmount !== receivedAmount) {
+      logger.warn(
+        { merchantOid, expected: expectedAmount, received: receivedAmount },
+        "PayTR callback amount mismatch",
+      );
     }
 
-    await WebhookEventModel.markProcessed(claim.id);
-    res.json({ ok: true });
+    if (status === "success") {
+      await PaymentModel.upsertFromWebhook({
+        orderId: order.id,
+        provider: "paytr",
+        providerSessionId: merchantOid,
+        providerPaymentId: `paytr_${merchantOid}`,
+        status: "succeeded",
+        amountCents: receivedAmount,
+        currency: currency || order.currency,
+        rawPayload: req.body,
+      }, client);
+
+      // Only transition pending → paid (don't regress a later status).
+      if (order.status === "pending" && expectedAmount === receivedAmount) {
+        await OrderModel.updateStatus(order.id, "paid", client);
+      }
+
+      await recordAuditEvent({
+        userId: order.user_id,
+        action: "payment.succeeded",
+        metadata: { orderId: order.id, merchantOid, paymentType },
+      });
+    } else {
+      // status === "failed"
+      await PaymentModel.upsertFromWebhook({
+        orderId: order.id,
+        provider: "paytr",
+        providerSessionId: merchantOid,
+        providerPaymentId: `paytr_${merchantOid}`,
+        status: "failed",
+        amountCents: receivedAmount || expectedAmount,
+        currency: currency || order.currency,
+        failureReason: failedReasonMsg
+          ? `[${failedReasonCode}] ${failedReasonMsg}`
+          : `Payment failed (code: ${failedReasonCode || "unknown"})`,
+        rawPayload: req.body,
+      }, client);
+
+      // Mark order as failed only if it's still pending.
+      if (order.status === "pending") {
+        await OrderModel.updateStatus(order.id, "failed", client);
+      }
+
+      await recordAuditEvent({
+        action: "payment.failed",
+        metadata: {
+          orderId: order.id,
+          merchantOid,
+          reason: failedReasonMsg,
+          code: failedReasonCode,
+        },
+      });
+    }
+
+    // Mark the idempotency record as processed within the transaction.
+    // If the transaction fails, the 'processed' status update is rolled back,
+    // leaving it in 'received' status for debugging. It won't be retried because
+    // the webhook_events row exists, but at least the database state remains consistent.
+    await client.query(
+      `UPDATE webhook_events SET status = 'processed', processed_at = NOW(), error = NULL WHERE id = $1`,
+      [claim.id]
+    );
+
+    await client.query("COMMIT");
   } catch (err) {
-    logger.error({ err, eventType, eventId }, "Webhook processing failed");
+    await client.query("ROLLBACK");
+    logger.error({ err, merchantOid }, "PayTR callback processing failed");
     await WebhookEventModel.markFailed(claim.id, err.message ?? String(err));
-    // Still 2xx — we own the event now. The DB row is flagged for triage.
-    res.json({ ok: true, processed: false });
+  } finally {
+    client.release();
   }
+
+  // 5. Always return plain "OK" to PayTR.
+  res.status(200).type("text/plain").send("OK");
 });
-
-// ── Handlers ────────────────────────────────────────────────────────
-const extractOrderId = (event) =>
-  event?.data?.metadata?.order_id ||
-  event?.metadata?.order_id ||
-  event?.data?.object?.metadata?.order_id ||
-  null;
-
-const handlePaymentSucceeded = async (event) => {
-  const orderId = extractOrderId(event);
-  if (!orderId) throw new Error("No order_id in webhook payload");
-
-  const order = await OrderModel.findById(orderId);
-  if (!order) throw new Error(`Unknown order ${orderId}`);
-
-  const data = event.data?.object || event.data || event;
-
-  await PaymentModel.upsertFromWebhook({
-    orderId: order.id,
-    providerSessionId: data.session_id || data.checkout_id || data.id,
-    providerPaymentId: data.payment_id || data.id,
-    status: "succeeded",
-    amountCents: Number(data.amount_total ?? data.amount ?? order.total_cents),
-    currency: data.currency || order.currency,
-    rawPayload: event,
-  });
-
-  if (order.status === "pending") {
-    await OrderModel.updateStatus(order.id, "paid");
-  }
-
-  await recordAuditEvent({
-    userId: order.user_id,
-    action: "payment.succeeded",
-    metadata: { orderId, eventId: event.id },
-  });
-};
-
-const handlePaymentFailed = async (event) => {
-  const orderId = extractOrderId(event);
-  const data = event.data?.object || event.data || event;
-  if (!orderId) return; // Best-effort — fail silently if we can't correlate
-
-  await PaymentModel.upsertFromWebhook({
-    orderId,
-    providerSessionId: data.session_id || data.checkout_id || data.id,
-    providerPaymentId: data.payment_id || data.id || `failed_${event.id}`,
-    status: "failed",
-    amountCents: Number(data.amount_total ?? data.amount ?? 0),
-    currency: data.currency || "TRY",
-    failureReason: data.failure_reason || data.error?.message,
-    rawPayload: event,
-  });
-
-  await recordAuditEvent({
-    action: "payment.failed",
-    metadata: { orderId, eventId: event.id, reason: data.failure_reason },
-  });
-};
-
-const handlePaymentRefunded = async (event) => {
-  const orderId = extractOrderId(event);
-  const data = event.data?.object || event.data || event;
-  if (!orderId) return;
-
-  await PaymentModel.upsertFromWebhook({
-    orderId,
-    providerSessionId: data.session_id,
-    providerPaymentId: data.payment_id || data.id,
-    status: "refunded",
-    amountCents: Number(data.amount_refunded ?? data.amount ?? 0),
-    currency: data.currency || "TRY",
-    rawPayload: event,
-  });
-
-  await OrderModel.updateStatus(orderId, "refunded");
-
-  await recordAuditEvent({
-    action: "payment.refunded",
-    metadata: { orderId, eventId: event.id },
-  });
-};

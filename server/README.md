@@ -13,7 +13,7 @@ server/
 ├── controllers/            # request handlers
 ├── routes/                 # Express routers (mounted under /api)
 ├── middleware/             # auth, CSRF, rate-limit, validate, error handler
-├── services/               # JWT, email (Resend), Google OAuth, Creem, audit
+├── services/               # JWT, email (Resend), Google OAuth, PayTR, audit
 ├── models/                 # thin SQL query layer over node-postgres
 ├── database/
 │   ├── pool.js             # pg Pool
@@ -74,13 +74,13 @@ cookie (scoped to `/api/auth/refresh`).
 | GET    | `/api/orders`                       | — (history)                                   |
 | GET    | `/api/orders/:id`                   | —                                             |
 | POST   | `/api/orders`                       | `{ items: [...], shippingAddress, total }`    |
-| POST   | `/api/payments/checkout`            | `{ orderId }`  → returns Creem checkout URL   |
+| POST   | `/api/payments/checkout`            | `{ orderId }`  → returns PayTR iframe token   |
 
-### Webhooks (no auth — signed by Creem)
+### Webhooks (no auth — signed by PayTR)
 
 | Method | Path                  |
 | ------ | --------------------- |
-| POST   | `/api/webhooks/creem` |
+| POST   | `/api/webhooks/paytr` |
 
 ## Security
 
@@ -93,7 +93,7 @@ cookie (scoped to `/api/auth/refresh`).
 - Helmet for HTTP headers.
 - All inputs validated with zod schemas; controllers receive `req.validated`.
 - Parametrized SQL only (no string interpolation).
-- Webhooks idempotent via `webhook_events` table + Creem signature check.
+- Webhooks idempotent via `webhook_events` table + PayTR signature check.
 - Audit log on auth events and sensitive mutations.
 
 ## Database migrations

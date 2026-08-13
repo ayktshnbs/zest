@@ -6,7 +6,7 @@ Vercel domain, so auth cookies stay first-party (login works everywhere, incl. i
 
 > ⚠️ Email verification, Google sign-in, and payments use **placeholder keys** —
 > registration, login, orders, and admin work, but no emails send and no real
-> charges happen until you add real Resend / Google / Creem keys.
+> charges happen until you add real Resend / Google / PayTR keys.
 
 ---
 
@@ -31,12 +31,13 @@ Vercel domain, so auth cookies stay first-party (login works everywhere, incl. i
    | `RESEND_API_KEY` | `re_dev_dummy_key` *(replace with a real key for emails)* |
    | `EMAIL_FROM` | `Zest Home <no-reply@example.com>` |
    | `GOOGLE_OAUTH_CLIENT_ID` | `dummy.apps.googleusercontent.com` |
-   | `CREEM_API_KEY` | `creem_sk_dev_dummy` |
-   | `CREEM_WEBHOOK_SECRET` | `whsec_dev_dummy` |
-   | `CREEM_SUCCESS_URL` | `https://YOUR-APP.vercel.app/odeme/basarili` |
-   | `CREEM_CANCEL_URL` | `https://YOUR-APP.vercel.app/odeme` |
+   | `PAYTR_MERCHANT_ID` | `paytr_merchant_id_dummy` |
+   | `PAYTR_MERCHANT_KEY` | `paytr_merchant_key_dummy` |
+   | `PAYTR_MERCHANT_SALT` | `paytr_merchant_salt_dummy` |
+   | `PAYTR_SUCCESS_URL` | `https://YOUR-APP.vercel.app/odeme/basarili` |
+   | `PAYTR_FAIL_URL` | `https://YOUR-APP.vercel.app/odeme/basarisiz` |
 
-   (`NODE_ENV`, `COOKIE_SECURE=true`, `PG_SSL=true`, TTLs, `CREEM_API_BASE` are preset in `render.yaml`.)
+   (`NODE_ENV`, `COOKIE_SECURE=true`, `PG_SSL=true`, TTLs, `PAYTR_TEST_MODE` are preset in `render.yaml`.)
 3. Deploy. Migrations are already applied to Neon, so the API is ready once it boots.
    Note the service URL, e.g. `https://zest-api.onrender.com`.
    - Free tier sleeps after ~15 min idle; the first request then takes ~30–50s.

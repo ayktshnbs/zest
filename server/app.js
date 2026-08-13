@@ -58,11 +58,11 @@ export const createApp = () => {
     }),
   );
 
-  // Webhooks: raw body needed for signature verification. Mount FIRST
-  // and use express.raw — express.json() is applied to other routes below.
+  // PayTR callbacks arrive as application/x-www-form-urlencoded.
+  // Mount BEFORE express.json() and CSRF — webhooks are server-to-server.
   app.use(
     "/api/webhooks",
-    express.raw({ type: "application/json", limit: "1mb" }),
+    express.urlencoded({ extended: false, limit: "1mb" }),
     webhookRoutes,
   );
 

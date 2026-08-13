@@ -1,15 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Check, Clock, Package, ArrowRight } from "lucide-react";
+import { Check, Package, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
 import { estimatedDelivery } from "@/lib/utils";
 
 export default function OrderSuccessPage() {
-  // Real order number comes from the checkout redirect (?order=…). We never
-  // fabricate one — if the page is opened directly, we show a dash and point
-  // the visitor to their account instead.
+  // Real order number comes from the checkout redirect (?order=…).
   const orderNumber = useMemo(() => {
     if (typeof window !== "undefined") {
       const fromUrl = new URLSearchParams(window.location.search).get("order");
@@ -17,6 +15,7 @@ export default function OrderSuccessPage() {
     }
     return null;
   }, []);
+
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24 bg-background">
       <div className="max-w-2xl mx-auto px-5 md:px-16 text-center space-y-10">
@@ -31,15 +30,15 @@ export default function OrderSuccessPage() {
 
         <div className="space-y-4">
           <span className="font-audiowide text-[10px] uppercase tracking-[0.4em] text-foreground/40">
-            Siparişiniz Alındı
+            Siparişiniz Onaylandı
           </span>
           <h1 className="font-audiowide text-3xl md:text-5xl uppercase tracking-tight">
             Teşekkür Ederiz
           </h1>
           <p className="text-foreground/50 leading-relaxed">
-            Siparişiniz oluşturuldu ve <strong className="text-foreground">ödeme bekleniyor</strong>{" "}
-            durumundadır. Ödemeniz onaylandığında siparişiniz hazırlanmaya başlar ve size
-            e-posta ile bilgi verilir.
+            Ödemeniz başarıyla alındı ve siparişiniz oluşturuldu.
+            Siparişiniz hazırlandığında ve kargoya verildiğinde size
+            e-posta ile bilgi vereceğiz.
           </p>
         </div>
 
@@ -48,16 +47,15 @@ export default function OrderSuccessPage() {
           <SummaryRow
             label="Ödeme Durumu"
             value={
-              <span className="inline-flex items-center gap-2 text-yellow-700">
-                <Clock size={12} /> Ödeme bekleniyor
+              <span className="inline-flex items-center gap-2 text-green-700">
+                <Check size={12} /> Ödendi
               </span>
             }
           />
-          <SummaryRow label="Tahmini Teslimat" value={`Ödeme onayı sonrası · ${estimatedDelivery()}`} />
+          <SummaryRow label="Tahmini Teslimat" value={estimatedDelivery()} />
         </div>
 
         <p className="text-[12px] text-foreground/50 font-body leading-relaxed">
-          Havale/EFT seçtiyseniz banka bilgilerimiz e-posta adresinize gönderilecektir.
           Siparişinizin güncel durumunu{" "}
           <Link href="/hesabim" className="underline text-foreground">
             hesabım

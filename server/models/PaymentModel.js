@@ -5,7 +5,7 @@ import { query } from "../database/pool.js";
 
 export const create = async ({
   orderId,
-  provider = "creem",
+  provider = "paytr",
   providerSessionId,
   amountCents,
   currency,
@@ -44,7 +44,7 @@ export const findByProviderSessionId = async (providerSessionId) => {
  */
 export const upsertFromWebhook = async ({
   orderId,
-  provider = "creem",
+  provider = "paytr",
   providerSessionId,
   providerPaymentId,
   status,
@@ -52,8 +52,8 @@ export const upsertFromWebhook = async ({
   currency,
   failureReason,
   rawPayload,
-}) => {
-  const { rows } = await query(
+}, db = pool) => {
+  const { rows } = await db.query(
     `INSERT INTO payments (
        order_id, provider, provider_session_id, provider_payment_id,
        status, amount_cents, currency, failure_reason, raw_payload

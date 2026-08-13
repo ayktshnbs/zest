@@ -3,12 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import { useAuth } from "@/components/AuthProvider";
-import { ordersApi, ApiError } from "@/lib/api";
+import { ordersApi, paymentsApi, ApiError } from "@/lib/api";
 import {
   ArrowLeft,
   ArrowRight,
   Check,
-  Clock,
+  CreditCard,
   Lock,
   Mail,
   Package,
@@ -44,13 +44,8 @@ type ShippingForm = {
   district: string;
   postalCode: string;
 };
-// Single shipping option: standard courier. Express was removed — we don't
-// have a same-day handling agreement with any carrier.
+// Single shipping option: standard courier.
 type DeliveryMethod = "standart";
-// "kart" (online card payment) is intentionally NOT selectable yet: PayTR
-// virtual POS integration is pending. We never render our own card fields —
-// when PayTR lands, the customer will pay on PayTR's hosted page/iframe.
-type PaymentMethod = "havale" | "kapida";
 
 const deliveryPricing: Record<DeliveryMethod, number> = {
   standart: STANDARD_SHIPPING_COST,
@@ -75,7 +70,6 @@ export default function CheckoutPage() {
     postalCode: "",
   });
   const [delivery, setDelivery] = useState<DeliveryMethod>("standart");
-  const [payment, setPayment] = useState<PaymentMethod>("havale");
   const [agree, setAgree] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -113,10 +107,9 @@ export default function CheckoutPage() {
       );
     }
     if (step === "delivery") return Boolean(delivery);
-    if (step === "payment") return Boolean(payment);
     if (step === "review") return agree;
-    return true;
-  }, [step, contact, shipping, delivery, payment, agree]);
+    return true; // payment step just shows info
+  }, [step, contact, shipping, delivery, agree]);
 
   const goNext = () => {
     const idx = steps.findIndex((s) => s.id === step);
@@ -138,11 +131,10 @@ export default function CheckoutPage() {
     setError(null);
 
     const deliveryLabel = "Standart Kargo";
-    const paymentLabel = payment === "havale" ? "Havale/EFT" : "Kapıda Ödeme";
+    const paymentLabel = "Kredi / Banka Kartı";
 
     try {
-      // Only productId + quantity are trusted by the API — price, shipping and
-      // totals are recomputed server-side from the authoritative catalog.
+      // 1. Create order
       const { order } = await ordersApi.create({
         items: cart.map((i) => ({
           productId: i.id,
@@ -160,8 +152,14 @@ export default function CheckoutPage() {
         },
         notes: `İletişim: ${contact.email} · ${contact.phone} | Kargo: ${deliveryLabel} | Ödeme: ${paymentLabel}`,
       });
+
       clearCart();
-      router.replace(`/odeme/basarili?order=${encodeURIComponent(order.orderNumber)}`);
+
+      // 2. Request PayTR Token
+      const { token } = await paymentsApi.createCheckout(order.id);
+
+      // 3. Redirect to the iframe page
+      router.replace(`/odeme/kart?token=${encodeURIComponent(token)}`);
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         router.push(`/giris?next=${encodeURIComponent("/odeme")}`);
@@ -414,70 +412,19 @@ export default function CheckoutPage() {
                 {step === "payment" ? (
                   <FormCard title="Ödeme Yöntemi" eyebrow="4. Adım">
                     <div className="space-y-3 mb-6">
-                      {/* Online card payment — visible but not selectable until
-                          PayTR virtual POS goes live. We do NOT render card
-                          fields ourselves; PayTR's hosted page will handle
-                          card entry when the integration is complete. */}
-                      <div
-                        aria-disabled
-                        className="flex items-start gap-4 p-5 border border-dashed border-foreground/15 opacity-60 select-none"
-                      >
-                        <input type="radio" name="payment" disabled className="mt-1" />
+                      <div className="flex items-start gap-4 p-5 border border-foreground transition-colors bg-foreground/[0.02]">
+                        <input type="radio" checked readOnly className="mt-1 accent-foreground" />
                         <div>
-                          <p className="font-audiowide text-[11px] uppercase tracking-[0.3em] text-foreground">
+                          <p className="font-audiowide text-[11px] uppercase tracking-[0.3em] text-foreground flex items-center gap-2">
+                            <CreditCard size={14} />
                             Kredi / Banka Kartı
                           </p>
                           <p className="text-[12px] text-foreground/50 mt-1 font-body">
-                            Çok yakında — PayTR güvenli ödeme entegrasyonu tamamlandığında
-                            aktif olacaktır.
+                            Siparişi tamamla butonuna tıkladıktan sonra PayTR güvenli ödeme sayfasına yönlendirileceksiniz.
                           </p>
                         </div>
                       </div>
-
-                      {(
-                        [
-                          ["havale", "Havale / EFT", "Banka bilgileri e-posta ile gönderilir"],
-                          ["kapida", "Kapıda Ödeme", "Nakit veya kart ile teslimat anında"],
-                        ] as [PaymentMethod, string, string][]
-                      ).map(([value, label, hint]) => {
-                        const selected = payment === value;
-                        return (
-                          <label
-                            key={value}
-                            className={`flex items-start gap-4 p-5 border cursor-pointer transition-colors ${
-                              selected
-                                ? "border-foreground"
-                                : "border-foreground/10 hover:border-foreground/30"
-                            }`}
-                          >
-                            <input
-                              type="radio"
-                              name="payment"
-                              checked={selected}
-                              onChange={() => setPayment(value)}
-                              className="mt-1 accent-foreground"
-                            />
-                            <div>
-                              <p className="font-audiowide text-[11px] uppercase tracking-[0.3em] text-foreground">
-                                {label}
-                              </p>
-                              <p className="text-[12px] text-foreground/50 mt-1 font-body">
-                                {hint}
-                              </p>
-                            </div>
-                          </label>
-                        );
-                      })}
                     </div>
-
-                    <p className="text-[12px] text-foreground/60 bg-foreground/[0.03] border border-foreground/10 px-4 py-3 font-body flex items-start gap-2">
-                      <Clock size={13} className="mt-0.5 shrink-0" />
-                      <span>
-                        Siparişiniz <strong className="text-foreground">“ödeme bekleniyor”</strong>{" "}
-                        durumunda alınır. Havale/EFT seçtiyseniz banka bilgilerimiz e-posta ile
-                        gönderilir; ödemeniz onaylandığında siparişiniz hazırlanmaya başlar.
-                      </span>
-                    </p>
                   </FormCard>
                 ) : null}
 
@@ -505,10 +452,7 @@ export default function CheckoutPage() {
                         </p>
                       </ReviewBlock>
                       <ReviewBlock title="Ödeme" onEdit={() => setStep("payment")}>
-                        <p>{payment === "havale" ? "Havale / EFT" : "Kapıda Ödeme"}</p>
-                        <p className="text-foreground/50">
-                          Sipariş “ödeme bekleniyor” durumunda oluşturulur.
-                        </p>
+                        <p>Kredi / Banka Kartı (PayTR Güvenli Ödeme)</p>
                       </ReviewBlock>
 
                       <label className="flex items-start gap-3 cursor-pointer text-[12px] text-foreground/60 font-body pt-2 border-t border-foreground/10">
@@ -626,7 +570,6 @@ export default function CheckoutPage() {
           </aside>
         </div>
       </div>
-
     </main>
   );
 }

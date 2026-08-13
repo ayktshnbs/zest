@@ -283,6 +283,11 @@ export const ordersApi = {
   get: (id: string) => api<{ order: Order }>(`/api/orders/${encodeURIComponent(id)}`),
 };
 
+export const paymentsApi = {
+  createCheckout: (orderId: string) =>
+    api<{ token: string }>("/api/payments/checkout", { method: "POST", body: { orderId } }),
+};
+
 // ── Admin ─────────────────────────────────────────────────────────────
 export interface AdminOrderSummary extends OrderSummary {
   fulfillmentStatus: FulfillmentStatus;

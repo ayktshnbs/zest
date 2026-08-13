@@ -1,9 +1,11 @@
-// Payment session creation — hits Creem and returns a redirect URL.
+// Payment session creation — requests a PayTR iframe token and returns it
+// to the frontend. The frontend loads the token into a PayTR iframe; we
+// never touch card data.
 
 import { asyncHandler } from "../utils/asyncHandler.js";
 import * as OrderModel from "../models/OrderModel.js";
 import * as PaymentModel from "../models/PaymentModel.js";
-import { createCheckoutSession } from "../services/paymentService.js";
+import { createPaytrToken } from "../services/paymentService.js";
 import { BadRequestError, NotFoundError } from "../utils/errors.js";
 import { audit } from "../middleware/audit.js";
 
@@ -16,23 +18,33 @@ export const createCheckout = asyncHandler(async (req, res) => {
     throw new BadRequestError(`Cannot pay an order that is ${order.status}`);
   }
 
-  const session = await createCheckoutSession({ order, user: req.user });
+  // Determine the customer's IP for PayTR (required parameter).
+  const userIp =
+    req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+    req.socket?.remoteAddress ||
+    "127.0.0.1";
 
+  const { token, merchantOid } = await createPaytrToken({
+    order,
+    user: req.user,
+    userIp,
+  });
+
+  // Record the pending payment so the webhook can correlate later.
   await PaymentModel.create({
     orderId: order.id,
-    providerSessionId: session.sessionId,
+    provider: "paytr",
+    providerSessionId: merchantOid,
     amountCents: Number(order.total_cents),
     currency: order.currency,
-    rawPayload: session.raw,
+    rawPayload: { merchantOid, createdAt: new Date().toISOString() },
   });
 
   await audit(req, "payment.checkout_created", {
     orderId: order.id,
-    sessionId: session.sessionId,
+    merchantOid,
   });
 
-  res.status(201).json({
-    checkoutUrl: session.url,
-    sessionId: session.sessionId,
-  });
+  // Only the iframe token goes to the frontend — no secrets.
+  res.status(201).json({ token });
 });

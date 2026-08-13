@@ -50,11 +50,12 @@ const envSchema = z.object({
 
   GOOGLE_OAUTH_CLIENT_ID: z.string().min(1),
 
-  CREEM_API_KEY: z.string().min(1),
-  CREEM_API_BASE: z.string().url(),
-  CREEM_WEBHOOK_SECRET: z.string().min(1),
-  CREEM_SUCCESS_URL: z.string().url(),
-  CREEM_CANCEL_URL: z.string().url(),
+  PAYTR_MERCHANT_ID: z.string().min(1),
+  PAYTR_MERCHANT_KEY: z.string().min(1),
+  PAYTR_MERCHANT_SALT: z.string().min(1),
+  PAYTR_SUCCESS_URL: z.string().url(),
+  PAYTR_FAIL_URL: z.string().url(),
+  PAYTR_TEST_MODE: z.enum(["0", "1"]).default("1"),
 
   // Cloudinary (image upload). Optional — admin uploads return 503 if unset.
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
@@ -156,12 +157,13 @@ export const config = {
     clientId: env.GOOGLE_OAUTH_CLIENT_ID,
   },
 
-  creem: {
-    apiKey: env.CREEM_API_KEY,
-    apiBase: env.CREEM_API_BASE.replace(/\/$/, ""),
-    webhookSecret: env.CREEM_WEBHOOK_SECRET,
-    successUrl: env.CREEM_SUCCESS_URL,
-    cancelUrl: env.CREEM_CANCEL_URL,
+  paytr: {
+    merchantId: env.PAYTR_MERCHANT_ID,
+    merchantKey: env.PAYTR_MERCHANT_KEY,
+    merchantSalt: env.PAYTR_MERCHANT_SALT,
+    successUrl: env.PAYTR_SUCCESS_URL,
+    failUrl: env.PAYTR_FAIL_URL,
+    testMode: env.PAYTR_TEST_MODE,
   },
 
   rateLimit: {

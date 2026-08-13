@@ -122,8 +122,8 @@ export const findByIdAdmin = async (id) => {
   return rows[0] ?? null;
 };
 
-export const updateStatus = async (id, status) => {
-  const { rows } = await query(
+export const updateStatus = async (id, status, db = pool) => {
+  const { rows } = await db.query(
     `UPDATE orders SET status = $2 WHERE id = $1 RETURNING *`,
     [id, status],
   );

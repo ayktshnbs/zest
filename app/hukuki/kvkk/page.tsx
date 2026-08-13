@@ -30,7 +30,7 @@ export default function KvkkPage() {
         },
         {
           title: "5. Verilerin Aktarılması",
-          body: "Kişisel verileriniz, siparişinizi tamamlamak için gerekli olan kargo şirketleri, ödeme altyapısı sağlayıcıları (örn. Creem) ve e-posta gönderim servisleri (örn. Resend) ile paylaşılır. Yasal zorunluluk halinde yetkili kamu kurumlarıyla da paylaşılabilir. Yurt dışı aktarımlar yalnızca KVKK md. 9 koşullarına uygun olarak yapılır.",
+          body: "Kişisel verileriniz, siparişinizi tamamlamak için gerekli olan kargo şirketleri, ödeme altyapısı sağlayıcıları (örn. PayTR) ve e-posta gönderim servisleri (örn. Resend) ile paylaşılır. Yasal zorunluluk halinde yetkili kamu kurumlarıyla da paylaşılabilir. Yurt dışı aktarımlar yalnızca KVKK md. 9 koşullarına uygun olarak yapılır.",
         },
         {
           title: "6. KVKK Kapsamındaki Haklarınız",

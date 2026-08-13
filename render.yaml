@@ -22,8 +22,8 @@ services:
         value: 15m
       - key: JWT_REFRESH_TTL
         value: 7d
-      - key: CREEM_API_BASE
-        value: https://api.creem.io
+      - key: PAYTR_TEST_MODE
+        value: "0"
       # Secrets / environment-specific — entered in the Render dashboard:
       - key: DATABASE_URL
         sync: false
@@ -49,13 +49,15 @@ services:
         sync: false
       - key: GOOGLE_OAUTH_CLIENT_ID
         sync: false
-      - key: CREEM_API_KEY
+      - key: PAYTR_MERCHANT_ID
         sync: false
-      - key: CREEM_WEBHOOK_SECRET
+      - key: PAYTR_MERCHANT_KEY
         sync: false
-      - key: CREEM_SUCCESS_URL
+      - key: PAYTR_MERCHANT_SALT
         sync: false
-      - key: CREEM_CANCEL_URL
+      - key: PAYTR_SUCCESS_URL
+        sync: false
+      - key: PAYTR_FAIL_URL
         sync: false
       # Cloudinary (image uploads)
       - key: CLOUDINARY_CLOUD_NAME
