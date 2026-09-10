@@ -26,6 +26,21 @@ export const findActiveByHash = async (refreshTokenHash) => {
   return rows[0] ?? null;
 };
 
+/**
+ * Is this session still usable? Backs the `sid` check in requireAuth, which is
+ * what makes revocation take effect immediately instead of after the access
+ * token's 15-minute TTL.
+ */
+export const isActive = async (id) => {
+  const { rows } = await query(
+    `SELECT 1 FROM sessions
+      WHERE id = $1 AND revoked_at IS NULL AND expires_at > NOW()
+      LIMIT 1`,
+    [id],
+  );
+  return rows.length > 0;
+};
+
 export const touch = async (id) => {
   await query(`UPDATE sessions SET last_used_at = NOW() WHERE id = $1`, [id]);
 };

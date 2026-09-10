@@ -1,20 +1,79 @@
 "use client";
 
 import Link from "next/link";
-import { Check, Package, ArrowRight } from "lucide-react";
+import { Check, Package, ArrowRight, Clock, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
-import { useMemo } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { estimatedDelivery } from "@/lib/utils";
+import { ordersApi, type OrderSummary } from "@/lib/api";
+import { paymentLabel } from "@/lib/orderLabels";
+
+// PayTR redirects here with no parameters, so the order has to be resolved
+// from the API. The page used to hard-code "Ödendi" and read a `?order=` param
+// nothing ever set — it claimed success even when the payment had failed, and
+// always showed "—" for the order number.
+//
+// The callback is server-to-server and regularly lands AFTER this redirect, so
+// a `pending` order is normal for a few seconds: poll a handful of times
+// before settling on "being confirmed" rather than crying failure.
+const POLL_INTERVAL_MS = 2500;
+const MAX_POLLS = 5;
+
+type Phase = "loading" | "resolved" | "unavailable";
 
 export default function OrderSuccessPage() {
-  // Real order number comes from the checkout redirect (?order=…).
-  const orderNumber = useMemo(() => {
-    if (typeof window !== "undefined") {
-      const fromUrl = new URLSearchParams(window.location.search).get("order");
-      if (fromUrl) return fromUrl;
+  const [phase, setPhase] = useState<Phase>("loading");
+  const [order, setOrder] = useState<OrderSummary | null>(null);
+  const pollsRef = useRef(0);
+  const cancelledRef = useRef(false);
+
+  const check = useCallback(async () => {
+    try {
+      // The newest order is the one just paid for.
+      const { orders } = await ordersApi.list(1, 1);
+      if (cancelledRef.current) return;
+      const latest = orders[0] ?? null;
+      setOrder(latest);
+      setPhase("resolved");
+
+      // Keep polling only while we're waiting on the payment callback.
+      if (latest && latest.status === "pending" && pollsRef.current < MAX_POLLS) {
+        pollsRef.current += 1;
+        setTimeout(() => {
+          if (!cancelledRef.current) void check();
+        }, POLL_INTERVAL_MS);
+      }
+    } catch {
+      if (cancelledRef.current) return;
+      // Not signed in, or the API is unreachable — either way, don't assert
+      // anything about the payment.
+      setPhase("unavailable");
     }
-    return null;
   }, []);
+
+  useEffect(() => {
+    cancelledRef.current = false;
+    void check();
+    return () => {
+      cancelledRef.current = true;
+    };
+  }, [check]);
+
+  const status = order?.status ?? null;
+  const isPaid = status === "paid";
+  const isFailed = status === "failed" || status === "cancelled";
+
+  const heading = isPaid
+    ? "Teşekkür Ederiz"
+    : isFailed
+      ? "Ödeme Tamamlanamadı"
+      : "Siparişiniz Alındı";
+
+  const eyebrow = isPaid
+    ? "Siparişiniz Onaylandı"
+    : isFailed
+      ? "Ödeme Alınamadı"
+      : "Ödemeniz Doğrulanıyor";
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-24 bg-background">
@@ -23,36 +82,68 @@ export default function OrderSuccessPage() {
           initial={{ scale: 0.6, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 200, damping: 18 }}
-          className="w-20 h-20 mx-auto bg-foreground text-background rounded-full flex items-center justify-center"
+          className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center ${
+            isFailed
+              ? "bg-red-600 text-white"
+              : isPaid
+                ? "bg-foreground text-background"
+                : "bg-foreground/10 text-foreground"
+          }`}
         >
-          <Check size={28} strokeWidth={2} />
+          {isFailed ? (
+            <AlertTriangle size={28} strokeWidth={2} />
+          ) : isPaid ? (
+            <Check size={28} strokeWidth={2} />
+          ) : (
+            <Clock size={26} strokeWidth={2} className="animate-pulse" />
+          )}
         </motion.div>
 
         <div className="space-y-4">
           <span className="font-audiowide text-[10px] uppercase tracking-[0.4em] text-foreground/40">
-            Siparişiniz Onaylandı
+            {phase === "loading" ? "Kontrol Ediliyor" : eyebrow}
           </span>
           <h1 className="font-audiowide text-3xl md:text-5xl uppercase tracking-tight">
-            Teşekkür Ederiz
+            {phase === "loading" ? "Bir Saniye" : heading}
           </h1>
           <p className="text-foreground/50 leading-relaxed">
-            Ödemeniz başarıyla alındı ve siparişiniz oluşturuldu.
-            Siparişiniz hazırlandığında ve kargoya verildiğinde size
-            e-posta ile bilgi vereceğiz.
+            {phase === "loading"
+              ? "Siparişinizin durumu kontrol ediliyor…"
+              : phase === "unavailable"
+                ? "Sipariş durumunuzu şu anda gösteremiyoruz. Siparişlerim sayfasından güncel durumu görebilirsiniz."
+                : isPaid
+                  ? "Ödemeniz başarıyla alındı ve siparişiniz oluşturuldu. Siparişiniz hazırlandığında ve kargoya verildiğinde size e-posta ile bilgi vereceğiz."
+                  : isFailed
+                    ? "Bankanızdan onay alınamadı. Siparişinizi Siparişlerim sayfasından yeniden ödemeyi deneyebilirsiniz."
+                    : "Siparişiniz oluşturuldu. Bankanızın onayı birkaç saniye içinde ulaşacak — bu sayfa kendini güncelleyecek."}
           </p>
         </div>
 
         <div className="border border-foreground/10 p-8 space-y-4 text-left">
-          <SummaryRow label="Sipariş No" value={orderNumber ?? "—"} />
+          <SummaryRow label="Sipariş No" value={order?.orderNumber ?? "—"} />
           <SummaryRow
             label="Ödeme Durumu"
             value={
-              <span className="inline-flex items-center gap-2 text-green-700">
-                <Check size={12} /> Ödendi
-              </span>
+              phase !== "resolved" || !status ? (
+                <span className="text-foreground/40">Kontrol ediliyor…</span>
+              ) : isPaid ? (
+                <span className="inline-flex items-center gap-2 text-green-700">
+                  <Check size={12} /> {paymentLabel[status]}
+                </span>
+              ) : isFailed ? (
+                <span className="inline-flex items-center gap-2 text-red-600">
+                  <AlertTriangle size={12} /> {paymentLabel[status]}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-2 text-foreground/60">
+                  <Clock size={12} /> {paymentLabel[status]}
+                </span>
+              )
             }
           />
-          <SummaryRow label="Tahmini Teslimat" value={estimatedDelivery()} />
+          {!isFailed ? (
+            <SummaryRow label="Tahmini Teslimat" value={estimatedDelivery()} />
+          ) : null}
         </div>
 
         <p className="text-[12px] text-foreground/50 font-body leading-relaxed">

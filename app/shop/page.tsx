@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
+import { useState, useMemo, useEffect, useRef, Suspense } from "react";
 import { products as staticProducts } from "@/lib/products";
 import { categories, categoryMap } from "@/lib/categories";
-import { useLiveCatalog } from "@/lib/useStock";
+import { useLiveCatalog, resolveEffective } from "@/lib/useStock";
 import { mergeProducts } from "@/lib/customProducts";
 import { ProductCard } from "@/components/ProductCard";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
-import { SortKey } from "@/types";
+import { SortKey, Product } from "@/types";
 
 type BadgeFilter = "new" | "bestseller" | "sale";
 
@@ -56,6 +56,13 @@ function ShopContent() {
     const fromUrl = Number(searchParams.get("max"));
     return Number.isFinite(fromUrl) && fromUrl > 0 ? fromUrl : Math.ceil(max / 100) * 100;
   });
+  // Whether the shopper actually chose a price cap. Until they do, the cap
+  // tracks the catalog ceiling — otherwise an admin-added product priced above
+  // the static maximum would be filtered out before anyone touched a slider.
+  const [priceTouched, setPriceTouched] = useState<boolean>(() => {
+    const fromUrl = Number(searchParams.get("max"));
+    return Number.isFinite(fromUrl) && fromUrl > 0;
+  });
   const [inStockOnly, setInStockOnly] = useState<boolean>(
     searchParams.get("instock") === "1",
   );
@@ -69,10 +76,30 @@ function ShopContent() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+  // Live stock/price per product, resolved once per catalog change. Filtering
+  // and sorting MUST use these: admin-added products carry stock: 0 on their
+  // static shape (real stock lives in the live catalog), so the raw values hid
+  // every one of them behind the "stokta olanlar" toggle and sorted them by a
+  // price the admin may have changed.
+  const effectiveById = useMemo(() => {
+    const map = new Map<string, ReturnType<typeof resolveEffective>>();
+    for (const p of products) map.set(p.id, resolveEffective(liveCatalog, p));
+    return map;
+  }, [products, liveCatalog]);
+
+  const eff = (p: Product) =>
+    effectiveById.get(p.id) ?? { stock: p.stock, price: p.price, name: p.name, hasVariants: false };
+
   const priceCeiling = useMemo(
-    () => Math.ceil(Math.max(...products.map((p) => p.price)) / 100) * 100,
-    [products],
+    () => Math.ceil(Math.max(...products.map((p) => eff(p).price)) / 100) * 100,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [products, effectiveById],
   );
+
+  // Keep an untouched cap pinned to the ceiling as the live catalog arrives.
+  useEffect(() => {
+    if (!priceTouched && maxPrice !== priceCeiling) setMaxPrice(priceCeiling);
+  }, [priceTouched, priceCeiling, maxPrice]);
 
   const activeCategory = selectedCategory !== "all" ? categoryMap[selectedCategory] : undefined;
 
@@ -90,8 +117,15 @@ function ShopContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [query, selectedCategory, selectedSub, sortBy, maxPrice, inStockOnly, badgeFilters, pathname, router, priceCeiling]);
 
-  // Reset subcategory when category changes
+  // Reset subcategory when the category changes — but not on the first run,
+  // which would discard the `sub` filter from a shared/bookmarked URL before
+  // the user ever saw it.
+  const didMountRef = useRef(false);
   useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
     setSelectedSub("all");
   }, [selectedCategory]);
 
@@ -99,10 +133,11 @@ function ShopContent() {
     const q = query.trim().toLocaleLowerCase("tr");
     return products
       .filter((p) => {
+        const e = eff(p);
         if (selectedCategory !== "all" && p.category !== selectedCategory) return false;
         if (selectedSub !== "all" && p.subcategory !== selectedSub) return false;
-        if (p.price > maxPrice) return false;
-        if (inStockOnly && p.stock <= 0) return false;
+        if (e.price > maxPrice) return false;
+        if (inStockOnly && e.stock <= 0) return false;
         if (badgeFilters.length > 0) {
           const matches =
             (badgeFilters.includes("new") && p.isNew) ||
@@ -111,7 +146,9 @@ function ShopContent() {
           if (!matches) return false;
         }
         if (q) {
-          const hay = [p.name, p.categoryLabel, p.subcategoryLabel ?? "", ...p.tags]
+          // Search the admin-overridden name too, so renaming a product
+          // doesn't make it unfindable by its new name.
+          const hay = [p.name, e.name, p.categoryLabel, p.subcategoryLabel ?? "", ...p.tags]
             .join(" ")
             .toLocaleLowerCase("tr");
           if (!hay.includes(q)) return false;
@@ -121,11 +158,11 @@ function ShopContent() {
       .sort((a, b) => {
         switch (sortBy) {
           case "price-asc":
-            return a.price - b.price;
+            return eff(a).price - eff(b).price;
           case "price-desc":
-            return b.price - a.price;
+            return eff(b).price - eff(a).price;
           case "name-asc":
-            return a.name.localeCompare(b.name, "tr");
+            return eff(a).name.localeCompare(eff(b).name, "tr");
           case "newest":
             return Number(Boolean(b.isNew)) - Number(Boolean(a.isNew)) ||
               b.id.localeCompare(a.id);
@@ -140,7 +177,22 @@ function ShopContent() {
             );
         }
       });
-  }, [query, selectedCategory, selectedSub, sortBy, maxPrice, inStockOnly, badgeFilters]);
+    // `products` and `effectiveById` are the important ones: without them this
+    // memo kept its first result (static catalog only), so admin-added products
+    // never appeared and retired ones never disappeared until the shopper
+    // happened to touch a filter.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    products,
+    effectiveById,
+    query,
+    selectedCategory,
+    selectedSub,
+    sortBy,
+    maxPrice,
+    inStockOnly,
+    badgeFilters,
+  ]);
 
   const toggleBadge = (badge: BadgeFilter) => {
     setBadgeFilters((prev) =>
@@ -153,6 +205,7 @@ function ShopContent() {
     setSelectedCategory("all");
     setSelectedSub("all");
     setSortBy("featured");
+    setPriceTouched(false);
     setMaxPrice(priceCeiling);
     setInStockOnly(false);
     setBadgeFilters([]);
@@ -333,7 +386,12 @@ function ShopContent() {
                 </FilterChip>
               ))}
               {maxPrice !== priceCeiling ? (
-                <FilterChip onClear={() => setMaxPrice(priceCeiling)}>
+                <FilterChip
+                  onClear={() => {
+                    setPriceTouched(false);
+                    setMaxPrice(priceCeiling);
+                  }}
+                >
                   Maks. {formatPrice(maxPrice)}
                 </FilterChip>
               ) : null}
@@ -435,7 +493,10 @@ function ShopContent() {
                     max={priceCeiling}
                     step={50}
                     value={maxPrice}
-                    onChange={(e) => setMaxPrice(Number(e.target.value))}
+                    onChange={(e) => {
+                      setPriceTouched(true);
+                      setMaxPrice(Number(e.target.value));
+                    }}
                     className="w-full accent-foreground"
                   />
                   <div className="flex justify-between text-[10px] font-body text-foreground/50 mt-2">

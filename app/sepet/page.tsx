@@ -132,7 +132,11 @@ export default function CartPage() {
             <AnimatePresence>
               {cart.map((item) => (
                 <motion.article
-                  key={item.id}
+                  // A cart line is identified by product + colour, so two
+                  // colours of the same set are two lines with the same id.
+                  // Keying on id alone collided and made AnimatePresence/layout
+                  // animate and reuse the wrong row.
+                  key={`${item.id}::${item.color?.key ?? ""}`}
                   layout
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}

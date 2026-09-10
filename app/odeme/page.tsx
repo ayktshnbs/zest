@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import { useAuth } from "@/components/AuthProvider";
 import { ordersApi, paymentsApi, ApiError } from "@/lib/api";
@@ -72,13 +72,34 @@ export default function CheckoutPage() {
   const [delivery, setDelivery] = useState<DeliveryMethod>("standart");
   const [agree, setAgree] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  // Set once PayTR has accepted the order and we're navigating to the iframe.
+  // Keeps the empty-cart guard quiet through the hand-off.
+  const [handoff, setHandoff] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // If the order was created but the PayTR token request failed, reuse that
+  // order on the next attempt instead of creating a second one (which would
+  // reserve the same stock twice and leave an orphan pending order behind).
+  // Keyed on the cart contents so editing the cart starts a fresh order.
+  const pendingOrderRef = useRef<{ id: string; cartKey: string } | null>(null);
+  const cartKey = useMemo(
+    () =>
+      cart
+        .map((i) => `${i.id}:${i.color?.key ?? ""}:${i.quantity}`)
+        .sort()
+        .join("|"),
+    [cart],
+  );
 
+  // Bounce to the cart when there's nothing to check out — but never while a
+  // submission is in flight. The cart is only cleared once PayTR has handed us
+  // a token, and this effect would otherwise fire on that state change and
+  // race the redirect to /odeme/kart (the API call can take tens of seconds on
+  // a cold start, so the bounce would win).
   useEffect(() => {
-    if (isHydrated && cart.length === 0) {
+    if (isHydrated && cart.length === 0 && !submitting && !handoff) {
       router.replace("/sepet");
     }
-  }, [isHydrated, cart.length, router]);
+  }, [isHydrated, cart.length, submitting, handoff, router]);
 
   // Prefill the contact email for a signed-in shopper.
   useEffect(() => {
@@ -134,31 +155,43 @@ export default function CheckoutPage() {
     const paymentLabel = "Kredi / Banka Kartı";
 
     try {
-      // 1. Create order
-      const { order } = await ordersApi.create({
-        items: cart.map((i) => ({
-          productId: i.id,
-          quantity: i.quantity,
-          ...(i.color ? { colorKey: i.color.key } : {}),
-        })),
-        shippingAddress: {
-          fullName: `${shipping.firstName} ${shipping.lastName}`.trim(),
-          phone: contact.phone || undefined,
-          line1: shipping.address,
-          city: shipping.city,
-          state: shipping.district || undefined,
-          postalCode: shipping.postalCode,
-          country: "TR",
-        },
-        notes: `İletişim: ${contact.email} · ${contact.phone} | Kargo: ${deliveryLabel} | Ödeme: ${paymentLabel}`,
-      });
+      // 1. Create the order — or reuse the one a previous failed attempt
+      //    already created for this exact cart.
+      const reusable = pendingOrderRef.current;
+      let orderId: string =
+        reusable && reusable.cartKey === cartKey ? reusable.id : "";
 
+      if (!orderId) {
+        const { order } = await ordersApi.create({
+          items: cart.map((i) => ({
+            productId: i.id,
+            quantity: i.quantity,
+            ...(i.color ? { colorKey: i.color.key } : {}),
+          })),
+          shippingAddress: {
+            fullName: `${shipping.firstName} ${shipping.lastName}`.trim(),
+            phone: contact.phone || undefined,
+            line1: shipping.address,
+            city: shipping.city,
+            state: shipping.district || undefined,
+            postalCode: shipping.postalCode,
+            country: "TR",
+          },
+          notes: `İletişim: ${contact.email} · ${contact.phone} | Kargo: ${deliveryLabel} | Ödeme: ${paymentLabel}`,
+        });
+        orderId = order.id;
+        pendingOrderRef.current = { id: order.id, cartKey };
+      }
+
+      // 2. Request PayTR Token. The cart is deliberately still intact here —
+      //    if this throws (provider down, bad keys) the shopper keeps their
+      //    cart and can try again instead of being left with nothing.
+      const { token } = await paymentsApi.createCheckout(orderId);
+
+      // 3. Only now is the order safely handed to PayTR: clear the cart and go.
+      pendingOrderRef.current = null;
+      setHandoff(true);
       clearCart();
-
-      // 2. Request PayTR Token
-      const { token } = await paymentsApi.createCheckout(order.id);
-
-      // 3. Redirect to the iframe page
       router.replace(`/odeme/kart?token=${encodeURIComponent(token)}`);
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
@@ -174,18 +207,41 @@ export default function CheckoutPage() {
         setError(
           `Üzgünüz, stok yetersiz${names ? `: ${names}` : ""}. Lütfen sepetinizi güncelleyip tekrar deneyin.`,
         );
+      } else if (err instanceof ApiError && err.code === "payment_in_progress") {
+        // The server refuses a second live PayTR session for one order, so the
+        // customer can't be charged twice. Tell them what to do instead.
+        const secs =
+          (err.details as { retryAfterSeconds?: number } | undefined)?.retryAfterSeconds ?? 0;
+        const mins = Math.ceil(secs / 60);
+        setError(
+          `${err.message}${mins > 0 ? ` (yaklaşık ${mins} dakika)` : ""} Devam eden ödemenizi "Siparişlerim" sayfasından takip edebilirsiniz.`,
+        );
+      } else if (err instanceof ApiError && err.status === 400) {
+        // e.g. "Product X requires a color choice" — surfacing the real
+        // message is the only way the shopper can act on it (the offending
+        // line has to be removed and re-added with a colour from the product
+        // page). A generic message here is a dead end.
+        setError(
+          `${err.message} Lütfen ilgili ürünü sepetten çıkarıp ürün sayfasından seçeneğiyle birlikte ekleyin.`,
+        );
+      } else if (err instanceof ApiError && err.status === 0) {
+        setError("Sunucuya ulaşılamıyor. Sepetiniz korundu, lütfen tekrar deneyin.");
       } else {
-        setError("Sipariş oluşturulamadı. Lütfen tekrar deneyin.");
+        setError(
+          "Ödeme başlatılamadı. Sepetiniz korundu, lütfen tekrar deneyin.",
+        );
       }
       setSubmitting(false);
     }
   };
 
-  if (!isHydrated || cart.length === 0) {
+  // `handoff` renders the same placeholder while we navigate to the PayTR
+  // iframe, so the just-emptied cart never flashes the full checkout UI.
+  if (!isHydrated || cart.length === 0 || handoff) {
     return (
       <main className="min-h-screen pt-40 text-center">
         <p className="font-audiowide text-[10px] uppercase tracking-[0.4em] text-foreground/40">
-          Yükleniyor
+          {handoff ? "Ödeme sayfasına yönlendiriliyorsunuz" : "Yükleniyor"}
         </p>
       </main>
     );
@@ -528,7 +584,12 @@ export default function CheckoutPage() {
 
               <ul className="space-y-5 max-h-[320px] overflow-y-auto pr-2 scrollbar-hide">
                 {cart.map((item) => (
-                  <li key={item.id} className="flex gap-4">
+                  // Product + colour — two colours of one set are separate
+                  // lines that share `item.id`.
+                  <li
+                    key={`${item.id}::${item.color?.key ?? ""}`}
+                    className="flex gap-4"
+                  >
                     <div className="relative w-16 h-16 flex-shrink-0 bg-secondary/30 overflow-hidden">
                       <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
                       <span className="absolute -top-1 -right-1 bg-foreground text-background w-5 h-5 flex items-center justify-center text-[10px] font-audiowide rounded-full">
@@ -540,6 +601,13 @@ export default function CheckoutPage() {
                         {item.categoryLabel}
                       </p>
                       <p className="text-sm text-foreground line-clamp-1 mt-1">{item.name}</p>
+                      {/* Two colours of one set are separate lines with the
+                          same name — show which is which on the review step. */}
+                      {item.color ? (
+                        <p className="text-[11px] text-foreground/50 font-body mt-0.5">
+                          {item.color.label}
+                        </p>
+                      ) : null}
                     </div>
                     <p className="font-audiowide text-xs text-foreground tracking-tight whitespace-nowrap">
                       {formatPrice(item.price * item.quantity)}

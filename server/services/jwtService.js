@@ -20,13 +20,21 @@ const baseOptions = {
   audience: "zest-kitchene-web",
 };
 
-export const signAccessToken = (user) =>
+/**
+ * @param user
+ * @param {string} [sessionId]  sessions.id this token belongs to. Carried as
+ *   the `sid` claim so requireAuth can reject a token whose session has been
+ *   revoked (logout, password reset/change, Google account takeover) instead
+ *   of honouring it until it expires.
+ */
+export const signAccessToken = (user, sessionId) =>
   jwt.sign(
     {
       sub: user.id,
       email: user.email,
       role: user.role,
       typ: "access",
+      ...(sessionId ? { sid: sessionId } : {}),
     },
     config.jwt.accessSecret,
     {

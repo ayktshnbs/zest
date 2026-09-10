@@ -17,6 +17,8 @@ import {
   signUploadSchema,
   slugSchema,
   uuidSchema,
+  paginationSchema,
+  resolveReviewSchema,
 } from "../utils/validation.js";
 
 const router = Router();
@@ -37,6 +39,25 @@ router.patch(
   "/orders/:id",
   validate({ params: z.object({ id: uuidSchema }), body: updateOrderSchema }),
   adminController.updateOrder,
+);
+
+// Payment conditions needing a human (amount mismatch, probable double
+// charge, refund required, callback processing failure). Admin-only like
+// everything else on this router.
+router.get(
+  "/payment-reviews",
+  validate({ query: paginationSchema }),
+  adminController.listPaymentReviews,
+);
+// Mark one review handled. Appends a resolution audit row; the original
+// incident row is never modified or deleted.
+router.post(
+  "/payment-reviews/:id/resolve",
+  validate({
+    params: z.object({ id: uuidSchema }),
+    body: resolveReviewSchema,
+  }),
+  adminController.resolvePaymentReview,
 );
 
 router.get("/products", adminController.listProducts);

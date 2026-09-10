@@ -11,16 +11,19 @@
 //     UPDATE orders SET status='cancelled' WHERE id=$1 AND status='pending'
 //   inside its own transaction. The status guard means a second runner (or a
 //   webhook flipping the order to 'paid' at the same instant) makes the claim
-//   return 0 rows, and we skip — stock is restored at most once per order.
-//   Only `pending` orders are ever touched; paid/shipped/delivered/cancelled/
-//   refunded orders can never match the claim.
+//   return 0 rows, and we skip. The restore itself is guarded a second time by
+//   orders.stock_restored_at (services/stockService.js), so even a path that
+//   somehow bypassed the status claim cannot hand the same units out twice.
 //
-// Stock restore mirrors the decrement in orderController:
-//   items with variantId  → product_variants.stock += qty
-//   items without         → inventory.stock        += qty
+// Money safety: an order that already has a SUCCEEDED payment row is never
+// touched, even while its status still reads 'pending'. That happens when a
+// callback arrived with a mismatched amount (webhookController parks the order
+// for review rather than marking it paid) — cancelling it here would restock
+// goods the customer has already been charged for.
 
 import { pool, withTransaction } from "../database/pool.js";
 import { recordAuditEvent } from "../services/auditService.js";
+import { restoreOrderStock } from "../services/stockService.js";
 import { logger } from "../utils/logger.js";
 import { config } from "../config.js";
 
@@ -35,11 +38,23 @@ export const expirePendingOrders = async (
   // Candidate scan is outside the per-order transactions on purpose: it's a
   // cheap read, and the real claim happens row-by-row with the status guard.
   const { rows: candidates } = await pool.query(
-    `SELECT id, order_number, items
-       FROM orders
-      WHERE status = 'pending'
-        AND created_at < NOW() - ($1 || ' minutes')::interval
-      ORDER BY created_at
+    `SELECT o.id, o.order_number
+       FROM orders o
+      WHERE o.status = 'pending'
+        AND o.created_at < NOW() - ($1 || ' minutes')::interval
+        AND NOT EXISTS (
+          SELECT 1 FROM payments p
+           WHERE p.order_id = o.id
+             AND (
+               -- money already moved: never cancel/restock it here
+               p.status = 'succeeded'
+               -- or a payment attempt started recently: the shopper may be on
+               -- the PayTR page right now. Retries reuse the original order, so
+               -- created_at alone would let an old order be swept mid-payment.
+               OR p.created_at > NOW() - ($1 || ' minutes')::interval
+             )
+        )
+      ORDER BY o.created_at
       LIMIT 200`,
     [String(ttlMinutes)],
   );
@@ -50,30 +65,27 @@ export const expirePendingOrders = async (
       const done = await withTransaction(async (client) => {
         // Claim: flips pending→cancelled or tells us someone else got here
         // first (another runner, or a payment webhook marking it paid).
+        // The payment guard is re-checked inside the transaction — a
+        // settlement or a retry may have landed between the candidate scan
+        // and this claim.
         const { rows } = await client.query(
           `UPDATE orders SET status = 'cancelled'
             WHERE id = $1 AND status = 'pending'
-            RETURNING items`,
-          [order.id],
+              AND NOT EXISTS (
+                SELECT 1 FROM payments p
+                 WHERE p.order_id = orders.id
+                   AND (
+                     p.status = 'succeeded'
+                     OR p.created_at > NOW() - ($2 || ' minutes')::interval
+                   )
+              )
+            RETURNING id`,
+          [order.id, String(ttlMinutes)],
         );
         if (rows.length === 0) return false;
 
-        const items = Array.isArray(rows[0].items) ? rows[0].items : [];
-        for (const item of items) {
-          const qty = Number(item.quantity) || 0;
-          if (qty <= 0) continue;
-          if (item.variantId) {
-            await client.query(
-              `UPDATE product_variants SET stock = stock + $2 WHERE id = $1`,
-              [item.variantId, qty],
-            );
-          } else if (item.productId) {
-            await client.query(
-              `UPDATE inventory SET stock = stock + $2 WHERE product_id = $1`,
-              [item.productId, qty],
-            );
-          }
-        }
+        // Exactly-once restore, guarded by orders.stock_restored_at.
+        await restoreOrderStock(client, order.id);
         return true;
       });
 

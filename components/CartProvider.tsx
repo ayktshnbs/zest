@@ -79,8 +79,22 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const existingItem = prevCart.find((item) => sameLine(item, key));
       if (existingItem) {
         const next = sanitizeQuantity(product, existingItem.quantity + quantity);
+        // Refresh the line's snapshot from the product we were just handed.
+        // The old code kept the ORIGINAL stock/price captured at first add, so
+        // the cart's +/- ceiling drifted away from reality the longer an item
+        // sat there. `product` here already carries live stock and any admin
+        // price/name override (see ProductCard/ProductDetailClient).
         return prevCart.map((item) =>
-          sameLine(item, key) ? { ...item, quantity: next } : item,
+          sameLine(item, key)
+            ? {
+                ...item,
+                name: product.name,
+                price: product.price,
+                imageUrl: product.imageUrl,
+                stock: product.stock,
+                quantity: next,
+              }
+            : item,
         );
       }
       const next = sanitizeQuantity(product, quantity);

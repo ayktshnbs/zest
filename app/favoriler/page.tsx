@@ -2,16 +2,40 @@
 
 import { useWishlist } from "@/components/WishlistProvider";
 import { useCart } from "@/components/CartProvider";
-import { products } from "@/lib/products";
+import { products as staticProducts } from "@/lib/products";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Heart, Trash2, ShoppingCart, ArrowRight } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLiveCatalog, resolveEffective } from "@/lib/useStock";
+import { mergeProducts } from "@/lib/customProducts";
+import { useMemo } from "react";
 
 export default function WishlistPage() {
   const { ids, remove, clear, isHydrated } = useWishlist();
   const { addToCart } = useCart();
+  const router = useRouter();
+  // Favourites are stored as bare product ids and can point at admin-added
+  // products, which don't exist in the static catalog — resolving against
+  // `products` alone silently dropped them from the list (and from the count).
+  const liveCatalog = useLiveCatalog();
+  const catalog = useMemo(
+    () => mergeProducts(staticProducts, liveCatalog.customProducts, liveCatalog.categories),
+    [liveCatalog.customProducts, liveCatalog.categories],
+  );
+
+  const items = useMemo(
+    () =>
+      ids
+        .map((id) => catalog.find((p) => p.id === id))
+        .filter((p): p is (typeof catalog)[number] => Boolean(p))
+        // Overlay live stock/price/name so the card matches the rest of the
+        // storefront and "Sepete Taşı" gets a product the cart will accept.
+        .map((p) => ({ product: p, live: resolveEffective(liveCatalog, p) })),
+    [ids, catalog, liveCatalog],
+  );
 
   if (!isHydrated) {
     return (
@@ -22,10 +46,6 @@ export default function WishlistPage() {
       </main>
     );
   }
-
-  const items = ids
-    .map((id) => products.find((p) => p.id === id))
-    .filter((p): p is (typeof products)[number] => Boolean(p));
 
   return (
     <main className="min-h-screen pt-28 md:pt-32 pb-24 bg-background">
@@ -76,7 +96,7 @@ export default function WishlistPage() {
         ) : (
           <div className="divide-y divide-foreground/10">
             <AnimatePresence>
-              {items.map((p) => (
+              {items.map(({ product: p, live }) => (
                 <motion.article
                   key={p.id}
                   layout
@@ -98,7 +118,7 @@ export default function WishlistPage() {
                       </span>
                       <Link href={`/products/${p.id}`} className="block mt-1">
                         <h3 className="font-body text-lg text-foreground hover:text-foreground/70 transition-colors">
-                          {p.name}
+                          {live.name}
                         </h3>
                       </Link>
                       <p className="text-sm text-foreground/50 mt-2 line-clamp-2 max-w-md">
@@ -106,7 +126,7 @@ export default function WishlistPage() {
                       </p>
                       <div className="flex items-baseline gap-3 mt-3">
                         <span className="font-audiowide text-base text-foreground tracking-tight">
-                          {formatPrice(p.price)}
+                          {formatPrice(live.price)}
                         </span>
                         {p.originalPrice ? (
                           <span className="text-[12px] text-foreground/30 line-through">
@@ -115,17 +135,17 @@ export default function WishlistPage() {
                         ) : null}
                         <span
                           className={`text-[10px] font-audiowide uppercase tracking-[0.3em] ${
-                            p.stock <= 0
+                            live.stock <= 0
                               ? "text-foreground/40"
-                              : p.stock <= 5
+                              : live.stock <= 5
                               ? "text-foreground/70"
                               : "text-foreground/40"
                           }`}
                         >
-                          {p.stock <= 0
+                          {live.stock <= 0
                             ? "Stokta Yok"
-                            : p.stock <= 5
-                            ? `Son ${p.stock} adet`
+                            : live.stock <= 5
+                            ? `Son ${live.stock} adet`
                             : "Stokta Var"}
                         </span>
                       </div>
@@ -134,14 +154,26 @@ export default function WishlistPage() {
                     <div className="flex flex-col sm:flex-row gap-3">
                       <button
                         onClick={() => {
-                          addToCart(p);
+                          // Colour-variant products can't be added without a
+                          // colorKey (the order API rejects the line), so send
+                          // the shopper to the product page to choose one.
+                          if (live.hasVariants) {
+                            router.push(`/products/${p.id}`);
+                            return;
+                          }
+                          addToCart({
+                            ...p,
+                            name: live.name,
+                            price: live.price,
+                            stock: live.stock,
+                          });
                           remove(p.id);
                         }}
-                        disabled={p.stock <= 0}
+                        disabled={live.stock <= 0}
                         className="flex-1 sm:flex-none px-6 py-3 bg-foreground text-background font-audiowide text-[10px] uppercase tracking-[0.3em] hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
                         <ShoppingCart size={12} />
-                        Sepete Taşı
+                        {live.hasVariants ? "Renk Seç" : "Sepete Taşı"}
                       </button>
                       <Link
                         href={`/products/${p.id}`}

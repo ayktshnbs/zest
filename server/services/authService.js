@@ -52,10 +52,12 @@ export const verifyPassword = (password, hash) => {
  * Also records a session row so the refresh token can be revoked.
  */
 const issueSession = async (res, user, { ip, userAgent }) => {
-  const accessToken = signAccessToken(user);
   const refreshToken = signRefreshToken(user);
 
-  await SessionModel.create({
+  // The session row is created FIRST so its id can be stamped into the access
+  // token as `sid`. That claim is what lets requireAuth reject a token whose
+  // session was revoked, rather than honouring it for the rest of its TTL.
+  const session = await SessionModel.create({
     userId: user.id,
     refreshTokenHash: hashToken(refreshToken),
     expiresAt: new Date(Date.now() + refreshTtlMs),
@@ -63,10 +65,12 @@ const issueSession = async (res, user, { ip, userAgent }) => {
     ip,
   });
 
+  const accessToken = signAccessToken(user, session.id);
+
   res.cookie(ACCESS_COOKIE, accessToken, accessCookieOptions(accessTtlMs));
   res.cookie(REFRESH_COOKIE, refreshToken, refreshCookieOptions(refreshTtlMs));
 
-  return { accessToken, refreshToken };
+  return { accessToken, refreshToken, sessionId: session.id };
 };
 
 /** Issue a fresh email-verification token and email the link. */
@@ -146,6 +150,13 @@ export const loginUser = async (req, res, { email, password }) => {
 
 // ── Logout ──────────────────────────────────────────────────────────
 export const logoutUser = async (req) => {
+  // Primary path: the access token's `sid`. The refresh cookie is scoped to
+  // /api/auth/refresh so the browser does NOT send it here — relying on it
+  // alone meant logout cleared the cookies but left the session row live.
+  if (req.user?.sessionId) {
+    await SessionModel.revoke(req.user.sessionId);
+  }
+
   const refreshToken = req.cookies?.[REFRESH_COOKIE];
   if (refreshToken) {
     const session = await SessionModel.findActiveByHash(hashToken(refreshToken));
@@ -242,7 +253,7 @@ export const resetPassword = async (req, { token, password }) => {
 };
 
 // ── Change password (while logged in) ───────────────────────────────
-export const changePassword = async (req, { currentPassword, newPassword }) => {
+export const changePassword = async (req, res, { currentPassword, newPassword }) => {
   const user = await UserModel.findById(req.user.id);
   if (!user) throw new NotFoundError("Account not found");
 
@@ -252,8 +263,15 @@ export const changePassword = async (req, { currentPassword, newPassword }) => {
   const passwordHash = await hashPassword(newPassword);
   await UserModel.updatePasswordHash(user.id, passwordHash);
 
-  // Revoke all other sessions; keep the current one alive by re-issuing.
+  // Revoke every session (this device included — its access token carries the
+  // now-revoked `sid`), then immediately mint a fresh one so the person who
+  // just changed their password isn't logged out of the tab they did it in.
+  // Every OTHER device is signed out, which is the point.
   await SessionModel.revokeAllForUser(user.id);
+  await issueSession(res, user, {
+    ip: req.ip,
+    userAgent: req.headers["user-agent"],
+  });
 
   await recordAuditEvent({
     userId: user.id,

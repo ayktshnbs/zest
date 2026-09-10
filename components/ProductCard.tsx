@@ -7,6 +7,7 @@ import { useCart } from "./CartProvider";
 import { useWishlist } from "./WishlistProvider";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatPrice } from "@/lib/utils";
 import { useLiveProduct } from "@/lib/useStock";
@@ -20,6 +21,7 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
   const { addToCart } = useCart();
   const { has: inWishlist, toggle: toggleWishlist } = useWishlist();
   const [isHovered, setIsHovered] = useState(false);
+  const router = useRouter();
 
   const wishlisted = inWishlist(product.id);
   const live = useLiveProduct(product.id);
@@ -28,15 +30,33 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
   const effectivePrice = live.priceCents != null ? live.priceCents / 100 : product.price;
   // Admin-uploaded photos (Cloudinary) override the static cover when present.
   const effectiveImageUrl = live.imageUrls?.[0] ?? product.imageUrl;
+  // `stock` MUST carry the live value: CartProvider.addToCart bails out on
+  // `product.stock <= 0`, and admin-added products are built with stock: 0
+  // (their real stock only exists in the live catalog). Without this the
+  // add-to-cart button was a silent no-op for every custom product.
   const effectiveProduct = {
     ...product,
     name: effectiveName,
     price: effectivePrice,
     imageUrl: effectiveImageUrl,
+    stock: effectiveStock,
+  };
+  // Admin badge override wins as a whole when present, otherwise the static
+  // catalog flags apply (matches how name/price/description overrides behave).
+  const badges = live.badges ?? {
+    isNew: product.isNew,
+    isBestSeller: product.isBestSeller,
+    isFeatured: product.isFeatured,
   };
   const outOfStock = effectiveStock <= 0;
   const lowStock = !outOfStock && effectiveStock <= 5;
   const compact = variant === "compact";
+  // Products sold in colours can't be added from a listing card — the order
+  // API rejects a line without a colorKey. Send the shopper to the product
+  // page to pick one instead of building a cart that can never check out.
+  const needsVariantChoice = live.hasVariants;
+
+  const goToProduct = () => router.push(`/products/${product.id}`);
 
   return (
     <motion.div
@@ -69,12 +89,12 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
               -%{product.discountPercent}
             </span>
           ) : null}
-          {product.isNew ? (
+          {badges.isNew ? (
             <span className="bg-background text-foreground font-audiowide text-[8px] tracking-[0.25em] uppercase px-2.5 py-1 border border-foreground/10">
               Yeni
             </span>
           ) : null}
-          {product.isBestSeller ? (
+          {badges.isBestSeller ? (
             <span className="bg-background text-foreground font-audiowide text-[8px] tracking-[0.25em] uppercase px-2.5 py-1 border border-foreground/10">
               Çok Satan
             </span>
@@ -99,11 +119,15 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
               exit={{ opacity: 0, y: 10 }}
               onClick={(e) => {
                 e.preventDefault();
+                if (needsVariantChoice) {
+                  goToProduct();
+                  return;
+                }
                 addToCart(effectiveProduct);
               }}
               className="hidden lg:block absolute bottom-4 left-4 right-4 bg-foreground text-background py-4 font-audiowide text-[9px] uppercase tracking-[0.3em] z-20 hover:opacity-90 transition-opacity"
             >
-              Sepete Ekle
+              {needsVariantChoice ? "Renk Seç" : "Sepete Ekle"}
             </motion.button>
           ) : null}
         </AnimatePresence>
@@ -167,11 +191,17 @@ export const ProductCard = ({ product, variant = "default" }: ProductCardProps) 
           disabled={outOfStock}
           onClick={(e) => {
             e.preventDefault();
-            addToCart(product);
+            if (needsVariantChoice) {
+              goToProduct();
+              return;
+            }
+            // effectiveProduct (not the raw static product) — it carries the
+            // live stock and the admin's name/price/image overrides.
+            addToCart(effectiveProduct);
           }}
           className="lg:hidden w-full py-4 bg-foreground text-background font-audiowide text-[9px] uppercase tracking-[0.3em] transition-transform active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {outOfStock ? "Stokta Yok" : "Sepete Ekle"}
+          {outOfStock ? "Stokta Yok" : needsVariantChoice ? "Renk Seç" : "Sepete Ekle"}
         </button>
       </div>
     </motion.div>

@@ -109,6 +109,25 @@ export const listAll = async ({ limit, offset, status }) => {
   return { rows, total: countRows[0].total };
 };
 
+/**
+ * Admin: several orders by id, with the buyer's identity. Used to enrich the
+ * payment-review list. Ids MUST already be validated as UUIDs by the caller —
+ * the ::uuid[] cast throws on malformed input.
+ */
+export const findManyAdmin = async (ids) => {
+  if (!Array.isArray(ids) || ids.length === 0) return [];
+  const { rows } = await query(
+    `SELECT o.id, o.order_number, o.status, o.fulfillment_status,
+            o.currency, o.total_cents, o.created_at,
+            u.email AS user_email, u.name AS user_name
+       FROM orders o
+       JOIN users u ON u.id = o.user_id
+      WHERE o.id = ANY($1::uuid[])`,
+    [ids],
+  );
+  return rows;
+};
+
 // Admin: a single order joined with the buyer's identity.
 export const findByIdAdmin = async (id) => {
   const { rows } = await query(
@@ -122,6 +141,32 @@ export const findByIdAdmin = async (id) => {
   return rows[0] ?? null;
 };
 
+/** Lock one order row for the duration of a transaction. */
+export const lockForUpdate = async (client, id) => {
+  const { rows } = await client.query(
+    `SELECT * FROM orders WHERE id = $1 FOR UPDATE`,
+    [id],
+  );
+  return rows[0] ?? null;
+};
+
+/**
+ * Claim the next payment attempt for an order and put it back in `pending`.
+ * The returned counter is what makes each PayTR merchant_oid unique, so this
+ * must run inside the same transaction that re-reserves stock.
+ */
+export const beginPaymentAttempt = async (client, id) => {
+  const { rows } = await client.query(
+    `UPDATE orders
+        SET payment_attempts = payment_attempts + 1,
+            status = 'pending'
+      WHERE id = $1
+      RETURNING payment_attempts`,
+    [id],
+  );
+  return rows[0]?.payment_attempts ?? null;
+};
+
 export const updateStatus = async (id, status, db = pool) => {
   const { rows } = await db.query(
     `UPDATE orders SET status = $2 WHERE id = $1 RETURNING *`,
@@ -130,25 +175,11 @@ export const updateStatus = async (id, status, db = pool) => {
   return rows[0] ?? null;
 };
 
-// Admin: update payment status and/or fulfillment status in one call.
-export const updateAdmin = async (id, { status, fulfillmentStatus }) => {
-  const sets = [];
-  const params = [id];
-  if (status) {
-    params.push(status);
-    sets.push(`status = $${params.length}`);
-  }
-  if (fulfillmentStatus) {
-    params.push(fulfillmentStatus);
-    sets.push(`fulfillment_status = $${params.length}`);
-  }
-  if (sets.length === 0) return findById(id);
-  const { rows } = await query(
-    `UPDATE orders SET ${sets.join(", ")} WHERE id = $1 RETURNING *`,
-    params,
-  );
-  return rows[0] ?? null;
-};
+// NOTE: the admin status update used to live here as `updateAdmin`. It now
+// happens inside adminController.updateOrder's transaction, because changing
+// an order to/from cancelled/refunded has to move inventory in the same
+// atomic step (services/stockService.js). A standalone helper that wrote the
+// status without touching stock is a trap, so it is deliberately gone.
 
 export const toPublic = (order) => {
   if (!order) return null;

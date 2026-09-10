@@ -38,15 +38,27 @@ Vercel domain, so auth cookies stay first-party (login works everywhere, incl. i
    | `PAYTR_FAIL_URL` | `https://YOUR-APP.vercel.app/odeme/basarisiz` |
 
    (`NODE_ENV`, `COOKIE_SECURE=true`, `PG_SSL=true`, TTLs, `PAYTR_TEST_MODE` are preset in `render.yaml`.)
-3. Deploy. Migrations are already applied to Neon, so the API is ready once it boots.
+3. Deploy. The build command runs `npm run migrate:deploy`, so pending migrations
+   are applied automatically before the service boots (the runner is idempotent).
    Note the service URL, e.g. `https://zest-api.onrender.com`.
    - Free tier sleeps after ~15 min idle; the first request then takes ~30–50s.
+
+   > ⚠️ Migration `021_add_order_stock_accounting.sql` is **required**. It adds
+   > `orders.stock_restored_at` and `orders.payment_attempts`, which checkout,
+   > the payment webhook and the expiry job all query. Deploying the code
+   > without it breaks order payment. If you apply migrations by hand instead,
+   > run `npm run migrate` from `server/` before deploying.
 
 ## 2. Frontend → Vercel
 
 1. Vercel project → **Settings → Environment Variables** → add
    `BACKEND_URL = https://zest-api.onrender.com` (Production). Leave
    `NEXT_PUBLIC_API_URL` unset (the app uses the same-origin `/api` proxy).
+
+   > `BACKEND_URL` is **mandatory**: without it there is no `/api/*` rewrite and
+   > every API call 404s at runtime. The production build now fails fast with an
+   > explanatory error rather than shipping a silently broken site. See
+   > `.env.example` for the full storefront variable list.
 2. Deploy: `vercel --prod` (or push to `main` if the project auto-deploys from GitHub).
 3. Note the production URL, e.g. `https://kitchen-e-commerce.vercel.app`.
 

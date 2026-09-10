@@ -656,8 +656,13 @@ function ProductFormModal({
           shortDescription: shortDesc.trim() || null,
           description: description.trim() || null,
           imageUrls,
-          badges: { isNew, isFeatured },
-          isActive: true,
+          // isBestSeller has no control in this form; carry the stored value
+          // through so saving doesn't strip it.
+          badges: { isNew, isFeatured, isBestSeller: existing.badges?.isBestSeller },
+          // Preserve the product's current published state. Hard-coding `true`
+          // here silently republished a product the admin had deactivated the
+          // moment they edited any other field.
+          isActive: existing.isActive,
           volumeLabel: volumeLabel.trim() || null,
           setSize: Number.isFinite(setSizeNum as number) && (setSizeNum as number) > 0 ? setSizeNum : null,
           ...(variantPayload ? { variants: variantPayload } : { variants: [] }),
@@ -1230,12 +1235,18 @@ function BuiltinProductFormModal({
         : null;
     // Badges: only persist as an override if the admin flipped anything off
     // the static catalog default. Otherwise clear the override.
+    //
+    // The override replaces the static flags WHOLESALE in the storefront, so
+    // isBestSeller has to be carried through even though this form has no
+    // control for it — otherwise editing "Yeni" on a best-seller quietly
+    // stripped its "Çok Satan" badge.
     const staticBadges = {
       isNew: Boolean(staticP?.isNew),
       isFeatured: Boolean(staticP?.isFeatured),
     };
+    const isBestSeller = Boolean(staticP?.isBestSeller);
     const matchesDefault = isNew === staticBadges.isNew && isFeatured === staticBadges.isFeatured;
-    const badgesOut = matchesDefault ? null : { isNew, isFeatured };
+    const badgesOut = matchesDefault ? null : { isNew, isFeatured, isBestSeller };
     try {
       const { product } = await adminApi.updateProduct(row.productId, {
         name: nameOut,

@@ -9,18 +9,26 @@ import { fulfillmentLabel, itemsSummary, liraFromCents } from "./labels";
 export default function AdminDashboard() {
   const [orders, setOrders] = useState<AdminOrderSummary[]>([]);
   const [stock, setStock] = useState<StockRow[]>([]);
+  // Count of payment conditions needing a human. Surfaced here so an operator
+  // who never opens the review page still sees that something is wrong.
+  const [reviewCount, setReviewCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       try {
-        const [o, s] = await Promise.all([
+        const [o, s, r] = await Promise.all([
           adminApi.listOrders({ pageSize: 100 }),
           adminApi.listStock(),
+          // Never let a review-list hiccup blank the whole dashboard.
+          adminApi.listPaymentReviews({ pageSize: 1 }).catch(() => null),
         ]);
         setOrders(o.orders);
         setStock(s.stock);
+        // Unresolved only — a lifetime total would keep the alert lit forever
+        // after a single historical incident.
+        setReviewCount(r?.unresolvedTotal ?? 0);
       } catch (e) {
         setErr(e instanceof ApiError ? e.message : "Yüklenemedi");
       } finally {
@@ -49,6 +57,21 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-12">
+      {reviewCount > 0 ? (
+        <Link
+          href="/admin/odeme-incelemeleri"
+          className="block border border-red-500/40 bg-red-500/[0.06] p-5 hover:bg-red-500/[0.1] transition-colors"
+        >
+          <p className="font-audiowide text-[11px] uppercase tracking-[0.25em] text-red-600">
+            {reviewCount} çözülmemiş ödeme incelemesi
+          </p>
+          <p className="text-[13px] font-body text-foreground/70 mt-2">
+            Tutar uyuşmazlığı, olası çift çekim veya iade gerektiren ödemeler var.
+            Ayrıntılar için tıklayın.
+          </p>
+        </Link>
+      ) : null}
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {tiles.map((t) => (
           <div key={t.label} className="border border-foreground/10 p-6">

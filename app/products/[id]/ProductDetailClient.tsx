@@ -60,11 +60,16 @@ export function ProductDetailClient({ params }: { params: { id: string } }) {
   const variants = liveCatalog.variants[params.id] ?? [];
   const hasVariants = variants.length > 0;
   const [selectedColorKey, setSelectedColorKey] = useState<string | null>(null);
+  // Default to the first colour that's actually in stock. Listing pages now
+  // route variant products here to choose one, so landing on a sold-out swatch
+  // (with the add button disabled) would read as "product unavailable".
   const selectedVariant = hasVariants
-    ? variants.find((v) => v.colorKey === selectedColorKey) ?? variants[0]
+    ? variants.find((v) => v.colorKey === selectedColorKey) ??
+      variants.find((v) => v.stock > 0) ??
+      variants[0]
     : null;
 
-  const { addToCart } = useCart();
+  const { addToCart, totalPrice: cartTotal } = useCart();
   const { has: inWishlist, toggle: toggleWishlist } = useWishlist();
   const { track } = useRecentlyViewed();
   const router = useRouter();
@@ -138,6 +143,23 @@ export function ProductDetailClient({ params }: { params: { id: string } }) {
   const effectiveProduct = { ...product, name: effectiveName, price: effectivePrice };
   const outOfStock = effectiveStock <= 0;
   const lowStock = !outOfStock && effectiveStock <= 5;
+  // Admin badge/set overrides. A present override replaces the static flags
+  // wholesale, mirroring how name/price overrides behave.
+  const badges = live.badges ?? {
+    isNew: product.isNew,
+    isBestSeller: product.isBestSeller,
+    isFeatured: product.isFeatured,
+  };
+  // Free-shipping progress has to account for what's already in the cart plus
+  // the quantity being configured here — comparing the UNIT price against the
+  // threshold told a shopper with ₺700 in their cart they still needed ₺600.
+  const projectedTotal = cartTotal + effectivePrice * quantity;
+  const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - projectedTotal);
+  // Set metadata: the admin override wins, then the custom product's own
+  // value. These are collected in the admin editor and stored by the API; the
+  // storefront simply never displayed them, so the controls did nothing.
+  const volumeLabel = live.volumeLabel ?? customMatch?.volumeLabel ?? null;
+  const setSize = live.setSize ?? customMatch?.setSize ?? null;
   // Filter out retired built-ins from the related shelf so we don't surface
   // products the user just hid (those photos are gone too).
   const retiredSet = new Set(liveCatalog.retiredIds);
@@ -260,12 +282,12 @@ export function ProductDetailClient({ params }: { params: { id: string } }) {
                     -%{product.discountPercent}
                   </span>
                 ) : null}
-                {product.isNew ? (
+                {badges.isNew ? (
                   <span className="bg-background text-foreground font-audiowide text-[9px] tracking-[0.25em] uppercase px-3 py-1.5 border border-foreground/10">
                     Yeni
                   </span>
                 ) : null}
-                {product.isBestSeller ? (
+                {badges.isBestSeller ? (
                   <span className="bg-background text-foreground font-audiowide text-[9px] tracking-[0.25em] uppercase px-3 py-1.5 border border-foreground/10">
                     Çok Satan
                   </span>
@@ -379,6 +401,8 @@ export function ProductDetailClient({ params }: { params: { id: string } }) {
             </div>
             <p className="text-foreground/40 text-xs font-body mb-8">
               KDV dahil · {product.sku}
+              {volumeLabel ? ` · ${volumeLabel}` : ""}
+              {setSize ? ` · ${setSize} parça` : ""}
             </p>
 
             {/* Color picker — only for variant products */}
@@ -446,13 +470,13 @@ export function ProductDetailClient({ params }: { params: { id: string } }) {
               <div className="flex items-center gap-3 text-sm text-foreground/60">
                 <Truck size={16} className="text-foreground/40" />
                 <span>
-                  {effectivePrice >= FREE_SHIPPING_THRESHOLD ? (
+                  {remainingForFreeShipping === 0 ? (
                     <>
-                      <strong className="text-foreground">Ücretsiz kargo</strong> · Bu üründe geçerli
+                      <strong className="text-foreground">Ücretsiz kargo</strong> · Bu siparişte geçerli
                     </>
                   ) : (
                     <>
-                      {formatPrice(FREE_SHIPPING_THRESHOLD - effectivePrice)} daha eklerseniz kargo
+                      {formatPrice(remainingForFreeShipping)} daha eklerseniz kargo
                       ücretsiz olur
                     </>
                   )}

@@ -18,6 +18,15 @@ import { AppError } from "../utils/errors.js";
 const PAYTR_TOKEN_URL = "https://www.paytr.com/odeme/api/get-token";
 
 /**
+ * How long a PayTR payment page stays payable, in minutes. Sent to PayTR as
+ * `timeout_limit` AND used by paymentController to decide whether an
+ * unresolved attempt is still live — a second attempt opened inside this
+ * window would give the customer two payable pages for one order.
+ * Keep the two uses in lockstep by reading this constant.
+ */
+export const PAYTR_ATTEMPT_TIMEOUT_MINUTES = 30;
+
+/**
  * Build the user_basket parameter PayTR expects.
  * Each item is [name, unitPriceTL, quantity]. The result is
  * JSON-encoded then base64-encoded.
@@ -41,14 +50,28 @@ const encodeBasket = (items) => {
  * @param {{ order, user, userIp }} params
  * @returns {{ token: string }} The iframe token.
  */
-export const createPaytrToken = async ({ order, user, userIp }) => {
+/**
+ * Build the merchant_oid for one payment attempt.
+ *
+ * Two hard constraints from PayTR: it must be alphanumeric only (the order
+ * UUID's dashes are not allowed) and it must be UNIQUE per attempt — reusing
+ * one gets the token request rejected, which is what made retrying a declined
+ * card impossible. `attempt` comes from orders.payment_attempts, so attempt 2
+ * on the same order gets a different oid.
+ *
+ * Our webhook idempotency key is derived from this value, so per-attempt
+ * uniqueness is also what lets the second attempt's callback be processed
+ * instead of being swallowed as a duplicate of the first.
+ */
+export const buildMerchantOid = (orderId, attempt) =>
+  `ZH${String(orderId).replace(/-/g, "")}A${attempt}`;
+
+export const createPaytrToken = async ({ order, user, userIp, attempt = 1 }) => {
   const merchantId = config.paytr.merchantId;
   const merchantKey = config.paytr.merchantKey;
   const merchantSalt = config.paytr.merchantSalt;
 
-  // merchant_oid must be unique per payment attempt. Use order id directly —
-  // the webhook_events idempotency layer handles duplicates.
-  const merchantOid = `PAYTR-${order.id}`;
+  const merchantOid = buildMerchantOid(order.id, attempt);
   const email = user.email;
   const paymentAmount = String(Number(order.total_cents ?? order.totalCents));
   const userBasket = encodeBasket(order.items ?? []);
@@ -104,7 +127,7 @@ export const createPaytrToken = async ({ order, user, userIp }) => {
     user_phone: userPhone,
     merchant_ok_url: config.paytr.successUrl,
     merchant_fail_url: config.paytr.failUrl,
-    timeout_limit: "30",
+    timeout_limit: String(PAYTR_ATTEMPT_TIMEOUT_MINUTES),
     currency,
     test_mode: testMode,
     lang: "tr",

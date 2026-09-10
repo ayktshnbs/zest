@@ -117,7 +117,10 @@ export const CartSidebar = ({ isOpen, onClose }: CartSidebarProps) => {
                   <AnimatePresence mode="popLayout">
                     {cart.map((item) => (
                       <motion.div
-                        key={item.id}
+                        // Product + colour: two colours of one set are two
+                        // lines sharing `item.id`, and a duplicate key made
+                        // AnimatePresence/layout reuse the wrong row.
+                        key={`${item.id}::${item.color?.key ?? ""}`}
                         layout
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}

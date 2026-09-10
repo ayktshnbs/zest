@@ -10,7 +10,9 @@ import { logger } from "../utils/logger.js";
 
 const resend = new Resend(config.resend.apiKey);
 
-const sendEmail = async ({ to, subject, html, text }) => {
+// `replyTo` defaults to the configured support address; the contact form
+// overrides it with the visitor's own address.
+const sendEmail = async ({ to, subject, html, text, replyTo }) => {
   try {
     const result = await resend.emails.send({
       from: config.resend.from,
@@ -18,7 +20,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
       subject,
       html,
       text,
-      replyTo: config.resend.replyTo,
+      replyTo: replyTo ?? config.resend.replyTo,
     });
     if (result.error) {
       logger.error({ err: result.error, to, subject }, "Resend returned error");
@@ -144,13 +146,16 @@ ${message}
       <div style="border-top:1px solid #eee;padding-top:20px;font-size:15px;line-height:1.6">${safeMessage}</div>
     </div>
   `;
-  // Use the visitor's address as replyTo so the support team can hit Reply
-  // and answer them directly, regardless of what config.resend.replyTo is.
-  return resend.emails.send({
-    from: config.resend.from,
+  // Route through sendEmail (rather than calling resend directly) so a
+  // provider-level failure is actually DETECTED. Resend resolves with
+  // { data, error } instead of throwing, so the old direct call reported
+  // success to the visitor even when the message was never delivered.
+  // The visitor's address becomes replyTo so support can just hit Reply.
+  return sendEmail({
     to: inbox,
     replyTo: email,
-    subject: fullSubject,
+    // Strip CR/LF so a crafted subject can't inject extra header lines.
+    subject: fullSubject.replace(/[\r\n]+/g, " "),
     html,
     text,
   });

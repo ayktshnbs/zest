@@ -8,6 +8,7 @@ import { useAuth } from "@/components/AuthProvider";
 const nav = [
   { href: "/admin", label: "Panel" },
   { href: "/admin/orders", label: "Siparişler" },
+  { href: "/admin/odeme-incelemeleri", label: "Ödeme İnceleme" },
   { href: "/admin/products", label: "Ürünler" },
   { href: "/admin/categories", label: "Kategoriler" },
 ];

@@ -33,6 +33,8 @@ export const updateMe = asyncHandler(async (req, res) => {
 });
 
 export const changePassword = asyncHandler(async (req, res) => {
-  await authService.changePassword(req, req.validated.body);
+  // `res` is passed so the service can re-issue this device's session cookies
+  // after revoking every session (see authService.changePassword).
+  await authService.changePassword(req, res, req.validated.body);
   res.json({ ok: true });
 });

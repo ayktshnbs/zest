@@ -147,6 +147,12 @@ export const updateOrderSchema = z
     message: "Provide status or fulfillmentStatus",
   });
 
+// Marking a payment review handled. The note is free text an operator can use
+// to record what they did (refund reference, PayTR ticket, etc).
+export const resolveReviewSchema = z.object({
+  note: z.string().trim().max(1000).optional(),
+});
+
 export const setStockSchema = z.object({
   stock: z.number().int().min(0).max(1_000_000),
 });

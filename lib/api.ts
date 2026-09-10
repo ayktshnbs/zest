@@ -34,15 +34,16 @@ const readCookie = (name: string): string | undefined => {
   return match ? decodeURIComponent(match[1]) : undefined;
 };
 
-let csrfPrimed = false;
+// The `csrf` cookie is session-scoped, so it can disappear mid-session (cookie
+// cleared, browser eviction). This used to be gated behind a module flag that
+// latched true forever once set — after such a loss every mutating request
+// silently went out with no x-csrf-token and 403'd until a full page reload.
+// The cookie itself is now the only source of truth: if it's there we're
+// primed, if it's gone we re-prime.
 const primeCsrf = async () => {
-  if (csrfPrimed || readCookie("csrf")) {
-    csrfPrimed = true;
-    return;
-  }
+  if (readCookie("csrf")) return;
   try {
     await fetch(`${API_BASE}/api/auth/csrf`, { credentials: "include" });
-    csrfPrimed = true;
   } catch {
     // best effort — caller will hit the real error path on the next request
   }
@@ -143,6 +144,22 @@ export const api = async <T = unknown>(
     const err = typeof payload === "object" && payload && "error" in payload
       ? (payload as { error: { code?: string; message?: string; details?: unknown } }).error
       : undefined;
+
+    // Stale or missing CSRF token → fetch a fresh one and replay once.
+    // Without this a lost `csrf` cookie left the tab unable to submit
+    // anything until the user reloaded. Narrowed to the CSRF code so a
+    // genuine `forbidden` (e.g. non-admin hitting /api/admin) isn't retried.
+    if (res.status === 403 && err?.code === "invalid_csrf_token" && needsCsrf && !_retried) {
+      // Force a re-fetch even if a stale cookie is still present — it's the
+      // stale value that the server just rejected.
+      try {
+        await fetch(`${API_BASE}/api/auth/csrf`, { credentials: "include" });
+      } catch {
+        /* fall through to the throw below */
+      }
+      if (readCookie("csrf")) return api<T>(path, options, true);
+    }
+
     throw new ApiError(err?.message || `Request failed (${res.status})`, {
       status: res.status,
       code: err?.code,
@@ -329,7 +346,54 @@ export interface AdminProduct {
   isActive: boolean;
 }
 
+// Payment conditions that need a human. Written by the PayTR webhook into
+// audit_logs with metadata.requiresManualReview = true; surfaced admin-only.
+export interface PaymentReview {
+  id: string;
+  action: string;
+  createdAt: string;
+  detail: string | null;
+  merchantOid: string | null;
+  metadata: Record<string, unknown>;
+  // Resolution lives in a separate append-only audit row; the original
+  // incident record is never mutated.
+  resolved: boolean;
+  resolvedAt: string | null;
+  resolvedBy: string | null;
+  resolutionNote: string | null;
+  // Current state of the affected order, so the operator can tell an
+  // already-handled case from an open one. null if the order can't be resolved.
+  order: {
+    id: string;
+    orderNumber: string;
+    status: OrderStatus;
+    fulfillmentStatus: FulfillmentStatus;
+    currency: string;
+    totalCents: number;
+    customerEmail: string;
+    customerName: string;
+  } | null;
+}
+
 export const adminApi = {
+  listPaymentReviews: (params: { page?: number; pageSize?: number } = {}) => {
+    const q = new URLSearchParams();
+    if (params.page) q.set("page", String(params.page));
+    if (params.pageSize) q.set("pageSize", String(params.pageSize));
+    const qs = q.toString();
+    return api<{
+      reviews: PaymentReview[];
+      pagination: Pagination;
+      // Reviews nobody has marked handled yet — what the dashboard badge shows.
+      unresolvedTotal: number;
+    }>(`/api/admin/payment-reviews${qs ? `?${qs}` : ""}`);
+  },
+  // Append a resolution audit row for one review. Admin-only, idempotent.
+  resolvePaymentReview: (id: string, note?: string) =>
+    api<{ ok: true; alreadyResolved: boolean; resolvedAt: string }>(
+      `/api/admin/payment-reviews/${encodeURIComponent(id)}/resolve`,
+      { method: "POST", body: { ...(note ? { note } : {}) } },
+    ),
   listOrders: (params: { page?: number; pageSize?: number; status?: OrderStatus } = {}) => {
     const q = new URLSearchParams();
     if (params.page) q.set("page", String(params.page));

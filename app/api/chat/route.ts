@@ -131,7 +131,52 @@ async function callGemini(
   return { ok: false, status: lastStatus, detail: lastDetail, modelsTried: MODEL_CHAIN };
 }
 
+// ── Rate limiting ─────────────────────────────────────────────────────
+// This route is a Next handler, so it never passes through the Express
+// globalRateLimiter — without this anyone could loop it and drain the Gemini
+// quota. Fixed window per client IP, held in module memory.
+//
+// Caveat: memory is per server instance, so on a multi-instance/serverless
+// deployment the effective limit is (LIMIT × instances). That's still a hard
+// ceiling per instance and costs nothing; a shared store would be the upgrade
+// if abuse ever gets past it.
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 12; // messages per IP per minute
+const hits = new Map<string, { count: number; resetAt: number }>();
+
+const clientIp = (req: NextRequest): string => {
+  const fwd = req.headers.get("x-forwarded-for");
+  if (fwd) return fwd.split(",")[0].trim();
+  return req.headers.get("x-real-ip") ?? "unknown";
+};
+
+const rateLimit = (ip: string): { ok: boolean; retryAfter: number } => {
+  const now = Date.now();
+  // Opportunistic sweep so the map can't grow without bound.
+  if (hits.size > 5000) {
+    for (const [key, v] of hits) if (v.resetAt <= now) hits.delete(key);
+  }
+  const entry = hits.get(ip);
+  if (!entry || entry.resetAt <= now) {
+    hits.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return { ok: true, retryAfter: 0 };
+  }
+  entry.count += 1;
+  if (entry.count > RATE_LIMIT_MAX) {
+    return { ok: false, retryAfter: Math.ceil((entry.resetAt - now) / 1000) };
+  }
+  return { ok: true, retryAfter: 0 };
+};
+
 export async function POST(req: NextRequest) {
+  const { ok: withinLimit, retryAfter } = rateLimit(clientIp(req));
+  if (!withinLimit) {
+    return Response.json(
+      { error: "Çok fazla mesaj gönderdiniz. Lütfen biraz bekleyin." },
+      { status: 429, headers: { "retry-after": String(retryAfter) } },
+    );
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return Response.json(
@@ -188,24 +233,42 @@ export async function POST(req: NextRequest) {
   return Response.json({ error }, { status: 502 });
 }
 
-// Diagnostic: visit /api/chat in a browser to see whether the key works and
-// which model responds (or the exact Gemini error). No secrets are exposed.
-export async function GET() {
+// Diagnostic probe. Reports configuration for free; only performs a real
+// (billed) Gemini call when CHAT_DIAGNOSTIC_TOKEN is configured AND supplied,
+// because this endpoint is public and every hit used to cost a model call.
+// Upstream error text is never echoed — it goes to the server log instead.
+export async function GET(req: NextRequest) {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return Response.json({ configured: false, modelsTried: MODEL_CHAIN });
+  const expected = process.env.CHAT_DIAGNOSTIC_TOKEN;
+  const supplied =
+    req.headers.get("x-diagnostic-token") ??
+    new URL(req.url).searchParams.get("token");
+
+  const base = { configured: Boolean(apiKey), modelsTried: MODEL_CHAIN };
+
+  // No token configured, or the wrong one supplied → configuration only.
+  if (!expected || supplied !== expected) {
+    return Response.json({
+      ...base,
+      probed: false,
+      hint: "Set CHAT_DIAGNOSTIC_TOKEN and pass ?token=… to run a live probe.",
+    });
   }
+  if (!apiKey) return Response.json({ ...base, probed: false });
+
+  const { ok: withinLimit } = rateLimit(clientIp(req));
+  if (!withinLimit) {
+    return Response.json({ ...base, probed: false, error: "rate_limited" }, { status: 429 });
+  }
+
   const result = await callGemini(apiKey, [
     { role: "user", parts: [{ text: "Test: merhaba" }] },
   ]);
   if (result.ok) {
-    return Response.json({ configured: true, ok: true, model: result.model });
+    return Response.json({ ...base, probed: true, ok: true, model: result.model });
   }
-  return Response.json({
-    configured: true,
-    ok: false,
-    status: result.status,
-    detail: result.detail,
-    modelsTried: result.modelsTried,
-  });
+  // `detail` (raw upstream body) is deliberately omitted — callGemini already
+  // logged it server-side.
+  console.error(`Gemini diagnostic failed: ${result.status} ${result.detail}`);
+  return Response.json({ ...base, probed: true, ok: false, status: result.status });
 }

@@ -161,7 +161,9 @@ export default function RootLayout({
                       <FooterCol
                         title="Müşteri Hizmetleri"
                         items={[
-                          { label: "Sipariş Takibi", href: "/siparislerim" },
+                          // Order tracking lives on the account page; there is
+                          // no /siparislerim route (this 404'd).
+                          { label: "Sipariş Takibi", href: "/hesabim" },
                           { label: "Teslimat", href: "/yardim/kargo" },
                           { label: "İade & Değişim", href: "/yardim/iade" },
                         ]}

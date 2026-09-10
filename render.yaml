@@ -8,7 +8,12 @@ services:
     rootDir: server
     plan: free
     branch: main
-    buildCommand: npm install
+    # Migrations run on every deploy. The runner is idempotent (it records
+    # applied filenames in schema_migrations and skips them), so this is a
+    # no-op when there's nothing new — but it means a deploy carrying a new
+    # migration can never boot against an out-of-date schema. `migrate:deploy`
+    # reads env from the Render dashboard rather than a .env file.
+    buildCommand: npm install && npm run migrate:deploy
     startCommand: node server.js
     healthCheckPath: /api/health
     envVars:

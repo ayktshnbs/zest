@@ -12,14 +12,14 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { contactApi, ApiError } from "@/lib/api";
 
-// FormSubmit.co — free form-to-email relay, no API key, no signup. The first
-// submission triggers a one-time activation email to the recipient; click the
-// link in it once and every future submission lands in the inbox.
-// We use the AJAX endpoint so the page doesn't navigate away on submit — the
-// in-page success/error UI keeps working.
-const FORMSUBMIT_INBOX = "info@zest-home.net";
-const FORMSUBMIT_URL = `https://formsubmit.co/ajax/${FORMSUBMIT_INBOX}`;
+// Submissions go to our own API (POST /api/contact), which validates the
+// payload, forwards it to CONTACT_INBOX via Resend and reports a real delivery
+// failure back. This used to POST straight from the browser to formsubmit.co,
+// which sent customer PII to an unvetted third party and — because that relay
+// needs a one-time activation click — could silently drop every message while
+// the UI still said "sent".
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -45,41 +45,29 @@ export default function ContactPage() {
     setErr(null);
     setSending(true);
     try {
-      const res = await fetch(FORMSUBMIT_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          name: name.trim(),
-          email: email.trim(),
-          // FormSubmit reads these to shape the outbound message:
-          _subject: subject.trim()
-            ? `ZestHome İletişim · ${subject.trim()}`
-            : "ZestHome İletişim · Yeni mesaj",
-          _replyto: email.trim(),
-          _template: "table",
-          _captcha: "false",
-          message: message.trim(),
-        }),
+      await contactApi.send({
+        name: name.trim(),
+        email: email.trim(),
+        subject: subject.trim() || undefined,
+        message: message.trim(),
       });
-      const data = await res.json().catch(() => ({}));
-
-      if (!data?.success) {
-        throw new Error("Mesaj gönderilemedi.");
-      }
       setSent(true);
       setName("");
       setEmail("");
       setSubject("");
       setMessage("");
     } catch (e) {
-      setErr(
-        e instanceof Error
-          ? e.message
-          : "Mesaj gönderilemedi. Lütfen tekrar deneyin.",
-      );
+      if (e instanceof ApiError) {
+        setErr(
+          e.status === 0
+            ? "Sunucuya ulaşılamıyor. Lütfen bağlantınızı kontrol edin."
+            : e.status === 422
+              ? "Lütfen formu kontrol edin: ad en az 2, mesaj en az 10 karakter olmalı."
+              : e.message || "Mesaj gönderilemedi. Lütfen tekrar deneyin.",
+        );
+      } else {
+        setErr("Mesaj gönderilemedi. Lütfen tekrar deneyin.");
+      }
     } finally {
       setSending(false);
     }
