@@ -39,6 +39,7 @@ import * as WebhookEventModel from "../models/WebhookEventModel.js";
 import * as PaymentModel from "../models/PaymentModel.js";
 import * as OrderModel from "../models/OrderModel.js";
 import { recordAuditEvent } from "../services/auditService.js";
+import { notifyOrderPaid } from "../services/orderNotificationService.js";
 import { logger } from "../utils/logger.js";
 
 /**
@@ -192,6 +193,11 @@ export const paytrCallback = asyncHandler(async (req, res) => {
   const client = await pool.connect();
   let outcome = "ok";
   let failure = null;
+  // Set only on the branches that move the order to `paid` in THIS
+  // transaction. Drives the post-commit emails (step 6) — a held success
+  // (amount mismatch, stock gone) or a no-op never sets it.
+  let paidThisCallback = false;
+  let orderId = null;
   try {
     await client.query("BEGIN");
 
@@ -250,7 +256,7 @@ export const paytrCallback = asyncHandler(async (req, res) => {
     );
     if (!claim) throw ALREADY_PROCESSED;
 
-    const orderId = await resolveOrderId(merchantOid, client);
+    orderId = await resolveOrderId(merchantOid, client);
     if (!orderId) throw new Error(`Cannot resolve order from ${merchantOid}`);
 
     // Lock the order row for the rest of the transaction. This also serialises
@@ -325,6 +331,7 @@ export const paytrCallback = asyncHandler(async (req, res) => {
         }, client);
       } else if (order.status === "pending") {
         await OrderModel.updateStatus(order.id, "paid", client);
+        paidThisCallback = true;
         await recordAuditEvent({
           userId: order.user_id,
           action: "payment.succeeded",
@@ -337,6 +344,7 @@ export const paytrCallback = asyncHandler(async (req, res) => {
         const reservation = await reserveOrderStock(client, order.id);
         if (reservation.ok) {
           await OrderModel.updateStatus(order.id, "paid", client);
+          paidThisCallback = true;
           logger.warn(
             { orderId: order.id, merchantOid, previousStatus: order.status },
             "Late PayTR success — order re-opened and stock re-reserved",
@@ -502,4 +510,14 @@ export const paytrCallback = asyncHandler(async (req, res) => {
 
   // 5. Durably processed (or a duplicate of one that was): acknowledge.
   res.status(200).type("text/plain").send("OK");
+
+  // 6. Notify — strictly AFTER the acknowledgement, outside the transaction,
+  //    and not awaited. Only the delivery that actually moved the order to
+  //    `paid` mails: a redelivery ("duplicate") already did, and a held
+  //    success must not tell the customer their order is confirmed.
+  //    notifyOrderPaid never rejects, so an email outage cannot turn this
+  //    acknowledged payment into a retry.
+  if (outcome === "ok" && paidThisCallback && orderId) {
+    void notifyOrderPaid(orderId);
+  }
 });

@@ -78,6 +78,15 @@ const envSchema = z.object({
     .transform((v) => v !== "false"),
   ORDER_PENDING_TTL_MINUTES: z.coerce.number().int().positive().default(60),
   ORDER_EXPIRY_INTERVAL_MINUTES: z.coerce.number().int().positive().default(10),
+
+  // Post-payment emails (services/orderNotificationService.js): the customer's
+  // order confirmation and the merchant's new-order alert. They are sent only
+  // AFTER a payment has committed and can never affect it, so this switch is
+  // purely for silencing them (e.g. during an email-provider outage). The test
+  // suite turns it off so no test performs network I/O.
+  ORDER_EMAILS_ENABLED: boolFromString.default("true"),
+  // Inbox for new-order alerts. Falls back to CONTACT_INBOX.
+  ORDER_NOTIFY_EMAIL: z.string().email().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -177,5 +186,10 @@ export const config = {
     enabled: env.ORDER_EXPIRY_ENABLED,
     ttlMinutes: env.ORDER_PENDING_TTL_MINUTES,
     intervalMinutes: env.ORDER_EXPIRY_INTERVAL_MINUTES,
+  },
+
+  orderEmails: {
+    enabled: env.ORDER_EMAILS_ENABLED,
+    notifyTo: env.ORDER_NOTIFY_EMAIL ?? env.CONTACT_INBOX,
   },
 };

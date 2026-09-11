@@ -40,6 +40,8 @@ set("EMAIL_VERIFICATION_URL", "http://localhost:3000/e-posta-dogrula");
 
 set("RESEND_API_KEY", "re_test_key");
 set("EMAIL_FROM", "Zest Test <no-reply@example.test>");
+// Post-payment emails would be the suite's only network I/O; keep them off.
+set("ORDER_EMAILS_ENABLED", "false");
 set("GOOGLE_OAUTH_CLIENT_ID", "test.apps.googleusercontent.com");
 
 // The signing helper mirrors these — see helpers/callback.js.

@@ -64,6 +64,9 @@ services:
         sync: false
       - key: PAYTR_FAIL_URL
         sync: false
+      # Where new-order alerts are emailed (defaults to CONTACT_INBOX if unset)
+      - key: ORDER_NOTIFY_EMAIL
+        sync: false
       # Cloudinary (image uploads)
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
