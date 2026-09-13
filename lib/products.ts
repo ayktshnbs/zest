@@ -1133,7 +1133,7 @@ const seeds: ProductSeed[] = [
   // ── Ev Gereçleri › Organizerlar ──────────────────────────────────
   {
     id: "org-ak499",
-    imageCount: 0,
+    imageCount: 1,
     name: "Piramit Kozmetik Ürün Düzenleyicisi",
     topCategory: "genel-ev-urunleri",
     category: "organizerlar",
@@ -1158,7 +1158,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "org-ak500",
-    imageCount: 0,
+    imageCount: 1,
     name: "Podyum Kozmetik Ürün Düzenleyicisi",
     topCategory: "genel-ev-urunleri",
     category: "organizerlar",
@@ -1233,7 +1233,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "org-ak505",
-    imageCount: 0,
+    imageCount: 1,
     name: "Makyaj Pamukluğu",
     topCategory: "genel-ev-urunleri",
     category: "organizerlar",
@@ -1308,7 +1308,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "org-ak523",
-    imageCount: 0,
+    imageCount: 1,
     name: "Çekmeceli Piramit Kozmetik Ürün Düzenleyicisi",
     topCategory: "genel-ev-urunleri",
     category: "organizerlar",
@@ -1333,7 +1333,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "org-ak634",
-    imageCount: 0,
+    imageCount: 1,
     name: "Üç Gözlü Çekmece",
     topCategory: "genel-ev-urunleri",
     category: "organizerlar",
@@ -1358,7 +1358,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "org-ak635",
-    imageCount: 0,
+    imageCount: 1,
     name: "Organizerli Üç Çekmeceli Set",
     topCategory: "genel-ev-urunleri",
     category: "organizerlar",
@@ -1383,7 +1383,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "org-ak730",
-    imageCount: 0,
+    imageCount: 1,
     name: "Yuvarlak İkili Organizer",
     topCategory: "genel-ev-urunleri",
     category: "organizerlar",
@@ -1408,7 +1408,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "org-ak731",
-    imageCount: 0,
+    imageCount: 1,
     name: "Mücevher Kutusu",
     topCategory: "genel-ev-urunleri",
     category: "organizerlar",
@@ -1433,7 +1433,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "org-ak766",
-    imageCount: 0,
+    imageCount: 1,
     name: "Aynalı 4 Katlı Kare Organizer",
     topCategory: "genel-ev-urunleri",
     category: "organizerlar",
@@ -1458,7 +1458,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "org-ak865",
-    imageCount: 0,
+    imageCount: 1,
     name: "Premium Makyaj Organizeri",
     topCategory: "genel-ev-urunleri",
     category: "organizerlar",
@@ -1483,7 +1483,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "org-ak869",
-    imageCount: 0,
+    imageCount: 1,
     name: "7 Gözlü Makyaj Organizeri",
     topCategory: "genel-ev-urunleri",
     category: "organizerlar",
