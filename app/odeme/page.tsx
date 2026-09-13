@@ -252,8 +252,13 @@ export default function CheckoutPage() {
             isDefault: setAsDefaultOnSave,
           });
           // Available immediately without a page refresh, per spec — both for
-          // "back to shipping" within this checkout and for next time.
-          setSavedAddresses((prev) => [created, ...prev]);
+          // "back to shipping" within this checkout and for next time. If it
+          // became the default, the server already un-defaulted the old one;
+          // mirror that locally so the list never shows two "Varsayılan".
+          setSavedAddresses((prev) => [
+            created,
+            ...(created.isDefault ? prev.map((a) => ({ ...a, isDefault: false })) : prev),
+          ]);
           setSaveNewAddress(false);
         } catch {
           // Swallow — the order still goes out with the address typed above.

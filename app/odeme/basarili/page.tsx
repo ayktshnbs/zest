@@ -156,7 +156,7 @@ export default function OrderSuccessPage() {
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            href="/hesabim"
+            href="/hesabim/siparisler"
             className="px-10 py-4 bg-foreground text-background font-audiowide text-[10px] uppercase tracking-[0.3em] hover:opacity-90 transition-opacity inline-flex items-center justify-center gap-2"
           >
             <Package size={12} /> Siparişlerim

@@ -137,7 +137,7 @@ export default function OrderFailedPage() {
             </button>
           ) : null}
           <Link
-            href="/hesabim"
+            href="/hesabim/siparisler"
             className="px-10 py-4 border border-foreground/15 font-audiowide text-[10px] uppercase tracking-[0.3em] hover:border-foreground transition-colors inline-flex items-center justify-center gap-2"
           >
             <Package size={12} /> Siparişlerim
