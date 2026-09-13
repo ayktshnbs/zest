@@ -14,35 +14,30 @@ import {
 
 const productionSteps = [
   {
-    n: "01",
     title: "Tasarım",
     en: "Design",
     icon: Sparkles,
     body: "Her ürün; günlük mutfak ritüellerini gözleyen tasarım ekibimizin eskizleriyle hayata başlar.",
   },
   {
-    n: "02",
     title: "Kalıp",
     en: "Mould",
     icon: Hammer,
     body: "Kendi kalıphanemizde, mikron hassasiyetinde işlenen çelik kalıplar, seri üretime hazırlanır.",
   },
   {
-    n: "03",
     title: "Enjeksiyon",
     en: "Injection",
     icon: Factory,
     body: "Gıdayla temasa uygun granüller, modern enjeksiyon hattımızda gövdeye dönüşür.",
   },
   {
-    n: "04",
     title: "Montaj",
     en: "Assembly",
     icon: PackageCheck,
     body: "Bıçaklar, contalar, kapaklar; el işçiliğiyle birleşip kalite kontrolünden geçer.",
   },
   {
-    n: "05",
     title: "Sevkiyat",
     en: "Shipping",
     icon: Truck,
@@ -154,9 +149,6 @@ export default function AboutPage() {
         {/* Narrative */}
         <section className="grid lg:grid-cols-12 gap-10 lg:gap-16 mb-28 md:mb-40">
           <div className="lg:col-span-4">
-            <p className="font-audiowide text-[10px] uppercase tracking-[0.5em] text-foreground/40 mb-4">
-              01
-            </p>
             <h2 className="font-audiowide text-2xl md:text-3xl uppercase tracking-tight text-foreground leading-tight">
               Yaklaşımımız
             </h2>
@@ -172,19 +164,15 @@ export default function AboutPage() {
             </p>
             <ul className="space-y-3 pt-2 border-l border-foreground/15 pl-6">
               <li className="flex items-start gap-3">
-                <span className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/40 mt-1.5 shrink-0">01</span>
                 <span>Günlük kullanımı kolaylaştırmalıdır.</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/40 mt-1.5 shrink-0">02</span>
                 <span>Uzun süre güvenle kullanılmalıdır.</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/40 mt-1.5 shrink-0">03</span>
                 <span>Yaşam alanına uyum sağlamalıdır.</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/40 mt-1.5 shrink-0">04</span>
                 <span>Hem işlevsel hem estetik bir deneyim sunmalıdır.</span>
               </li>
             </ul>
@@ -198,9 +186,6 @@ export default function AboutPage() {
         <section className="mb-20 md:mb-40">
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 mb-12 md:mb-16">
             <div className="lg:col-span-4">
-              <p className="font-audiowide text-[10px] uppercase tracking-[0.5em] text-foreground/40 mb-4">
-                02
-              </p>
               <h2 className="font-audiowide text-2xl md:text-3xl uppercase tracking-tight text-foreground leading-tight">
                 Ne İçin Çalışıyoruz?
               </h2>
@@ -221,17 +206,14 @@ export default function AboutPage() {
               const Icon = step.icon;
               return (
                 <motion.div
-                  key={step.n}
+                  key={step.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-80px" }}
                   transition={{ duration: 0.5, delay: i * 0.08 }}
                   className="bg-background p-7 flex flex-col gap-6 min-h-[260px]"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-audiowide text-xs tracking-[0.3em] text-foreground/30">
-                      {step.n}
-                    </span>
+                  <div className="flex items-center justify-end">
                     <Icon size={18} strokeWidth={1.5} className="text-foreground/70" />
                   </div>
                   <div>
@@ -255,7 +237,7 @@ export default function AboutPage() {
         <section className="mb-28 md:mb-40 grid lg:grid-cols-12 gap-10 lg:gap-16">
           <div className="lg:col-span-4">
             <p className="font-audiowide text-[10px] uppercase tracking-[0.5em] text-foreground/40 mb-4">
-              03 · Vizyonumuz
+              Vizyonumuz
             </p>
             <h2 className="font-audiowide text-2xl md:text-3xl uppercase tracking-tight text-foreground leading-tight">
               Modern yaşam için tasarlanmış ürünler.

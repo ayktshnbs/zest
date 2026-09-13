@@ -75,7 +75,7 @@ export default function AdminOrdersPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as OrderStatus | "")}
-          className="border border-foreground/15 bg-background px-3 py-2 text-[12px] font-body focus:outline-none focus:border-foreground"
+          className="border border-foreground/15 bg-background pl-3 pr-9 py-2 text-[12px] font-body focus:outline-none focus:ring-0 focus:border-foreground"
         >
           <option value="">Tüm ödeme durumları</option>
           {PAYMENT_STATUSES.map((s) => (
@@ -144,7 +144,7 @@ export default function AdminOrdersPage() {
                         onChange={(e) =>
                           setFulfillment(o.id, e.target.value as FulfillmentStatus)
                         }
-                        className="border border-foreground/15 bg-background px-2 py-1 text-[12px] font-body focus:outline-none focus:border-foreground disabled:opacity-50"
+                        className="border border-foreground/15 bg-background pl-2 pr-8 py-1 text-[12px] font-body focus:outline-none focus:ring-0 focus:border-foreground disabled:opacity-50"
                       >
                         {FULFILLMENT_STATUSES.map((s) => (
                           <option key={s} value={s}>

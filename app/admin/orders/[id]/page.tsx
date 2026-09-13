@@ -90,7 +90,7 @@ export default function AdminOrderDetail({ params }: { params: { id: string } })
               value={order.status}
               disabled={saving}
               onChange={(e) => patch({ status: e.target.value as OrderStatus })}
-              className="mt-1 block border border-foreground/15 bg-background px-2 py-1.5 text-[13px] font-body focus:outline-none focus:border-foreground disabled:opacity-50"
+              className="mt-1 block border border-foreground/15 bg-background pl-2 pr-9 py-1.5 text-[13px] font-body focus:outline-none focus:ring-0 focus:border-foreground disabled:opacity-50"
             >
               {PAYMENT_STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -107,7 +107,7 @@ export default function AdminOrderDetail({ params }: { params: { id: string } })
               value={order.fulfillmentStatus}
               disabled={saving}
               onChange={(e) => patch({ fulfillmentStatus: e.target.value as FulfillmentStatus })}
-              className="mt-1 block border border-foreground/15 bg-background px-2 py-1.5 text-[13px] font-body focus:outline-none focus:border-foreground disabled:opacity-50"
+              className="mt-1 block border border-foreground/15 bg-background pl-2 pr-9 py-1.5 text-[13px] font-body focus:outline-none focus:ring-0 focus:border-foreground disabled:opacity-50"
             >
               {FULFILLMENT_STATUSES.map((s) => (
                 <option key={s} value={s}>

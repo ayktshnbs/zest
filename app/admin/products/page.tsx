@@ -719,7 +719,7 @@ function ProductFormModal({
             <select
               value={categorySlug}
               onChange={(e) => setCategorySlug(e.target.value)}
-              className="mt-1 w-full border border-foreground/15 bg-background px-3 py-2 text-[13px] focus:outline-none focus:border-foreground"
+              className="mt-1 w-full border border-foreground/15 bg-background pl-3 pr-9 py-2 text-[13px] focus:outline-none focus:ring-0 focus:border-foreground"
             >
               <optgroup label="Yerleşik">
                 {BUILTIN_CATEGORY_OPTIONS.map((c) => (

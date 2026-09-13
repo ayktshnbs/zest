@@ -244,7 +244,7 @@ export const Navbar = () => {
                   placeholder="Ürün, kategori, etiket arayın..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent pl-8 py-4 text-lg font-body text-foreground placeholder:text-foreground/30 focus:outline-none"
+                  className="w-full bg-transparent border-0 pl-8 pr-0 py-4 text-lg font-body text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-0"
                 />
               </form>
 
