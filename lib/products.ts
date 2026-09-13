@@ -233,9 +233,16 @@ const seeds: ProductSeed[] = [
   },
 
   // ── Saklama Kapları ──────────────────────────────────────────────
+  // The skl-esk* / skl-m5 / skl-m8 built-ins were retired (product_overrides
+  // is_active=false, photos removed from public/products in 25c85a3) in favour
+  // of the Bonny / Dikdörtgen set products. They stay in the seed list so
+  // product pages, order history and admin overrides keep resolving, but
+  // imageCount is 0 (→ placeholder) and they carry no isNew/isFeatured/
+  // originalPrice — otherwise the statically prerendered homepage shows them
+  // with broken images until the live catalog's retiredIds arrive.
   {
     id: "skl-esk0001",
-    imageCount: 5,
+    imageCount: 0,
     name: "Uzun Boy Vakumlu Saklama Kavanozu",
     category: "saklama-kaplari",
     subcategory: "vakumlu-kavanozlar",
@@ -259,7 +266,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "skl-esk0002",
-    imageCount: 5,
+    imageCount: 0,
     name: "Bonny Vakumlu Saklama Kavanozu 0.6L",
     category: "saklama-kaplari",
     subcategory: "vakumlu-kavanozlar",
@@ -284,7 +291,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "skl-esk0003",
-    imageCount: 5,
+    imageCount: 0,
     name: "Bonny Vakumlu Saklama Kavanozu 0.9L",
     category: "saklama-kaplari",
     subcategory: "vakumlu-kavanozlar",
@@ -311,12 +318,11 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "skl-esk0101",
-    imageCount: 3,
+    imageCount: 0,
     name: "Luxe Premium Vakumlu Kavanoz – Gold",
     category: "saklama-kaplari",
     subcategory: "vakumlu-kavanozlar",
     price: 279,
-    originalPrice: 329,
     stock: 64,
     rating: 4.8,
     reviewCount: 428,
@@ -333,12 +339,10 @@ const seeds: ProductSeed[] = [
     care: containerCare,
     dimensions: "10 × 10 × 16 cm · 1 L",
     tags: ["premium", "vakumlu", "gold"],
-    isNew: true,
-    isFeatured: true,
   },
   {
     id: "skl-esk0102",
-    imageCount: 3,
+    imageCount: 0,
     name: "Luxe Premium Vakumlu Kavanoz – Gümüş",
     category: "saklama-kaplari",
     subcategory: "vakumlu-kavanozlar",
@@ -358,11 +362,10 @@ const seeds: ProductSeed[] = [
     care: containerCare,
     dimensions: "10 × 10 × 16 cm · 1 L",
     tags: ["premium", "vakumlu", "gumus"],
-    isNew: true,
   },
   {
     id: "skl-esk0103",
-    imageCount: 3,
+    imageCount: 0,
     name: "Luxe Premium Vakumlu Kavanoz – Roze",
     category: "saklama-kaplari",
     subcategory: "vakumlu-kavanozlar",
@@ -382,11 +385,10 @@ const seeds: ProductSeed[] = [
     care: containerCare,
     dimensions: "10 × 10 × 16 cm · 1 L",
     tags: ["premium", "vakumlu", "roze"],
-    isNew: true,
   },
   {
     id: "skl-esk0211",
-    imageCount: 4,
+    imageCount: 0,
     name: "Woody Ahşap Kapaklı Kavanoz 0.9L",
     category: "saklama-kaplari",
     subcategory: "ahsap-kapakli",
@@ -410,12 +412,11 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "skl-esk0212",
-    imageCount: 5,
+    imageCount: 0,
     name: "Woody Ahşap Kapaklı Kavanoz 1.4L",
     category: "saklama-kaplari",
     subcategory: "ahsap-kapakli",
     price: 249,
-    originalPrice: 299,
     stock: 71,
     rating: 4.7,
     reviewCount: 165,
@@ -435,7 +436,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "skl-esk0213",
-    imageCount: 4,
+    imageCount: 0,
     name: "Woody Ahşap Kapaklı Kavanoz Mini",
     category: "saklama-kaplari",
     subcategory: "ahsap-kapakli",
@@ -459,12 +460,11 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "skl-esk1001",
-    imageCount: 5,
+    imageCount: 0,
     name: "Kare Vakumlu Saklama Seti 3'lü",
     category: "saklama-kaplari",
     subcategory: "saklama-setleri",
     price: 749,
-    originalPrice: 899,
     stock: 22,
     rating: 4.9,
     reviewCount: 318,
@@ -485,7 +485,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "skl-esk1101",
-    imageCount: 3,
+    imageCount: 0,
     name: "Crystal Şeffaf Hava Sızdırmaz Kap",
     category: "saklama-kaplari",
     subcategory: "cam-gorunumlu",
@@ -509,7 +509,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "skl-esk1211",
-    imageCount: 5,
+    imageCount: 0,
     name: "Tall Cam Görünümlü Vakumlu Kavanoz",
     category: "saklama-kaplari",
     subcategory: "vakumlu-kavanozlar",
@@ -528,7 +528,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "skl-m5",
-    imageCount: 5,
+    imageCount: 0,
     name: "Modüler Kapaklı Saklama Kabı 0.9L",
     category: "saklama-kaplari",
     subcategory: "dikdortgen-kaplar",
@@ -594,7 +594,7 @@ const seeds: ProductSeed[] = [
   },
   {
     id: "skl-m8",
-    imageCount: 3,
+    imageCount: 0,
     name: "3'lü Saklama Kabı Seti",
     category: "saklama-kaplari",
     subcategory: "saklama-setleri",
@@ -611,7 +611,6 @@ const seeds: ProductSeed[] = [
     care: containerCare,
     dimensions: "Set: 24 × 16 × 20 cm",
     tags: ["set", "saklama"],
-    isFeatured: true,
   },
 
   // ── Servis & Sofra ────────────────────────────────────────────────

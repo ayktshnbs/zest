@@ -167,123 +167,6 @@
     "/products/rnd-rev/gri/0.jpg",
     "/products/rnd-rev/siyah/0.jpg"
   ],
-  "skl-esk0001": [
-    "/products/skl-esk0001/0.jpg",
-    "/products/skl-esk0001/1.jpg",
-    "/products/skl-esk0001/2.jpg",
-    "/products/skl-esk0001/3.jpg",
-    "/products/skl-esk0001/4.jpg",
-    "/products/skl-esk0001/5.jpg",
-    "/products/skl-esk0001/6.jpg",
-    "/products/skl-esk0001/7.jpg",
-    "/products/skl-esk0001/8.jpg",
-    "/products/skl-esk0001/9.jpg",
-    "/products/skl-esk0001/10.jpg",
-    "/products/skl-esk0001/11.jpg"
-  ],
-  "skl-esk0002": [
-    "/products/skl-esk0002/0.jpg",
-    "/products/skl-esk0002/1.jpg",
-    "/products/skl-esk0002/2.jpg",
-    "/products/skl-esk0002/3.jpg",
-    "/products/skl-esk0002/4.jpg",
-    "/products/skl-esk0002/5.jpg",
-    "/products/skl-esk0002/6.jpg",
-    "/products/skl-esk0002/7.jpg",
-    "/products/skl-esk0002/8.jpg",
-    "/products/skl-esk0002/9.jpg",
-    "/products/skl-esk0002/10.jpg",
-    "/products/skl-esk0002/11.jpg"
-  ],
-  "skl-esk0003": [
-    "/products/skl-esk0003/0.jpg",
-    "/products/skl-esk0003/1.jpg",
-    "/products/skl-esk0003/2.jpg",
-    "/products/skl-esk0003/3.jpg",
-    "/products/skl-esk0003/4.jpg",
-    "/products/skl-esk0003/5.jpg",
-    "/products/skl-esk0003/6.jpg",
-    "/products/skl-esk0003/7.jpg",
-    "/products/skl-esk0003/8.jpg",
-    "/products/skl-esk0003/9.jpg",
-    "/products/skl-esk0003/10.jpg",
-    "/products/skl-esk0003/11.jpg"
-  ],
-  "skl-esk0101": [
-    "/products/skl-esk0101/0.jpg",
-    "/products/skl-esk0101/1.jpg",
-    "/products/skl-esk0101/2.jpg"
-  ],
-  "skl-esk0102": [
-    "/products/skl-esk0102/0.jpg",
-    "/products/skl-esk0102/1.jpg",
-    "/products/skl-esk0102/2.jpg"
-  ],
-  "skl-esk0103": [
-    "/products/skl-esk0103/0.jpg",
-    "/products/skl-esk0103/1.jpg",
-    "/products/skl-esk0103/2.jpg"
-  ],
-  "skl-esk0211": [
-    "/products/skl-esk0211/0.jpg",
-    "/products/skl-esk0211/1.jpg"
-  ],
-  "skl-esk0212": [
-    "/products/skl-esk0212/0.jpg",
-    "/products/skl-esk0212/1.jpg",
-    "/products/skl-esk0212/2.jpg"
-  ],
-  "skl-esk0213": [
-    "/products/skl-esk0213/0.jpg",
-    "/products/skl-esk0213/1.jpg"
-  ],
-  "skl-esk1001": [
-    "/products/skl-esk1001/0.jpg",
-    "/products/skl-esk1001/1.jpg",
-    "/products/skl-esk1001/2.jpg",
-    "/products/skl-esk1001/3.jpg",
-    "/products/skl-esk1001/4.jpg",
-    "/products/skl-esk1001/5.jpg",
-    "/products/skl-esk1001/6.jpg",
-    "/products/skl-esk1001/7.jpg",
-    "/products/skl-esk1001/8.jpg",
-    "/products/skl-esk1001/9.jpg",
-    "/products/skl-esk1001/10.jpg",
-    "/products/skl-esk1001/11.jpg"
-  ],
-  "skl-esk1101": [
-    "/products/skl-esk1101/0.jpg",
-    "/products/skl-esk1101/1.jpg",
-    "/products/skl-esk1101/2.jpg"
-  ],
-  "skl-esk1211": [
-    "/products/skl-esk1211/0.jpg",
-    "/products/skl-esk1211/1.jpg",
-    "/products/skl-esk1211/2.jpg",
-    "/products/skl-esk1211/3.jpg",
-    "/products/skl-esk1211/4.jpg",
-    "/products/skl-esk1211/5.jpg",
-    "/products/skl-esk1211/6.jpg",
-    "/products/skl-esk1211/7.jpg",
-    "/products/skl-esk1211/8.jpg",
-    "/products/skl-esk1211/9.jpg",
-    "/products/skl-esk1211/10.jpg",
-    "/products/skl-esk1211/11.jpg"
-  ],
-  "skl-m5": [
-    "/products/skl-m5/0.jpg",
-    "/products/skl-m5/1.jpg",
-    "/products/skl-m5/2.jpg",
-    "/products/skl-m5/3.jpg",
-    "/products/skl-m5/4.jpg",
-    "/products/skl-m5/5.jpg",
-    "/products/skl-m5/6.jpg",
-    "/products/skl-m5/7.jpg",
-    "/products/skl-m5/8.jpg",
-    "/products/skl-m5/9.jpg",
-    "/products/skl-m5/10.jpg",
-    "/products/skl-m5/11.jpg"
-  ],
   "skl-m6": [
     "/products/skl-m6/siyah/0.jpg",
     "/products/skl-m6/yesil/0.jpg",
@@ -293,11 +176,6 @@
     "/products/skl-m7/yesil/0.jpg",
     "/products/skl-m7/siyah/0.jpg",
     "/products/skl-m7/krem/0.jpg"
-  ],
-  "skl-m8": [
-    "/products/skl-m8/0.jpg",
-    "/products/skl-m8/1.jpg",
-    "/products/skl-m8/2.jpg"
   ],
   "soy-sol1": [
     "/products/soy-sol1/0.jpg",
