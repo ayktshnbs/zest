@@ -4,6 +4,7 @@
 
 export { default as authRoutes } from "./authRoutes.js";
 export { default as userRoutes } from "./userRoutes.js";
+export { default as addressRoutes } from "./addressRoutes.js";
 export { default as orderRoutes } from "./orderRoutes.js";
 export { default as paymentRoutes } from "./paymentRoutes.js";
 export { default as webhookRoutes } from "./webhookRoutes.js";

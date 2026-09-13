@@ -1,82 +1,129 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@/components/AuthProvider";
-import { ordersApi, ApiError, type OrderSummary } from "@/lib/api";
+import {
+  ordersApi,
+  addressesApi,
+  ApiError,
+  type OrderSummary,
+} from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
 import { paymentLabel, fulfillmentLabel, fulfillmentDot, liraFromCents } from "@/lib/orderLabels";
+import { User, MapPin, Package, ShieldCheck, ArrowRight } from "lucide-react";
 
-export default function AccountPage() {
-  const { user, isLoading, isAuthenticated, logout } = useAuth();
-  const router = useRouter();
-  const [orders, setOrders] = useState<OrderSummary[]>([]);
+export default function AccountDashboard() {
+  const [orderCount, setOrderCount] = useState<number | null>(null);
+  const [latestOrders, setLatestOrders] = useState<OrderSummary[]>([]);
+  const [addressCount, setAddressCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState<string | null>(null);
-
-  // Require login.
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.replace(`/giris?next=${encodeURIComponent("/hesabim")}`);
-    }
-  }, [isLoading, isAuthenticated, router]);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
     (async () => {
-      try {
-        const { orders } = await ordersApi.list(1, 50);
-        setOrders(orders);
-      } catch (e) {
-        if (!(e instanceof ApiError && e.status === 401)) setErr("Siparişler yüklenemedi.");
-      } finally {
-        setLoading(false);
+      const [ordersResult, addressesResult] = await Promise.allSettled([
+        ordersApi.list(1, 3),
+        addressesApi.list(),
+      ]);
+      if (ordersResult.status === "fulfilled") {
+        setLatestOrders(ordersResult.value.orders);
+        setOrderCount(ordersResult.value.pagination.total);
+      } else if (!(ordersResult.reason instanceof ApiError && ordersResult.reason.status === 401)) {
+        setOrderCount(0);
       }
+      if (addressesResult.status === "fulfilled") {
+        setAddressCount(addressesResult.value.addresses.length);
+      } else if (
+        !(addressesResult.reason instanceof ApiError && addressesResult.reason.status === 401)
+      ) {
+        setAddressCount(0);
+      }
+      setLoading(false);
     })();
-  }, [isAuthenticated]);
+  }, []);
 
-  if (isLoading || !isAuthenticated) {
-    return (
-      <main className="min-h-screen pt-40 text-center">
-        <p className="font-audiowide text-[10px] uppercase tracking-[0.4em] text-foreground/40">
-          Yükleniyor
-        </p>
-      </main>
-    );
-  }
+  const cards = [
+    {
+      href: "/hesabim/profil",
+      icon: User,
+      title: "Profil Bilgilerim",
+      desc: "Ad, soyad, e-posta ve telefon bilgilerinizi güncelleyin.",
+    },
+    {
+      href: "/hesabim/adresler",
+      icon: MapPin,
+      title: "Adreslerim",
+      desc:
+        addressCount === null
+          ? "Kayıtlı teslimat adreslerinizi yönetin."
+          : addressCount === 0
+            ? "Henüz kayıtlı adresiniz yok."
+            : `${addressCount} kayıtlı adres`,
+    },
+    {
+      href: "/hesabim/siparisler",
+      icon: Package,
+      title: "Siparişlerim",
+      desc:
+        orderCount === null
+          ? "Sipariş geçmişinizi görüntüleyin."
+          : orderCount === 0
+            ? "Henüz siparişiniz yok."
+            : `${orderCount} sipariş`,
+    },
+    {
+      href: "/hesabim/guvenlik",
+      icon: ShieldCheck,
+      title: "Şifre ve Güvenlik",
+      desc: "Şifrenizi değiştirin ve hesap güvenliğinizi yönetin.",
+    },
+  ];
 
   return (
-    <main className="min-h-screen pt-28 md:pt-32 pb-24 bg-background">
-      <div className="max-w-4xl mx-auto px-5 md:px-16">
-        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-foreground/10 pb-6 mb-10">
-          <div>
-            <span className="font-audiowide text-[9px] uppercase tracking-[0.4em] text-foreground/40">
-              Hesabım
-            </span>
-            <h1 className="font-audiowide text-3xl md:text-4xl uppercase tracking-tight mt-2">
-              {user?.name}
-            </h1>
-            <p className="text-foreground/40 font-body text-sm mt-1">{user?.email}</p>
-          </div>
-          <button
-            onClick={() => {
-              logout();
-              router.replace("/");
-            }}
-            className="font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/40 hover:text-foreground border-b border-foreground/10 hover:border-foreground pb-1"
+    <div className="space-y-12">
+      {/* Quick-nav cards */}
+      <div className="grid sm:grid-cols-2 gap-4">
+        {cards.map((c) => (
+          <Link
+            key={c.href}
+            href={c.href}
+            className="group flex items-start gap-4 border border-foreground/10 p-6 hover:border-foreground/30 transition-colors"
           >
-            Çıkış Yap
-          </button>
+            <div className="w-10 h-10 flex items-center justify-center border border-foreground/10 shrink-0 text-foreground/60 group-hover:text-foreground group-hover:border-foreground/30 transition-colors">
+              <c.icon size={16} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-audiowide text-[11px] uppercase tracking-[0.25em] text-foreground flex items-center gap-2">
+                {c.title}
+                <ArrowRight
+                  size={12}
+                  className="opacity-0 group-hover:opacity-60 transition-opacity -translate-x-1 group-hover:translate-x-0"
+                />
+              </p>
+              <p className="text-[13px] text-foreground/50 font-body mt-1.5 leading-relaxed">
+                {c.desc}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* Latest orders */}
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-audiowide text-sm uppercase tracking-[0.3em]">Son Siparişleriniz</h2>
+          {latestOrders.length > 0 ? (
+            <Link
+              href="/hesabim/siparisler"
+              className="text-[10px] font-audiowide uppercase tracking-[0.3em] text-foreground/40 hover:text-foreground border-b border-foreground/10 hover:border-foreground pb-1"
+            >
+              Tümünü Gör
+            </Link>
+          ) : null}
         </div>
-
-        <h2 className="font-audiowide text-sm uppercase tracking-[0.3em] mb-6">Siparişlerim</h2>
-
-        {err ? <p className="text-red-600 font-body text-sm mb-4">{err}</p> : null}
 
         {loading ? (
           <p className="text-foreground/40 font-body text-sm">Yükleniyor…</p>
-        ) : orders.length === 0 ? (
+        ) : latestOrders.length === 0 ? (
           <div className="border border-foreground/10 p-10 text-center">
             <p className="text-foreground/50 font-body">Henüz siparişiniz yok.</p>
             <Link
@@ -88,7 +135,7 @@ export default function AccountPage() {
           </div>
         ) : (
           <ul className="space-y-3">
-            {orders.map((o) => (
+            {latestOrders.map((o) => (
               <li
                 key={o.id}
                 className="border border-foreground/10 p-5 flex flex-wrap items-center justify-between gap-4"
@@ -116,6 +163,6 @@ export default function AccountPage() {
           </ul>
         )}
       </div>
-    </main>
+    </div>
   );
 }

@@ -3,7 +3,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import { useAuth } from "@/components/AuthProvider";
-import { ordersApi, paymentsApi, ApiError } from "@/lib/api";
+import {
+  ordersApi,
+  paymentsApi,
+  addressesApi,
+  ApiError,
+  type Address,
+  type SavedAddress,
+} from "@/lib/api";
 import {
   ArrowLeft,
   ArrowRight,
@@ -11,8 +18,11 @@ import {
   CreditCard,
   Lock,
   Mail,
+  MapPin,
   Package,
   Phone,
+  Plus,
+  Star,
   Truck,
 } from "lucide-react";
 import Image from "next/image";
@@ -71,6 +81,18 @@ export default function CheckoutPage() {
   });
   const [delivery, setDelivery] = useState<DeliveryMethod>("standart");
   const [agree, setAgree] = useState(false);
+
+  // ── Saved addresses ("Adreslerim") ──────────────────────────────────
+  // addressMode picks which UI the shipping step shows. Starts "manual" so
+  // guests and first-time shoppers see exactly the pre-existing form; it
+  // flips to "saved" automatically, once, the first time a signed-in
+  // shopper's address list arrives with at least one entry.
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [addressMode, setAddressMode] = useState<"saved" | "manual">("manual");
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [saveNewAddress, setSaveNewAddress] = useState(false);
+  const [setAsDefaultOnSave, setSetAsDefaultOnSave] = useState(false);
+  const didAutoSelectAddress = useRef(false);
   const [submitting, setSubmitting] = useState(false);
   // Set once PayTR has accepted the order and we're navigating to the iframe.
   // Keeps the empty-cart guard quiet through the hand-off.
@@ -106,6 +128,63 @@ export default function CheckoutPage() {
     if (user?.email) setContact((c) => (c.email ? c : { ...c, email: user.email }));
   }, [user]);
 
+  // Load saved addresses for a signed-in shopper. Best-effort: a failure here
+  // must never break checkout — it just falls back to the manual form that
+  // already exists, exactly as for a guest.
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    (async () => {
+      try {
+        const { addresses } = await addressesApi.list();
+        setSavedAddresses(addresses);
+      } catch {
+        // Swallow — checkout continues with the manual address form.
+      }
+    })();
+  }, [isAuthenticated]);
+
+  // Auto-select once, the first time the list arrives with something in it:
+  // the default address if there is one, otherwise the most recent entry.
+  // Runs only once so a shopper who deliberately switches to "manual" to add
+  // a new address isn't yanked back to "saved" on a later re-render.
+  useEffect(() => {
+    if (didAutoSelectAddress.current || savedAddresses.length === 0) return;
+    didAutoSelectAddress.current = true;
+    const preferred = savedAddresses.find((a) => a.isDefault) ?? savedAddresses[0];
+    setSelectedAddressId(preferred.id);
+    setAddressMode("saved");
+  }, [savedAddresses]);
+
+  const selectedAddress = savedAddresses.find((a) => a.id === selectedAddressId) ?? null;
+
+  // Single source of truth for "what address does this order ship to" —
+  // used by both the review step's display and the actual order submission,
+  // so they can never disagree. Sourced from the selected saved address when
+  // one is chosen, otherwise from the pre-existing manual form fields.
+  const buildShippingAddress = (): Address => {
+    if (addressMode === "saved" && selectedAddress) {
+      return {
+        fullName: selectedAddress.fullName,
+        phone: selectedAddress.phone || contact.phone || undefined,
+        line1: selectedAddress.line1,
+        line2: selectedAddress.line2 || undefined,
+        city: selectedAddress.city,
+        state: selectedAddress.state || undefined,
+        postalCode: selectedAddress.postalCode,
+        country: "TR",
+      };
+    }
+    return {
+      fullName: `${shipping.firstName} ${shipping.lastName}`.trim(),
+      phone: contact.phone || undefined,
+      line1: shipping.address,
+      city: shipping.city,
+      state: shipping.district || undefined,
+      postalCode: shipping.postalCode,
+      country: "TR",
+    };
+  };
+
   const baseShipping =
     totalPrice >= FREE_SHIPPING_THRESHOLD && delivery === "standart"
       ? 0
@@ -118,6 +197,7 @@ export default function CheckoutPage() {
       return /\S+@\S+\.\S+/.test(contact.email) && contact.phone.replace(/\D/g, "").length >= 10;
     }
     if (step === "shipping") {
+      if (addressMode === "saved") return Boolean(selectedAddressId);
       return (
         shipping.firstName.trim() &&
         shipping.lastName.trim() &&
@@ -130,7 +210,7 @@ export default function CheckoutPage() {
     if (step === "delivery") return Boolean(delivery);
     if (step === "review") return agree;
     return true; // payment step just shows info
-  }, [step, contact, shipping, delivery, agree]);
+  }, [step, contact, shipping, delivery, agree, addressMode, selectedAddressId]);
 
   const goNext = () => {
     const idx = steps.findIndex((s) => s.id === step);
@@ -155,6 +235,31 @@ export default function CheckoutPage() {
     const paymentLabel = "Kredi / Banka Kartı";
 
     try {
+      // 0. Best-effort: persist a manually-entered address for next time, if
+      //    the shopper asked to. Never blocks or fails the order — a saved-
+      //    address write is a convenience, not part of the purchase. Guarded
+      //    so a retry (after e.g. a stock error) doesn't save it twice.
+      if (addressMode === "manual" && saveNewAddress) {
+        try {
+          const { address: created } = await addressesApi.create({
+            title: "Adresim",
+            fullName: `${shipping.firstName} ${shipping.lastName}`.trim(),
+            phone: contact.phone,
+            line1: shipping.address,
+            city: shipping.city,
+            state: shipping.district,
+            postalCode: shipping.postalCode,
+            isDefault: setAsDefaultOnSave,
+          });
+          // Available immediately without a page refresh, per spec — both for
+          // "back to shipping" within this checkout and for next time.
+          setSavedAddresses((prev) => [created, ...prev]);
+          setSaveNewAddress(false);
+        } catch {
+          // Swallow — the order still goes out with the address typed above.
+        }
+      }
+
       // 1. Create the order — or reuse the one a previous failed attempt
       //    already created for this exact cart.
       const reusable = pendingOrderRef.current;
@@ -168,15 +273,7 @@ export default function CheckoutPage() {
             quantity: i.quantity,
             ...(i.color ? { colorKey: i.color.key } : {}),
           })),
-          shippingAddress: {
-            fullName: `${shipping.firstName} ${shipping.lastName}`.trim(),
-            phone: contact.phone || undefined,
-            line1: shipping.address,
-            city: shipping.city,
-            state: shipping.district || undefined,
-            postalCode: shipping.postalCode,
-            country: "TR",
-          },
+          shippingAddress: buildShippingAddress(),
           notes: `İletişim: ${contact.email} · ${contact.phone} | Kargo: ${deliveryLabel} | Ödeme: ${paymentLabel}`,
         });
         orderId = order.id;
@@ -342,78 +439,170 @@ export default function CheckoutPage() {
 
                 {step === "shipping" ? (
                   <FormCard title="Teslimat Adresi" eyebrow="2. Adım">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                      <Field label="Ad">
-                        <input
-                          required
-                          autoComplete="given-name"
-                          value={shipping.firstName}
-                          onChange={(e) =>
-                            setShipping({ ...shipping, firstName: e.target.value })
-                          }
-                          className="form-input"
-                        />
-                      </Field>
-                      <Field label="Soyad">
-                        <input
-                          required
-                          autoComplete="family-name"
-                          value={shipping.lastName}
-                          onChange={(e) =>
-                            setShipping({ ...shipping, lastName: e.target.value })
-                          }
-                          className="form-input"
-                        />
-                      </Field>
-                      <div className="sm:col-span-2">
-                        <Field label="Adres">
-                          <textarea
-                            required
-                            rows={3}
-                            autoComplete="street-address"
-                            value={shipping.address}
-                            onChange={(e) =>
-                              setShipping({ ...shipping, address: e.target.value })
-                            }
-                            placeholder="Mahalle, sokak, kapı / daire no"
-                            className="form-input resize-none"
-                          />
-                        </Field>
+                    {isAuthenticated && addressMode === "saved" && savedAddresses.length > 0 ? (
+                      <div className="space-y-3">
+                        {savedAddresses.map((a) => {
+                          const selected = selectedAddressId === a.id;
+                          return (
+                            <label
+                              key={a.id}
+                              className={`flex items-start gap-4 p-5 border cursor-pointer transition-colors ${
+                                selected
+                                  ? "border-foreground"
+                                  : "border-foreground/10 hover:border-foreground/30"
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name="savedAddress"
+                                checked={selected}
+                                onChange={() => setSelectedAddressId(a.id)}
+                                className="mt-1 accent-foreground"
+                              />
+                              <div className="flex-1">
+                                <p className="font-audiowide text-[11px] uppercase tracking-[0.25em] text-foreground flex items-center gap-2">
+                                  {a.title}
+                                  {a.isDefault ? (
+                                    <span className="inline-flex items-center gap-1 text-[9px] text-foreground/50 border border-foreground/15 px-1.5 py-0.5 normal-case tracking-normal">
+                                      <Star size={8} className="fill-current" /> Varsayılan
+                                    </span>
+                                  ) : null}
+                                </p>
+                                <p className="text-[13px] text-foreground/70 font-body mt-1.5">
+                                  {a.fullName}
+                                </p>
+                                <p className="text-[12px] text-foreground/50 font-body">
+                                  {a.line1}
+                                </p>
+                                <p className="text-[12px] text-foreground/50 font-body">
+                                  {a.state} / {a.city} {a.postalCode}
+                                </p>
+                              </div>
+                            </label>
+                          );
+                        })}
+                        <button
+                          type="button"
+                          onClick={() => setAddressMode("manual")}
+                          className="flex items-center gap-2 font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/50 hover:text-foreground pt-2"
+                        >
+                          <Plus size={13} /> Yeni Adres Ekle
+                        </button>
                       </div>
-                      <Field label="İl">
-                        <input
-                          required
-                          autoComplete="address-level1"
-                          value={shipping.city}
-                          onChange={(e) =>
-                            setShipping({ ...shipping, city: e.target.value })
-                          }
-                          className="form-input"
-                        />
-                      </Field>
-                      <Field label="İlçe">
-                        <input
-                          required
-                          autoComplete="address-level2"
-                          value={shipping.district}
-                          onChange={(e) =>
-                            setShipping({ ...shipping, district: e.target.value })
-                          }
-                          className="form-input"
-                        />
-                      </Field>
-                      <Field label="Posta Kodu">
-                        <input
-                          required
-                          autoComplete="postal-code"
-                          value={shipping.postalCode}
-                          onChange={(e) =>
-                            setShipping({ ...shipping, postalCode: e.target.value })
-                          }
-                          className="form-input"
-                        />
-                      </Field>
-                    </div>
+                    ) : (
+                      <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                          <Field label="Ad">
+                            <input
+                              required
+                              autoComplete="given-name"
+                              value={shipping.firstName}
+                              onChange={(e) =>
+                                setShipping({ ...shipping, firstName: e.target.value })
+                              }
+                              className="form-input"
+                            />
+                          </Field>
+                          <Field label="Soyad">
+                            <input
+                              required
+                              autoComplete="family-name"
+                              value={shipping.lastName}
+                              onChange={(e) =>
+                                setShipping({ ...shipping, lastName: e.target.value })
+                              }
+                              className="form-input"
+                            />
+                          </Field>
+                          <div className="sm:col-span-2">
+                            <Field label="Adres">
+                              <textarea
+                                required
+                                rows={3}
+                                autoComplete="street-address"
+                                value={shipping.address}
+                                onChange={(e) =>
+                                  setShipping({ ...shipping, address: e.target.value })
+                                }
+                                placeholder="Mahalle, sokak, kapı / daire no"
+                                className="form-input resize-none"
+                              />
+                            </Field>
+                          </div>
+                          <Field label="İl">
+                            <input
+                              required
+                              autoComplete="address-level1"
+                              value={shipping.city}
+                              onChange={(e) =>
+                                setShipping({ ...shipping, city: e.target.value })
+                              }
+                              className="form-input"
+                            />
+                          </Field>
+                          <Field label="İlçe">
+                            <input
+                              required
+                              autoComplete="address-level2"
+                              value={shipping.district}
+                              onChange={(e) =>
+                                setShipping({ ...shipping, district: e.target.value })
+                              }
+                              className="form-input"
+                            />
+                          </Field>
+                          <Field label="Posta Kodu">
+                            <input
+                              required
+                              autoComplete="postal-code"
+                              value={shipping.postalCode}
+                              onChange={(e) =>
+                                setShipping({ ...shipping, postalCode: e.target.value })
+                              }
+                              className="form-input"
+                            />
+                          </Field>
+                        </div>
+
+                        {isAuthenticated && savedAddresses.length > 0 ? (
+                          <button
+                            type="button"
+                            onClick={() => setAddressMode("saved")}
+                            className="flex items-center gap-2 font-audiowide text-[10px] uppercase tracking-[0.3em] text-foreground/50 hover:text-foreground mt-5"
+                          >
+                            <MapPin size={13} /> Kayıtlı adreslerimden seç
+                          </button>
+                        ) : null}
+
+                        {isAuthenticated ? (
+                          <div className="mt-6 pt-5 border-t border-foreground/10 space-y-3">
+                            <label className="flex items-center gap-3 cursor-pointer text-[13px] text-foreground/70 font-body">
+                              <input
+                                type="checkbox"
+                                checked={saveNewAddress}
+                                onChange={(e) => {
+                                  setSaveNewAddress(e.target.checked);
+                                  if (!e.target.checked) setSetAsDefaultOnSave(false);
+                                }}
+                                className="accent-foreground"
+                              />
+                              Bu adresi adreslerime kaydet
+                            </label>
+                            {saveNewAddress ? (
+                              <label className="flex items-center gap-3 cursor-pointer text-[13px] text-foreground/70 font-body pl-7">
+                                <input
+                                  type="checkbox"
+                                  checked={setAsDefaultOnSave}
+                                  onChange={(e) => setSetAsDefaultOnSave(e.target.checked)}
+                                  className="accent-foreground"
+                                />
+                                Varsayılan adresim olarak ayarla
+                              </label>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </>
+                    )}
                   </FormCard>
                 ) : null}
 
@@ -492,13 +681,19 @@ export default function CheckoutPage() {
                         <p>{contact.phone}</p>
                       </ReviewBlock>
                       <ReviewBlock title="Teslimat Adresi" onEdit={() => setStep("shipping")}>
-                        <p>
-                          {shipping.firstName} {shipping.lastName}
-                        </p>
-                        <p>{shipping.address}</p>
-                        <p>
-                          {shipping.district}, {shipping.city} {shipping.postalCode}
-                        </p>
+                        {(() => {
+                          const effective = buildShippingAddress();
+                          return (
+                            <>
+                              <p>{effective.fullName}</p>
+                              <p>{effective.line1}</p>
+                              <p>
+                                {effective.state ? `${effective.state}, ` : ""}
+                                {effective.city} {effective.postalCode}
+                              </p>
+                            </>
+                          );
+                        })()}
                       </ReviewBlock>
                       <ReviewBlock title="Kargo" onEdit={() => setStep("delivery")}>
                         <p>

@@ -175,6 +175,7 @@ export interface PublicUser {
   id: string;
   email: string;
   name: string;
+  phone: string | null;
   role: "customer" | "admin";
   emailVerified: boolean;
   hasGoogle: boolean;
@@ -203,6 +204,63 @@ export const authApi = {
       method: "POST",
       body: { id_token: idToken },
     }),
+};
+
+// ── Account: profile + security ──────────────────────────────────────
+export const accountApi = {
+  // Pass phone: null to clear a previously-saved number; omit it to leave
+  // it untouched (mirrors server/models/UserModel.js's clearPhone contract).
+  updateProfile: (body: { name?: string; email?: string; phone?: string | null }) =>
+    api<{ user: PublicUser }>("/api/users/me", { method: "PATCH", body }),
+  changePassword: (body: { currentPassword: string; newPassword: string }) =>
+    api<{ ok: true }>("/api/users/me/change-password", { method: "POST", body }),
+};
+
+// ── Account: saved addresses ("Adreslerim") ───────────────────────────
+// Field shapes match the order Address type above 1:1 (minus id/title/
+// isDefault/timestamps) so a saved address can be dropped straight into a
+// checkout order's shippingAddress with no reshaping.
+export interface SavedAddress extends Address {
+  id: string;
+  title: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AddressInput {
+  title: string;
+  fullName: string;
+  phone: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  isDefault?: boolean;
+}
+
+export const addressesApi = {
+  list: () => api<{ addresses: SavedAddress[] }>("/api/users/me/addresses"),
+  create: (body: AddressInput) =>
+    api<{ address: SavedAddress }>("/api/users/me/addresses", {
+      method: "POST",
+      body,
+    }),
+  update: (id: string, body: Partial<AddressInput>) =>
+    api<{ address: SavedAddress }>(`/api/users/me/addresses/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body,
+    }),
+  remove: (id: string) =>
+    api<{ ok: true }>(`/api/users/me/addresses/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    }),
+  setDefault: (id: string) =>
+    api<{ address: SavedAddress }>(
+      `/api/users/me/addresses/${encodeURIComponent(id)}/default`,
+      { method: "POST" },
+    ),
 };
 
 export const favoritesApi = {

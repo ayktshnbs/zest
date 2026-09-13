@@ -27,6 +27,15 @@ export const nameSchema = z
   .min(1, "Name is required")
   .max(120);
 
+// Loose on purpose — matches the existing order addressSchema.phone
+// convention (length only, no format regex) rather than inventing a new,
+// stricter rule for this feature alone.
+export const phoneSchema = z
+  .string()
+  .trim()
+  .min(3, "Telefon numarası çok kısa")
+  .max(40, "Telefon numarası çok uzun");
+
 export const uuidSchema = z.string().uuid("Invalid identifier");
 
 // ── Auth ─────────────────────────────────────────────────────────────
@@ -63,9 +72,12 @@ export const updateProfileSchema = z
   .object({
     name: nameSchema.optional(),
     email: emailSchema.optional(),
+    // Explicit null clears a previously-saved phone; omitting the field
+    // leaves it untouched (see UserModel.updateProfile's clearPhone branch).
+    phone: phoneSchema.nullable().optional(),
   })
-  .refine((v) => v.name || v.email, {
-    message: "Provide name or email to update",
+  .refine((v) => v.name !== undefined || v.email !== undefined || v.phone !== undefined, {
+    message: "Provide name, email or phone to update",
   });
 
 export const changePasswordSchema = z.object({
@@ -84,6 +96,40 @@ const addressSchema = z.object({
   postalCode: z.string().trim().min(1).max(20),
   country: z.string().trim().min(2).max(2), // ISO 3166-1 alpha-2
 });
+
+// ── Saved addresses ("Adreslerim") ──────────────────────────────────
+// Same field shapes as the order addressSchema above (so a saved address
+// maps 1:1 onto what checkout already sends), plus two address-book-only
+// concepts: a user-chosen `title` and `isDefault`. Turkish messages here
+// since these are new, user-facing forms — existing schemas above are left
+// as-is (unrelated to this feature).
+export const createAddressSchema = z.object({
+  title: z.string().trim().min(1, "Adres başlığı gerekli").max(60),
+  fullName: z.string().trim().min(1, "Ad soyad gerekli").max(160),
+  phone: phoneSchema,
+  line1: z.string().trim().min(1, "Adres gerekli").max(200),
+  line2: z.string().trim().max(200).optional(),
+  city: z.string().trim().min(1, "İl gerekli").max(120),
+  state: z.string().trim().min(1, "İlçe gerekli").max(120),
+  postalCode: z.string().trim().min(1, "Posta kodu gerekli").max(20),
+  isDefault: z.boolean().optional().default(false),
+});
+
+export const updateAddressSchema = z
+  .object({
+    title: z.string().trim().min(1).max(60).optional(),
+    fullName: z.string().trim().min(1).max(160).optional(),
+    phone: phoneSchema.optional(),
+    line1: z.string().trim().min(1).max(200).optional(),
+    line2: z.string().trim().max(200).nullable().optional(),
+    city: z.string().trim().min(1).max(120).optional(),
+    state: z.string().trim().min(1).max(120).optional(),
+    postalCode: z.string().trim().min(1).max(20).optional(),
+    isDefault: z.boolean().optional(),
+  })
+  .refine((v) => Object.keys(v).length > 0, {
+    message: "Güncellenecek en az bir alan girin",
+  });
 
 // Only productId (+ optional colorKey for variant products) + quantity are
 // trusted from the client. Price, shipping, tax and currency are computed

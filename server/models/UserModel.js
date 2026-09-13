@@ -4,7 +4,7 @@
 import { query } from "../database/pool.js";
 
 const PUBLIC_COLUMNS = `
-  id, email, name, role, google_sub, email_verified,
+  id, email, name, phone, role, google_sub, email_verified,
   last_login_at, created_at, updated_at
 `;
 
@@ -42,14 +42,20 @@ export const create = async ({ email, name, passwordHash, googleSub, emailVerifi
   return rows[0];
 };
 
-export const updateProfile = async (id, { name, email }) => {
+// `phone` distinguishes "not provided" (undefined → COALESCE keeps the old
+// value) from "clear it" (explicit null → $4::text is NULL, which COALESCE
+// treats as "no new value"... so clearing needs its own branch: a plain
+// COALESCE can never write NULL over an existing value. `clearPhone` lets a
+// caller explicitly blank the field; omitting `phone` entirely leaves it untouched.
+export const updateProfile = async (id, { name, email, phone, clearPhone = false }) => {
   const { rows } = await query(
     `UPDATE users
        SET name = COALESCE($2, name),
-           email = COALESCE($3, email)
+           email = COALESCE($3, email),
+           phone = CASE WHEN $5 THEN NULL ELSE COALESCE($4, phone) END
      WHERE id = $1
      RETURNING ${PUBLIC_COLUMNS}`,
-    [id, name ?? null, email ?? null],
+    [id, name ?? null, email ?? null, phone ?? null, clearPhone],
   );
   return rows[0] ?? null;
 };
@@ -101,6 +107,7 @@ export const toPublic = (user) => {
     id: safe.id,
     email: safe.email,
     name: safe.name,
+    phone: safe.phone,
     role: safe.role,
     emailVerified: safe.email_verified,
     hasGoogle: Boolean(safe.google_sub),

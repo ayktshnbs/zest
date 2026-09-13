@@ -19,6 +19,7 @@ import webhookRoutes from "./routes/webhookRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import addressRoutes from "./routes/addressRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
@@ -86,6 +87,11 @@ export const createApp = () => {
   app.use(doubleCsrfProtection);
 
   app.use("/api/auth", authRoutes);
+  // More specific prefix first: without this, a request to
+  // /api/users/me/addresses would enter userRoutes' blanket requireAuth
+  // (no route there matches, so it falls through) before ever reaching this
+  // router, doubling the auth check for no reason.
+  app.use("/api/users/me/addresses", addressRoutes);
   app.use("/api/users", userRoutes);
   app.use("/api/orders", orderRoutes);
   app.use("/api/payments", paymentRoutes);

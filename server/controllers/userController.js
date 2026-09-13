@@ -13,7 +13,7 @@ export const me = asyncHandler(async (req, res) => {
 });
 
 export const updateMe = asyncHandler(async (req, res) => {
-  const { name, email } = req.validated.body;
+  const { name, email, phone } = req.validated.body;
 
   if (email && email !== req.user.email) {
     const existing = await UserModel.findByEmail(email);
@@ -22,11 +22,18 @@ export const updateMe = asyncHandler(async (req, res) => {
     }
   }
 
-  const updated = await UserModel.updateProfile(req.user.id, { name, email });
+  // `phone` distinguishes three states: absent (untouched), null (clear it),
+  // a string (set it) — see UserModel.updateProfile's clearPhone branch.
+  const updated = await UserModel.updateProfile(req.user.id, {
+    name,
+    email,
+    phone: phone ?? undefined,
+    clearPhone: phone === null,
+  });
   if (!updated) throw new NotFoundError("Account not found");
 
   await audit(req, "user.profile_updated", {
-    changes: { name: Boolean(name), email: Boolean(email) },
+    changes: { name: Boolean(name), email: Boolean(email), phone: phone !== undefined },
   });
 
   res.json({ user: UserModel.toPublic(updated) });
