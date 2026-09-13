@@ -256,7 +256,7 @@ function ShopContent() {
                 setQuery(e.target.value);
                 setVisibleCount(PAGE_SIZE);
               }}
-              className="w-full bg-transparent pl-7 pr-10 py-4 font-body text-sm text-foreground placeholder:text-foreground/30 focus:outline-none"
+              className="w-full bg-transparent border-0 pl-7 pr-10 py-4 font-body text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-0"
             />
             {query ? (
               <button
