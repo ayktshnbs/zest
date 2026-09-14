@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import {
@@ -19,7 +19,9 @@ import {
   liraFromCents,
 } from "../../labels";
 
-export default function AdminOrderDetail({ params }: { params: { id: string } }) {
+export default function AdminOrderDetail({ params }: { params: Promise<{ id: string }> }) {
+  // Next 15 hands client pages a Promise for `params`; React.use() unwraps it.
+  const { id } = use(params);
   const [order, setOrder] = useState<Order | null>(null);
   const [customer, setCustomer] = useState<{ email: string; name: string } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,7 +31,7 @@ export default function AdminOrderDetail({ params }: { params: { id: string } })
   useEffect(() => {
     (async () => {
       try {
-        const { order, customer } = await adminApi.getOrder(params.id);
+        const { order, customer } = await adminApi.getOrder(id);
         setOrder(order);
         setCustomer(customer);
       } catch (e) {
@@ -38,7 +40,7 @@ export default function AdminOrderDetail({ params }: { params: { id: string } })
         setLoading(false);
       }
     })();
-  }, [params.id]);
+  }, [id]);
 
   const patch = async (p: { status?: OrderStatus; fulfillmentStatus?: FulfillmentStatus }) => {
     if (!order) return;

@@ -16,8 +16,10 @@ export function generateStaticParams() {
   return categories.map((c) => ({ category: c.slug }));
 }
 
-export function generateMetadata({ params }: { params: { category: string } }) {
-  const cat = categoryMap[params.category];
+// Next 15: `params` is a Promise in pages and generateMetadata.
+export async function generateMetadata({ params }: { params: Promise<{ category: string }> }) {
+  const { category } = await params;
+  const cat = categoryMap[category];
   if (!cat) return { title: "Kategori | Zest Home" };
   return {
     title: `${cat.label} | Zest Home`,
@@ -25,12 +27,13 @@ export function generateMetadata({ params }: { params: { category: string } }) {
   };
 }
 
-export default function CategoryPage({ params }: { params: { category: string } }) {
-  const cat = categoryMap[params.category];
+export default async function CategoryPage({ params }: { params: Promise<{ category: string }> }) {
+  const { category } = await params;
+  const cat = categoryMap[category];
   // Admin-added category: hand off to a client component that resolves it from
   // the live catalog and renders its custom products.
   if (!cat) {
-    return <CustomCategoryView slug={params.category} />;
+    return <CustomCategoryView slug={category} />;
   }
   const list = getProductsByCategory(cat.slug);
 

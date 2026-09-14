@@ -99,19 +99,21 @@ async function resolveSeo(id: string): Promise<ProductSeo | null> {
   return null;
 }
 
+// Next 15: `params` is a Promise in pages and generateMetadata.
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  const seo = await resolveSeo(params.id);
+  const { id } = await params;
+  const seo = await resolveSeo(id);
   if (!seo) {
     return {
       title: "Ürün | Zest Home",
       description: "Zest Home premium mutfak gereçleri.",
     };
   }
-  const url = `${SITE_URL}/products/${params.id}`;
+  const url = `${SITE_URL}/products/${id}`;
   return {
     title: `${seo.name} | Zest Home`,
     description: seo.description,
@@ -134,8 +136,9 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProductPage({ params }: { params: { id: string } }) {
-  const seo = await resolveSeo(params.id);
+export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const seo = await resolveSeo(id);
 
   const jsonLd = seo
     ? {
@@ -147,7 +150,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
         brand: { "@type": "Brand", name: "Zest Home" },
         offers: {
           "@type": "Offer",
-          url: `${SITE_URL}/products/${params.id}`,
+          url: `${SITE_URL}/products/${id}`,
           priceCurrency: "TRY",
           price: seo.priceTRY.toFixed(2),
           availability: seo.inStock
@@ -166,7 +169,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       ) : null}
-      <ProductDetailClient params={params} />
+      <ProductDetailClient params={{ id }} />
     </>
   );
 }
