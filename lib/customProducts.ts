@@ -50,8 +50,6 @@ export const customToProduct = (p: CustomProductData, extraCategories: PublicCat
     brand: "Zest Home",
     sku: `ZST-${p.id.toUpperCase()}`,
     stock: 0, // live stock comes from useLiveProduct
-    rating: 0,
-    reviewCount: 0,
     imageUrl: cover,
     images,
     tags: ["custom", p.categorySlug],

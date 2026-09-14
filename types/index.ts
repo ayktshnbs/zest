@@ -16,8 +16,6 @@ export interface Product {
   brand: string;
   sku: string;
   stock: number;
-  rating: number;
-  reviewCount: number;
   imageUrl: string;
   images: string[];
   tags: string[];
@@ -63,5 +61,4 @@ export type SortKey =
   | "newest"
   | "price-asc"
   | "price-desc"
-  | "name-asc"
-  | "popular";
+  | "name-asc";

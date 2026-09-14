@@ -10,7 +10,6 @@ import { mergeProducts } from "@/lib/customProducts";
 
 const sortOptions: { value: SortKey; label: string }[] = [
   { value: "featured", label: "Öne Çıkanlar" },
-  { value: "popular", label: "En Popüler" },
   { value: "newest", label: "Yeni Gelenler" },
   { value: "price-asc", label: "Fiyat: Artan" },
   { value: "price-desc", label: "Fiyat: Azalan" },
@@ -82,15 +81,12 @@ export const CategoryShop = ({
             Number(Boolean(b.isNew)) - Number(Boolean(a.isNew)) ||
             b.id.localeCompare(a.id),
         );
-      case "popular":
-        return copy.sort((a, b) => b.reviewCount - a.reviewCount || b.rating - a.rating);
       case "featured":
       default:
         return copy.sort(
           (a, b) =>
             Number(Boolean(b.isFeatured)) - Number(Boolean(a.isFeatured)) ||
-            Number(Boolean(b.isBestSeller)) - Number(Boolean(a.isBestSeller)) ||
-            b.rating - a.rating,
+            Number(Boolean(b.isBestSeller)) - Number(Boolean(a.isBestSeller)),
         );
     }
   }, [products, selectedSub, sortBy]);

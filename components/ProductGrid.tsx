@@ -28,18 +28,12 @@ const sortProducts = (items: Product[], key: SortKey): Product[] => {
           Number(Boolean(b.isNew)) - Number(Boolean(a.isNew)) ||
           b.id.localeCompare(a.id),
       );
-    case "popular":
-      return copy.sort(
-        (a, b) =>
-          b.reviewCount - a.reviewCount || b.rating - a.rating,
-      );
     case "featured":
     default:
       return copy.sort(
         (a, b) =>
           Number(Boolean(b.isFeatured)) - Number(Boolean(a.isFeatured)) ||
-          Number(Boolean(b.isBestSeller)) - Number(Boolean(a.isBestSeller)) ||
-          b.rating - a.rating,
+          Number(Boolean(b.isBestSeller)) - Number(Boolean(a.isBestSeller)),
       );
   }
 };

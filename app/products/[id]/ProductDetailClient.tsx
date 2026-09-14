@@ -9,7 +9,6 @@ import { useCart } from "@/components/CartProvider";
 import { useWishlist } from "@/components/WishlistProvider";
 import { useRecentlyViewed } from "@/components/RecentlyViewedProvider";
 import {
-  Star,
   Truck,
   RefreshCw,
   Minus,
@@ -357,25 +356,6 @@ export function ProductDetailClient({ params }: { params: { id: string } }) {
             <h1 className="font-audiowide text-3xl md:text-5xl text-foreground mb-4 uppercase tracking-tight leading-tight">
               {effectiveName}
             </h1>
-
-            <div className="flex items-center gap-3 mb-6 text-xs">
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    size={12}
-                    className={
-                      i < Math.round(product.rating)
-                        ? "fill-foreground text-foreground"
-                        : "text-foreground/20"
-                    }
-                  />
-                ))}
-              </div>
-              <span className="text-foreground/40 font-body">
-                {product.rating.toFixed(1)} · {product.reviewCount} değerlendirme
-              </span>
-            </div>
 
             <p className="text-foreground/60 text-base leading-relaxed mb-8">
               {effectiveShortDescription}

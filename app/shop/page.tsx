@@ -16,7 +16,6 @@ type BadgeFilter = "new" | "bestseller" | "sale";
 
 const sortOptions: { value: SortKey; label: string }[] = [
   { value: "featured", label: "Öne Çıkanlar" },
-  { value: "popular", label: "En Popüler" },
   { value: "newest", label: "Yeni Gelenler" },
   { value: "price-asc", label: "Fiyat: Artan" },
   { value: "price-desc", label: "Fiyat: Azalan" },
@@ -166,14 +165,11 @@ function ShopContent() {
           case "newest":
             return Number(Boolean(b.isNew)) - Number(Boolean(a.isNew)) ||
               b.id.localeCompare(a.id);
-          case "popular":
-            return b.reviewCount - a.reviewCount || b.rating - a.rating;
           case "featured":
           default:
             return (
               Number(Boolean(b.isFeatured)) - Number(Boolean(a.isFeatured)) ||
-              Number(Boolean(b.isBestSeller)) - Number(Boolean(a.isBestSeller)) ||
-              b.rating - a.rating
+              Number(Boolean(b.isBestSeller)) - Number(Boolean(a.isBestSeller))
             );
         }
       });

@@ -17,8 +17,6 @@ interface ProductSeed {
   price: number;
   originalPrice?: number;
   stock: number;
-  rating: number;
-  reviewCount: number;
   shortDescription: string;
   description: string;
   features: string[];
@@ -53,8 +51,6 @@ const seeds: ProductSeed[] = [
     subcategory: "el-rondolari",
     price: 449.99,
     stock: 24,
-    rating: 4.8,
-    reviewCount: 312,
     shortDescription:
       "Üç bıçaklı sistemiyle saniyeler içinde sebze ve baharatlarınızı doğrar.",
     description:
@@ -81,8 +77,6 @@ const seeds: ProductSeed[] = [
     subcategory: "manuel-dograyicilar",
     price: 299.99,
     stock: 18,
-    rating: 4.6,
-    reviewCount: 187,
     shortDescription:
       "Sebzelerden cevize, üç farklı bıçakla çok amaçlı doğrayıcı.",
     description:
@@ -107,8 +101,6 @@ const seeds: ProductSeed[] = [
     subcategory: "ipli-dograyicilar",
     price: 299.99,
     stock: 41,
-    rating: 4.7,
-    reviewCount: 268,
     shortDescription:
       "İpli mekanizma sayesinde elektriksiz hızlı doğrama deneyimi.",
     description:
@@ -134,8 +126,6 @@ const seeds: ProductSeed[] = [
     subcategory: "mandolin-dilimleyiciler",
     price: 349.99,
     stock: 9,
-    rating: 4.8,
-    reviewCount: 372,
     shortDescription:
       "Ayarlanabilir kalınlık ve toplama haznesiyle restoran kalitesinde dilimler.",
     description:
@@ -162,8 +152,6 @@ const seeds: ProductSeed[] = [
     subcategory: "mandolin-dilimleyiciler",
     price: 219.99,
     stock: 27,
-    rating: 4.5,
-    reviewCount: 154,
     shortDescription:
       "Düz tasarımı sayesinde çekmecede minimum yer kaplar.",
     description:
@@ -187,8 +175,6 @@ const seeds: ProductSeed[] = [
     subcategory: "cok-yonlu-rendeler",
     price: 249.99,
     stock: 33,
-    rating: 4.6,
-    reviewCount: 203,
     shortDescription: "Dört farklı rende yüzeyi tek üründe.",
     description:
       "Çok Yönlü Rende Seti; ince, kalın, çubuk ve dilim olmak üzere dört farklı yüzey sunar. Ergonomik tutamağı ve kaymaz tabanıyla güvenli kullanım sağlar.",
@@ -211,8 +197,6 @@ const seeds: ProductSeed[] = [
     subcategory: "profesyonel-setler",
     price: 139.99,
     stock: 7,
-    rating: 4.9,
-    reviewCount: 289,
     shortDescription:
       "Beş bıçaklı profesyonel set, restoran kalitesinde sonuç.",
     description:
@@ -248,8 +232,6 @@ const seeds: ProductSeed[] = [
     subcategory: "vakumlu-kavanozlar",
     price: 399.99,
     stock: 47,
-    rating: 4.7,
-    reviewCount: 198,
     shortDescription: "Spagetti, makarna ve uzun gıdalarınız için yüksek boy kavanoz.",
     description:
       "Uzun Boy Vakumlu Saklama Kavanozu, dar tabanlı uzun gövdesiyle makarna, spagetti ve uzun gıdaları eksiksiz saklamanıza imkân verir. Vakum kilidi tazeliği korur.",
@@ -272,8 +254,6 @@ const seeds: ProductSeed[] = [
     subcategory: "vakumlu-kavanozlar",
     price: 799.99,
     stock: 124,
-    rating: 4.6,
-    reviewCount: 384,
     shortDescription:
       "Küçük boy vakumlu kavanoz; baharat ve kuruyemiş için ideal.",
     description:
@@ -297,8 +277,6 @@ const seeds: ProductSeed[] = [
     subcategory: "vakumlu-kavanozlar",
     price: 1599.99,
     stock: 86,
-    rating: 4.7,
-    reviewCount: 512,
     shortDescription:
       "Orta boy vakumlu saklama kavanozu kuru gıdalarınızı uzun süre taze tutar.",
     description:
@@ -324,8 +302,6 @@ const seeds: ProductSeed[] = [
     subcategory: "vakumlu-kavanozlar",
     price: 279,
     stock: 64,
-    rating: 4.8,
-    reviewCount: 428,
     shortDescription: "Saten dokulu premium gövde, mat altın detaylı kapak.",
     description:
       "Luxe Premium serisi, saten dokulu gövdesi ve mat metalik kapağıyla mutfak tezgâhlarında dekoratif duruşa sahip. Vakum sistemi sayesinde içerikleri uzun süre korur.",
@@ -348,8 +324,6 @@ const seeds: ProductSeed[] = [
     subcategory: "vakumlu-kavanozlar",
     price: 279,
     stock: 49,
-    rating: 4.8,
-    reviewCount: 263,
     shortDescription: "Saten dokulu gövde, mat gümüş tonlu kapak.",
     description:
       "Luxe Premium serisinin gümüş versiyonu, mutfağınıza dengeli bir nötr ton katar. Vakum sistemi sayesinde içeriği korur.",
@@ -371,8 +345,6 @@ const seeds: ProductSeed[] = [
     subcategory: "vakumlu-kavanozlar",
     price: 279,
     stock: 38,
-    rating: 4.7,
-    reviewCount: 184,
     shortDescription: "Saten dokulu gövde, modern roze altın kapak.",
     description:
       "Luxe Premium serisinin roze versiyonu, sıcak ve modern bir doku katar. Tezgâhlarda dekoratif şıklık sağlar.",
@@ -394,8 +366,6 @@ const seeds: ProductSeed[] = [
     subcategory: "ahsap-kapakli",
     price: 199,
     stock: 92,
-    rating: 4.7,
-    reviewCount: 198,
     shortDescription: "Doğal ahşap kapaklı kavanoz, sıcak Scandi dokunuşu.",
     description:
       "Woody Ahşap Kapaklı Kavanoz, doğal kayın ağacı kapağı ve silikon contası sayesinde hem dekoratif hem de işlevseldir. Açık raflarda sergilemek için idealdir.",
@@ -418,8 +388,6 @@ const seeds: ProductSeed[] = [
     subcategory: "ahsap-kapakli",
     price: 249,
     stock: 71,
-    rating: 4.7,
-    reviewCount: 165,
     shortDescription:
       "Geniş hacimli ahşap kapaklı kavanoz; tahıllar için ideal.",
     description:
@@ -442,8 +410,6 @@ const seeds: ProductSeed[] = [
     subcategory: "ahsap-kapakli",
     price: 159,
     stock: 108,
-    rating: 4.6,
-    reviewCount: 121,
     shortDescription:
       "Küçük boy ahşap kapaklı kavanoz; baharat ve atıştırmalık için.",
     description:
@@ -466,8 +432,6 @@ const seeds: ProductSeed[] = [
     subcategory: "saklama-setleri",
     price: 749,
     stock: 22,
-    rating: 4.9,
-    reviewCount: 318,
     shortDescription: "Üç farklı boyda hava sızdırmaz kare set.",
     description:
       "Kare Saklama Seti, üç farklı boyutu sayesinde mutfak dolabınızda eksiksiz bir saklama çözümü sunar. Aynı tabana sahip kapları üst üste istiflemek mümkün.",
@@ -491,8 +455,6 @@ const seeds: ProductSeed[] = [
     subcategory: "cam-gorunumlu",
     price: 189,
     stock: 58,
-    rating: 4.5,
-    reviewCount: 142,
     shortDescription: "Cam görünümlü, kelebek kilitli pratik saklama kabı.",
     description:
       "Crystal serisi, cam görünümlü gövdesi ve dört taraftan kilitli kapağıyla hava sızdırmaz saklama sunar. Hafiftir, kırılmaz ve buzdolabında yer kazandırır.",
@@ -515,8 +477,6 @@ const seeds: ProductSeed[] = [
     subcategory: "vakumlu-kavanozlar",
     price: 269,
     stock: 47,
-    rating: 4.7,
-    reviewCount: 138,
     shortDescription: "Uzun boylu, dar tabanlı kavanoz; uzun gıdalar için.",
     description:
       "Tall serisinin uzun gövdesi, spagetti, makarna ve uzun ürünleri eksiksiz saklamanıza imkân verir. Vakum kilidi tazeliği korur.",
@@ -534,8 +494,6 @@ const seeds: ProductSeed[] = [
     subcategory: "dikdortgen-kaplar",
     price: 53.13,
     stock: 134,
-    rating: 4.6,
-    reviewCount: 221,
     shortDescription: "Siyah kapaklı, buzdolabına ergonomik sığan dikdörtgen kap.",
     description:
       "Modüler Saklama Kabı, dolap ölçülerine göre tasarlanmış formuyla yerden kazandırır. Şık siyah kapak detayı ve hava sızdırmaz contası ile yemekleri taze tutar.",
@@ -558,8 +516,6 @@ const seeds: ProductSeed[] = [
     subcategory: "dikdortgen-kaplar",
     price: 95.63,
     stock: 102,
-    rating: 4.6,
-    reviewCount: 174,
     shortDescription: "Orta boy dikdörtgen kap; günlük yemekler için.",
     description:
       "Aynı seriyle istiflenebilen orta boy dikdörtgen kap, günlük yemeklerinizi taze tutarken buzdolabınızda düzen sağlar.",
@@ -581,8 +537,6 @@ const seeds: ProductSeed[] = [
     subcategory: "dikdortgen-kaplar",
     price: 151.8,
     stock: 89,
-    rating: 4.6,
-    reviewCount: 152,
     shortDescription: "Geniş hacimli dikdörtgen kap; sebzeler ve hazır yemekler için.",
     description:
       "Geniş hacmiyle önceden hazırlanan yemekler ve sebzeler için ideal. Aynı seri tasarım bütünlüğü sunar.",
@@ -600,8 +554,6 @@ const seeds: ProductSeed[] = [
     subcategory: "saklama-setleri",
     price: 349.99,
     stock: 35,
-    rating: 4.8,
-    reviewCount: 247,
     shortDescription:
       "Aynı seriyle uyumlu üç boy saklama kabı seti.",
     description:
@@ -622,8 +574,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 36.43,
     stock: 38,
-    rating: 4.7,
-    reviewCount: 156,
     shortDescription: "Geniş ağız ve derin formuyla servis dostu salata kasesi.",
     description:
       "Klasik Salata Kasesi, geniş ağız ve derin formuyla salata, makarna ve meyveleri sergilemek için tasarlandı. Mat parlak yüzeyi sofraya zarif bir hat katar.",
@@ -642,8 +592,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 68.31,
     stock: 64,
-    rating: 4.6,
-    reviewCount: 121,
     shortDescription: "Orta boy klasik kase; günlük servisler için ideal.",
     description:
       "Klasik kasenin orta boyu, günlük servislerinizi şıklaştırır. Set olarak diğer boylarla uyumlu kullanılabilir.",
@@ -661,8 +609,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 88.04,
     stock: 132,
-    rating: 4.5,
-    reviewCount: 78,
     shortDescription:
       "Küçük boy çerez kasesi; mezeler ve atıştırmalıklar için.",
     description:
@@ -681,8 +627,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 66.79,
     stock: 26,
-    rating: 4.8,
-    reviewCount: 193,
     shortDescription: "Sızdırmaz kapaklı büyük boy servis ve saklama kasesi.",
     description:
       "Kapaklı Servis Kasesi, sızdırmaz şeffaf kapağı sayesinde hazırladığınız salata ve yemekleri sofradan buzdolabına taşımanızı sağlar. Büyük boyu kalabalık sofralar için idealdir.",
@@ -701,8 +645,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 116.89,
     stock: 51,
-    rating: 4.7,
-    reviewCount: 162,
     shortDescription: "Aynı seriden orta boy kapaklı kase.",
     description:
       "Kapaklı serinin orta boyu, sızdırmaz kapağıyla salataları ve yemekleri tazece saklar.",
@@ -720,8 +662,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 156.35,
     stock: 89,
-    rating: 4.6,
-    reviewCount: 84,
     shortDescription:
       "Aperatif ve sos için kapaklı küçük kase.",
     description:
@@ -740,8 +680,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 91.08,
     stock: 22,
-    rating: 4.8,
-    reviewCount: 142,
     shortDescription: "Davet sofraları için ekstra büyük klasik kase.",
     description:
       "Klasik serinin XXL boyu, kalabalık sofralar için tasarlandı. Geniş ağzı ile sunum dostudur.",
@@ -759,8 +697,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 159.39,
     stock: 16,
-    rating: 4.9,
-    reviewCount: 211,
     shortDescription: "Davet sofralarına özel ekstra büyük dokulu kase.",
     description:
       "Dokulu seriden XXL kase, kalabalık davet sofraları için tasarlandı. Geniş ağzı ile sunum dostudur.",
@@ -779,8 +715,6 @@ const seeds: ProductSeed[] = [
     subcategory: "servis-tabaklari",
     price: 72.86,
     stock: 73,
-    rating: 4.5,
-    reviewCount: 96,
     shortDescription:
       "Dikdörtgen servis tabağı; mezeler ve kahvaltılar için.",
     description:
@@ -799,8 +733,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 121.44,
     stock: 42,
-    rating: 4.7,
-    reviewCount: 128,
     shortDescription: "Sızdırmaz kapaklı geniş servis kasesi.",
     description:
       "Kapaklı Servis Kasesi; sızdırmaz şeffaf kapağıyla salataları, mezeleri ve yemekleri sofrada sunmanızı, ardından buzdolabında saklamanızı sağlar.",
@@ -818,8 +750,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 37.95,
     stock: 31,
-    rating: 4.6,
-    reviewCount: 105,
     shortDescription: "Salata ve sıcak servisler için oval form.",
     description:
       "Klasik Oval Servis Kasesi, dengeli oval formuyla salatalar ve sıcak servisler için zarif görünüm sunar.",
@@ -837,8 +767,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 68.31,
     stock: 19,
-    rating: 4.8,
-    reviewCount: 154,
     shortDescription: "Dokulu yüzeyli oval servis kasesi.",
     description:
       "Dokulu Oval Kase, salataları ve ana yemekleri zarif bir oval form ile servis etmenizi sağlar.",
@@ -856,8 +784,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 339.99,
     stock: 64,
-    rating: 4.5,
-    reviewCount: 154,
     shortDescription:
       "İç içe geçen üç boy desenli kase; sızdırmaz kapaklarıyla hem servis hem saklama.",
     description:
@@ -882,8 +808,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kurutucular",
     price: 79.99,
     stock: 88,
-    rating: 4.7,
-    reviewCount: 219,
     shortDescription:
       "Sebze, meyve ve makarnayı pratikçe süzen geniş süzgeç.",
     description:
@@ -903,8 +827,6 @@ const seeds: ProductSeed[] = [
     subcategory: "surahi-karaf",
     price: 159.99,
     stock: 67,
-    rating: 4.5,
-    reviewCount: 137,
     shortDescription:
       "Tek elle kullanım için ergonomik kulplu sürahi.",
     description:
@@ -925,8 +847,6 @@ const seeds: ProductSeed[] = [
     subcategory: "kesme-tahtalari",
     price: 249.99,
     stock: 21,
-    rating: 4.9,
-    reviewCount: 487,
     shortDescription:
       "Bükülebilir gövdesiyle doğradıklarınızı tek harekette tencereye aktaran esnek kesme tahtası.",
     description:
@@ -952,8 +872,6 @@ const seeds: ProductSeed[] = [
     subcategory: "kesme-tahtalari",
     price: 229.99,
     stock: 55,
-    rating: 4.7,
-    reviewCount: 198,
     shortDescription:
       "Kaymaz ayakları ve kenar oluğuyla tezgâhı temiz tutan dayanıklı kesme tahtası.",
     description:
@@ -979,8 +897,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kurutucular",
     price: 339.99,
     stock: 28,
-    rating: 4.8,
-    reviewCount: 271,
     shortDescription:
       "Geniş hazneli salata kurutucu; tek hareketle sebzelerinizi kurutur.",
     description:
@@ -1005,8 +921,6 @@ const seeds: ProductSeed[] = [
     subcategory: "soyacaklar",
     price: 49.99,
     stock: 142,
-    rating: 4.6,
-    reviewCount: 218,
     shortDescription:
       "Keskin paslanmaz çelik bıçaklı, ergonomik kavramalı sebze soyacağı.",
     description:
@@ -1030,8 +944,6 @@ const seeds: ProductSeed[] = [
     subcategory: "soyacaklar",
     price: 49.99,
     stock: 96,
-    rating: 4.7,
-    reviewCount: 184,
     shortDescription:
       "Çift bıçaklı, jülyen kesim özellikli premium soyacak.",
     description:
@@ -1056,8 +968,6 @@ const seeds: ProductSeed[] = [
     subcategory: "buz-kaliplari",
     price: 60.72,
     stock: 198,
-    rating: 4.6,
-    reviewCount: 312,
     shortDescription:
       "Dökülmez kapaklı silikon buz kalıbı; eşit ve şeffaf buzlar.",
     description:
@@ -1083,8 +993,6 @@ const seeds: ProductSeed[] = [
     subcategory: "cok-yonlu-rendeler",
     price: 99.99,
     stock: 60,
-    rating: 4.7,
-    reviewCount: 24,
     shortDescription:
       "Çok yüzeyli paslanmaz çelik kutu rende; peynirden sebzeye her iş tek üründe.",
     description:
@@ -1110,8 +1018,6 @@ const seeds: ProductSeed[] = [
     subcategory: "salata-kaseleri",
     price: 339.99,
     stock: 30,
-    rating: 4.8,
-    reviewCount: 31,
     shortDescription:
       "Üç boy kapaklı Lunar kase; saklamadan servise tek sette.",
     description:
@@ -1139,8 +1045,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 249.99,
     stock: 24,
-    rating: 4.6,
-    reviewCount: 0,
     shortDescription:
       "Piramit formlu çok gözlü kozmetik düzenleyici; tüm makyaj malzemeleriniz tek yerde.",
     description:
@@ -1164,8 +1068,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 159.99,
     stock: 24,
-    rating: 4.5,
-    reviewCount: 0,
     shortDescription:
       "Podyum tarzı kompakt kozmetik düzenleyici; tezgâhınızda şık durur.",
     description:
@@ -1189,8 +1091,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 169.99,
     stock: 12,
-    rating: 4.7,
-    reviewCount: 0,
     shortDescription:
       "İki parçadan oluşan makyaj organizer seti; yan yana veya ayrı kullanılabilir.",
     description:
@@ -1214,8 +1114,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 189.99,
     stock: 12,
-    rating: 4.7,
-    reviewCount: 0,
     shortDescription:
       "Üç parçalı makyaj organizer seti; geniş koleksiyon sahipleri için.",
     description:
@@ -1239,8 +1137,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 99.99,
     stock: 24,
-    rating: 4.5,
-    reviewCount: 0,
     shortDescription:
       "Kapaklı pamuk ve kulak çubuğu düzenleyicisi; banyonuzda hijyenik saklama.",
     description:
@@ -1264,8 +1160,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 159.99,
     stock: 12,
-    rating: 4.8,
-    reviewCount: 0,
     shortDescription:
       "Döner silindir formunda 4 katlı makyaj organizeri; 360° erişim kolaylığı.",
     description:
@@ -1289,8 +1183,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 149.99,
     stock: 24,
-    rating: 4.6,
-    reviewCount: 0,
     shortDescription:
       "Kompakt çekmeceli modül; küçük aksesuarlar ve makyaj malzemeleri için.",
     description:
@@ -1314,8 +1206,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 329.99,
     stock: 12,
-    rating: 4.8,
-    reviewCount: 0,
     shortDescription:
       "Çekmeceli piramit düzenleyici; üstte açık bölmeler, altta çekmece.",
     description:
@@ -1339,8 +1229,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 399.99,
     stock: 12,
-    rating: 4.7,
-    reviewCount: 0,
     shortDescription:
       "Üç gözlü çekmece sistemi; makyaj ve aksesuarlarınızı kategorize edin.",
     description:
@@ -1364,8 +1252,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 499.99,
     stock: 8,
-    rating: 4.9,
-    reviewCount: 0,
     shortDescription:
       "Üst organizer + üç çekmeceli alt modül; komple makyaj istasyonu.",
     description:
@@ -1389,8 +1275,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 249.99,
     stock: 24,
-    rating: 4.6,
-    reviewCount: 0,
     shortDescription:
       "Yuvarlak formlu iki parçalı organizer; fırçalar ve kozmetik için.",
     description:
@@ -1414,8 +1298,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 399.99,
     stock: 12,
-    rating: 4.8,
-    reviewCount: 0,
     shortDescription:
       "Çok bölmeli mücevher kutusu; yüzük, kolye ve küpeleriniz için özel gözler.",
     description:
@@ -1439,8 +1321,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 189.99,
     stock: 12,
-    rating: 4.7,
-    reviewCount: 0,
     shortDescription:
       "Aynalı kapaklı, 4 katlı kare organizer; makyaj yaparken ayna elinizin altında.",
     description:
@@ -1464,8 +1344,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 899.99,
     stock: 4,
-    rating: 4.9,
-    reviewCount: 0,
     shortDescription:
       "Büyük boy premium makyaj organizeri; profesyonel koleksiyonlar için tasarlandı.",
     description:
@@ -1489,8 +1367,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 229.99,
     stock: 12,
-    rating: 4.7,
-    reviewCount: 0,
     shortDescription:
       "7 ayrı gözlü makyaj organizeri; her ürün grubuna özel bölme.",
     description:
@@ -1514,8 +1390,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 159.99,
     stock: 24,
-    rating: 4.6,
-    reviewCount: 0,
     shortDescription:
       "Kompakt takı organizeri; yüzük, küpe ve bilekliklerinizi düzenli saklayın.",
     description:
@@ -1539,8 +1413,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 199.99,
     stock: 24,
-    rating: 4.7,
-    reviewCount: 0,
     shortDescription:
       "Geniş çekmeceli modül; tek başına veya organizerlerin altına yerleştirerek kullanın.",
     description:
@@ -1564,8 +1436,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 129.99,
     stock: 24,
-    rating: 4.6,
-    reviewCount: 0,
     shortDescription:
       "Kapaklı kulak çubuğu kutusu; eğimli iç tabanla çubuklar öne akar, tek elle alınır.",
     description:
@@ -1589,8 +1459,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 179.99,
     stock: 24,
-    rating: 4.7,
-    reviewCount: 0,
     shortDescription:
       "Yedi silindir bölmeli papatya formlu organizer; fırça, kalem ve rimeller için.",
     description:
@@ -1614,8 +1482,6 @@ const seeds: ProductSeed[] = [
     category: "organizerlar",
     price: 449.99,
     stock: 12,
-    rating: 4.8,
-    reviewCount: 0,
     shortDescription:
       "Üstte kademeli oje rafları, altta üç çekmece; büyük koleksiyonlar için tam düzen.",
     description:
@@ -1718,8 +1584,6 @@ export const products: Product[] = seeds.map((seed) => {
     brand: "Zest Home",
     sku: `ZST-${seed.id.toUpperCase()}`,
     stock: seed.stock,
-    rating: seed.rating,
-    reviewCount: seed.reviewCount,
     imageUrl: cover,
     images,
     tags,
