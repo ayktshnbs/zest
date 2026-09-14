@@ -10,6 +10,7 @@
 // "Authorized JavaScript origins" for this OAuth client.
 
 import { useEffect, useRef, useState } from "react";
+import { safeNextPath } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { authApi, ApiError } from "@/lib/api";
 import { useAuth } from "./AuthProvider";
@@ -78,7 +79,7 @@ export const GoogleSignInButton = ({
             try {
               await authApi.google(resp.credential);
               await refresh();
-              router.push(redirectTo);
+              router.push(safeNextPath(redirectTo));
               router.refresh();
             } catch (err) {
               const msg =

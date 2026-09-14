@@ -6,12 +6,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { ApiError } from "@/lib/api";
+import { safeNextPath } from "@/lib/utils";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("next") || "/";
+  const redirectTo = safeNextPath(searchParams.get("next"));
 
   const { login } = useAuth();
   const [email, setEmail] = useState("");

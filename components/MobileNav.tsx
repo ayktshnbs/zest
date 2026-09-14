@@ -18,6 +18,7 @@ import { useWishlist } from "./WishlistProvider";
 import { useAuth } from "./AuthProvider";
 import { motion, AnimatePresence } from "framer-motion";
 import { categories } from "@/lib/categories";
+import { safeNextPath } from "@/lib/utils";
 
 export const MobileNav = () => {
   const pathname = usePathname();
@@ -26,7 +27,7 @@ export const MobileNav = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const loginHref = `/giris?next=${encodeURIComponent(pathname || "/")}`;
+  const loginHref = `/giris?next=${encodeURIComponent(safeNextPath(pathname))}`;
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -221,7 +222,7 @@ export const MobileNav = () => {
                           Giriş Yap
                         </Link>
                         <Link
-                          href={`/uye-ol?next=${encodeURIComponent(pathname || "/")}`}
+                          href={`/uye-ol?next=${encodeURIComponent(safeNextPath(pathname))}`}
                           onClick={() => setIsMenuOpen(false)}
                           className="flex-1 text-center border border-foreground/15 font-audiowide text-[10px] uppercase tracking-[0.25em] py-3 hover:border-foreground transition-colors"
                         >

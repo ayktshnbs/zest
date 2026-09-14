@@ -12,6 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { products } from "@/lib/products";
 import { categories } from "@/lib/categories";
+import { safeNextPath } from "@/lib/utils";
 import { formatPrice } from "@/lib/utils";
 
 export const Navbar = () => {
@@ -145,7 +146,7 @@ export const Navbar = () => {
             </button>
 
             <Link
-              href={isAuthenticated ? "/hesabim" : `/giris?next=${encodeURIComponent(pathname || "/")}`}
+              href={isAuthenticated ? "/hesabim" : `/giris?next=${encodeURIComponent(safeNextPath(pathname))}`}
               aria-label={isAuthenticated ? `Hesabım — ${user?.name}` : "Giriş yap"}
               title={isAuthenticated ? user?.name : "Giriş yap"}
               className={`p-2 transition-all duration-500 hidden sm:block ${
