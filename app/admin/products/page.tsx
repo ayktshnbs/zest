@@ -14,7 +14,14 @@ import {
 } from "@/lib/api";
 import { RotateCcw, Plus, X, ImagePlus, Trash2, Pencil } from "lucide-react";
 import { refreshLiveCatalog, useLiveCatalog } from "@/lib/useStock";
-import { products as staticProducts } from "@/lib/products";
+import { products as staticProducts, PLACEHOLDER_IMAGE } from "@/lib/products";
+
+// The storefront's "no photo" fallback must never sit in an editable gallery:
+// `Product.imageUrl` is `images[0] ?? PLACEHOLDER_IMAGE`, so seeding the editor
+// from it put the grey placeholder at index 0 and every photo the admin then
+// uploaded landed at index 1 — the catalog kept showing the placeholder.
+const withoutPlaceholder = (urls: readonly string[] | null | undefined) =>
+  (urls ?? []).filter((u) => u !== PLACEHOLDER_IMAGE);
 
 // Map each built-in product id → the category label it belongs to. The seed's
 // `category` field is actually a subcategory of Mutfak (e.g. "saklama-kaplari"),
@@ -784,6 +791,11 @@ function ProductFormModal({
             {imageUrls.map((u, i) => (
               <div key={u} className="relative w-20 h-20 border border-foreground/10">
                 <img src={u} alt="" className="w-full h-full object-cover" />
+                {i === 0 ? (
+                  <span className="absolute bottom-0 left-0 right-0 bg-foreground/70 text-background text-[9px] uppercase tracking-[0.2em] text-center py-0.5">
+                    Kapak
+                  </span>
+                ) : null}
                 <button
                   onClick={() => removeImage(i)}
                   className="absolute -top-2 -right-2 bg-background border border-foreground/20 p-0.5 text-foreground/50 hover:text-red-600"
@@ -1032,15 +1044,14 @@ function BuiltinProductFormModal({
   const staticP = staticProducts.find((p) => p.id === row.productId);
   const defaultShort = staticP?.shortDescription ?? "";
   const defaultLong = staticP?.description ?? "";
-  // Image precedence: admin override > static images > single cover.
-  const initialImages =
-    row.imageUrlsOverride && row.imageUrlsOverride.length > 0
-      ? row.imageUrlsOverride
-      : staticP?.images && staticP.images.length > 0
-      ? staticP.images
-      : staticP?.imageUrl
-      ? [staticP.imageUrl]
-      : [];
+  // Image precedence: admin override > static images. `staticP.imageUrl` is
+  // deliberately NOT a fallback — it is `images[0] ?? PLACEHOLDER_IMAGE`, so
+  // for a product with no photos it would seed the gallery with the
+  // placeholder. A product with no real photos starts with an EMPTY gallery,
+  // and the first upload becomes its cover.
+  const staticImages = withoutPlaceholder(staticP?.images);
+  const overrideImages = withoutPlaceholder(row.imageUrlsOverride);
+  const initialImages = overrideImages.length > 0 ? overrideImages : staticImages;
   const subcatLabel =
     staticP?.subcategoryLabel ?? staticP?.categoryLabel ?? row.productId;
 
@@ -1211,12 +1222,13 @@ function BuiltinProductFormModal({
       description.trim() === defaultLong.trim() || description.trim() === ""
         ? null
         : description.trim();
-    // If the gallery matches static disk images exactly, clear the override.
-    const staticSet = JSON.stringify(initialImages);
-    const isUnchanged =
-      JSON.stringify(imageUrls) === staticSet &&
-      (row.imageUrlsOverride == null || row.imageUrlsOverride.length === 0);
-    const imagesOut = isUnchanged ? null : imageUrls;
+    // If the gallery matches the static disk images exactly, clear the
+    // override (same null-means-default semantics as name/price). The
+    // placeholder is stripped first so it can never be persisted as a "photo"
+    // — whatever the admin uploaded is the gallery, cover first.
+    const gallery = withoutPlaceholder(imageUrls);
+    const isUnchanged = JSON.stringify(gallery) === JSON.stringify(staticImages);
+    const imagesOut = isUnchanged ? null : gallery;
     const variantsOut = variants.map((v) => ({
       colorKey: v.colorKey.trim(),
       colorLabel: v.colorLabel.trim(),
@@ -1354,6 +1366,11 @@ function BuiltinProductFormModal({
               <div key={u + i} className="relative w-20 h-20 border border-foreground/10">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={u} alt="" className="w-full h-full object-cover" />
+                {i === 0 ? (
+                  <span className="absolute bottom-0 left-0 right-0 bg-foreground/70 text-background text-[9px] uppercase tracking-[0.2em] text-center py-0.5">
+                    Kapak
+                  </span>
+                ) : null}
                 <button
                   onClick={() => removeImage(i)}
                   className="absolute -top-2 -right-2 bg-background border border-foreground/20 p-0.5 text-foreground/50 hover:text-red-600"

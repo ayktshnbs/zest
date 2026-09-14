@@ -6,6 +6,10 @@ import { pool } from "../database/pool.js";
 
 const SELECT_COLS = `product_id, name, price_cents, short_description, description, is_active, image_urls, volume_label, set_size, badges`;
 
+// Mirrors PLACEHOLDER_IMAGE in the storefront's lib/products.ts and the path
+// migration 024 removes from existing rows. Keep the three in sync.
+const PLACEHOLDER_IMAGE_PATH = "/placeholder-product.svg";
+
 /** { productId: { name, priceCents, shortDescription, description, isActive, imageUrls } }
  *  for every product with an override row. NULL fields stay null (caller falls
  *  back to the static catalog). isActive defaults to true. */
@@ -72,11 +76,16 @@ export const set = async (productId, fields) => {
   const description = "description" in fields ? fields.description : cur.description;
   const isActive = "isActive" in fields ? fields.isActive : cur.is_active;
   // null OR empty array both clear the override → static catalog images win.
+  // The storefront's "no photo" placeholder is a display fallback, never a
+  // gallery entry: an older admin build seeded the editor with it, so it was
+  // stored at index 0 and the real upload at index 1 (catalog showed grey).
+  // Strip it here so no client can persist it again.
   const imageUrls =
     "imageUrls" in fields
-      ? fields.imageUrls && fields.imageUrls.length > 0
-        ? fields.imageUrls
-        : null
+      ? (() => {
+          const cleaned = (fields.imageUrls ?? []).filter((u) => u !== PLACEHOLDER_IMAGE_PATH);
+          return cleaned.length > 0 ? cleaned : null;
+        })()
       : cur.image_urls;
   const volumeLabel =
     "volumeLabel" in fields

@@ -1647,7 +1647,11 @@ const imagesFor = (id: string, count: number) => {
 const ensureSlug = (s: string) => slugify(s);
 
 const DEFAULT_TOP_CATEGORY = "mutfak";
-const PLACEHOLDER_IMAGE = "/placeholder-product.svg";
+// Cover shown when a product has no real photos. Exported so the admin editor
+// can recognise it and keep it OUT of the editable gallery — it is a display
+// fallback, never a stored image (server/models/ProductOverrideModel.js strips
+// it too).
+export const PLACEHOLDER_IMAGE = "/placeholder-product.svg";
 
 const FINE_SUBCATEGORY_LABELS: Record<string, string> = {
   "vakumlu-kavanozlar": "Vakumlu Kavanozlar",
