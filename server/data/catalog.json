@@ -308,5 +308,25 @@
     "name": "Takı Organizeri",
     "priceCents": 15999,
     "stock": 24
+  },
+  "org-bcekmece": {
+    "name": "Büyük Çekmece Modülü",
+    "priceCents": 19999,
+    "stock": 24
+  },
+  "org-kpamukluk": {
+    "name": "Kulak Çubuğu Pamukluk",
+    "priceCents": 12999,
+    "stock": 24
+  },
+  "org-papatya": {
+    "name": "Papatya Organizer",
+    "priceCents": 17999,
+    "stock": 24
+  },
+  "org-oje3cek": {
+    "name": "Üç Çekmeceli Oje Düzenleyici",
+    "priceCents": 44999,
+    "stock": 12
   }
 }
